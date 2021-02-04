@@ -2,6 +2,10 @@
 
 国内一流的Unity3D手游自动化录制与回放工具
 
+## 功能说明
+
+1. 集成SDK(git@gitlab.testplus.cn:UAuto/U3DAutoSDK.git)
+
 ## 如何参与开发
 
 * python 3.7, pip
