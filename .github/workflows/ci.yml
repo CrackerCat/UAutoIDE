@@ -1,0 +1,51 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
+
+# This continuous integration pipeline is triggered anytime a user pushes code to the repo.
+# This pipeline builds the Wpf project, runs unit tests, then saves the MSIX build artifact.
+name: BuildWindows
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: '0 18 * * *'
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        python-version: [3.7]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install wheel
+        python -m pip install pynsist
+        pip install -r requirements.txt
+    - name: PyBuild
+      run: |
+        python build.py        
+      
+    - name: Generate build number
+      uses: einaregilsson/build-number@v3
+      with:
+        token: ${{secrets.TOKEN}}
+
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.TOKEN }}
+        file: ".\\dist\\UAutoIDE-1.0.12-internal-release.zip"
+        tag: ${{ github.ref }}

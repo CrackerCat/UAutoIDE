@@ -1,0 +1,6 @@
+global-exclude *_unittest.py
+recursive-include miniperf *.html *.js *.css *.json *.png *.eot *.svg *.ttf *.woff *
+recursive-exclude miniperf *.pyc
+recursive-include miniperf *.exe *.html *.dll
+recursive-exclude miniperf/ui/node_modules *
+recursive-exclude miniperf/.data *

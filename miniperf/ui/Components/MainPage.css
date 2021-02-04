@@ -1,0 +1,34 @@
+#content {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex: 1;
+    /*background:lightgrey;*/
+}
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.MuiContainer-root {
+    height: 100%;
+}
+.left {
+    width: 35vh;
+    display: flex;
+    flex-direction: column;
+    padding-right: 2px;
+}
+.middle {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding-right: 2px;
+}
+.right {
+    width: 40vh;
+    height: 100%;
+}

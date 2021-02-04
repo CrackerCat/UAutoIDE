@@ -1,0 +1,12 @@
+pythonnet==2.5.1
+cefpython3==66.0
+pywebview==3.4
+openpyxl==3.0.2
+jdcal==1.4.1
+et-xmlfile==1.0.1
+wcwidth
+-e git+https://github.com/king3soft/u3driver.git#egg=u3driver
+-e .
+
+
+
