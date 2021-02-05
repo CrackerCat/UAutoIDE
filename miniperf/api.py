@@ -20,7 +20,7 @@ class Api:
         # print(data)
         # self.p.stdin.write("data")
         # self.p.stdin.flush()
-        return extension.connect(data['sn'])
+        return extension.connect(data)
     def disConnect(self):
         return extension.disConnect()
 

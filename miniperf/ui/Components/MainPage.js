@@ -4,7 +4,7 @@ import {
     AppBar,
     Button,
     Input,
-    InputAdornment, Snackbar,
+    InputAdornment, Snackbar, TextField,
     Toolbar
 } from "@material-ui/core";
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
@@ -48,6 +48,15 @@ export default function MainPage(){
     const [okOpen, setOkOpen] = React.useState(false);
     const [isConnected, setIsConnected] = React.useState(false);
     const [message, setMessage] = React.useState('');
+    const [sn, setSN] = useState("");
+    const [ip, setIP] = useState("");
+
+    const changeSNValue = (e) =>{
+        setSN(e.target.value);
+    }
+    const changeIPValue = (e) =>{
+        setIP(e.target.value);
+    }
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -61,7 +70,7 @@ export default function MainPage(){
     }
 
     const connect = function (){
-        window.pywebview.api.connect({'sn':sn}).then((res)=>{
+        window.pywebview.api.connect({'sn':sn,'ip':ip}).then((res)=>{
             setIsConnected(res['ok'])
             showMsg(res['msg'])
         })
@@ -77,10 +86,7 @@ export default function MainPage(){
             showMsg(res['msg'])
         })
     }
-    const [sn, setSN] = useState("");
-    const changeValue = (e) =>{
-        setSN(e.target.value);
-    }
+
     useEffect(()=>{
         setTimeout(()=>{
             getCurDevice()
@@ -98,20 +104,24 @@ export default function MainPage(){
                 <div className={'container'}>
                     <AppBar position={"static"}>
                         <Toolbar>
-                            <Input
-                                id="standard-adornment-password"
-                                type={'text'}
-                                label="Standard"
+                            <TextField
+                                id="filled-helperText"
+                                label="设备号"
+                                variant="filled"
                                 className={classes.Input}
                                 value={sn}
-                                onChange={changeValue}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={connect} disabled={isConnected}>连接</Button>
-                                        <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={disConnect} disabled={!isConnected}>断开</Button>
-                                    </InputAdornment>
-                                }
+                                onChange={changeSNValue}
                             />
+                            <TextField
+                                id="filled-helperText"
+                                label="IP地址"
+                                variant="filled"
+                                className={classes.Input}
+                                value={ip}
+                                onChange={changeIPValue}
+                            />
+                            <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={connect} disabled={isConnected}>连接</Button>
+                            <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={disConnect} disabled={!isConnected}>断开</Button>
                             <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={test}>test</Button>
                         </Toolbar>
                     </AppBar>

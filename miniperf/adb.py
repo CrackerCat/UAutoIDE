@@ -25,11 +25,13 @@ class Device:
             self.isConnected = False
         pass
 
-    def connect(self,serial_num):
+    def connect(self,serial_num,ip):
         self.serial_num = serial_num
-        ip = self.getIP()
+        if ip == '':
+            ip = self.getIP()
         self.device = AltrunUnityDriver(serial_num,'',ip)
         self.isConnected = True
+        return ip
 
     def disConnect(self):
         self.device.stop()

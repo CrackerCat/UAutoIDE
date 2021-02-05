@@ -54,11 +54,11 @@ def getTempFile():
     return {"ok": True, "msg": data}
 
 
-def connect(sn: str):
+def connect(data):
     global phone
     try:
-        phone.connect(sn)
-        return {"ok": True, "msg": f"连接成功：{sn}"}
+        res = phone.connect(data['sn'],data['ip'])
+        return {"ok": True, "msg": f"连接成功：{res}"}
     except Exception as e:
         return {"ok": False, "msg": f"连接失败：{e}"}
 
