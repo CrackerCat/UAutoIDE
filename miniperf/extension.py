@@ -13,9 +13,12 @@ import wcwidth
 import subprocess
 from openpyxl import load_workbook
 from miniperf.adb import Device
-
+# import importlib
+import importlib.util
+import miniperf.asset.temp_test as case
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+
 python_path = os.path.join(os.path.split(sys.executable)[0], "python.exe")
 
 g_webview = None
@@ -71,10 +74,41 @@ def record():
         phone.record()
         return {"ok": True, "msg": '录制完成'}
 
+def getCurDevice():
+    res = GetDevices()
+    first_key = ''
+    if len(res) > 0:
+        first_key = list(res.keys())[0]
+    return {"ok": True, "msg": first_key}
+
+def GetDevices():
+    devices = os.popen("adb devices").read()
+    devices = devices.split('\n')
+    devices_dir = {}
+    for i in range(1,len(devices)):
+        if devices[i] != '':
+            device_number = devices[i].replace('device',"").split('\t')[0]
+            device_name = os.popen('adb -s ' + device_number + ' shell getprop ro.product.model ').read()
+            device_name = device_name.replace("\n", "")
+            devices_dir[device_number] = device_name
+    return devices_dir
+
+
+def runCase():
+    global phone
+    if phone.isConnected:
+        # case = importlib.import_module('miniperf.asset.temp_test')
+        # temp_test = importlib.util.find_loader('temp_test', os.path.join(ROOT_DIR, 'asset', 'temp_test.py'))
+        spec = importlib.util.spec_from_file_location('temp_test', os.path.join(ROOT_DIR, 'asset', 'temp_test.py'))
+        module = importlib.util.module_from_spec(spec)
+        sys.modules['temp_test'] = module
+        spec.loader.exec_module(module)
+        module.AutoRun(phone.device)
+        return {"ok": True, "msg": '运行完成'}
+
 def registered_webview(webview):
     global g_webview
     g_webview = webview
-
 
 def mkdir_if_not_exists(path, *paths):
     dirname = os.path.join(path, *paths)

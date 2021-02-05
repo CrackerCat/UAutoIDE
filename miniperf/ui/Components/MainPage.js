@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import MuiAlert from '@material-ui/lab/Alert';
 import {
     AppBar,
@@ -55,7 +55,7 @@ export default function MainPage(){
         setOkOpen(false);
     };
 
-    const showMsg = (msg)=>{
+    let showMsg = (msg)=>{
         setMessage(msg)
         setOkOpen(true)
     }
@@ -80,6 +80,17 @@ export default function MainPage(){
     const [sn, setSN] = useState("");
     const changeValue = (e) =>{
         setSN(e.target.value);
+    }
+    useEffect(()=>{
+        setTimeout(()=>{
+            getCurDevice()
+        },2000)
+    },[])
+
+    const getCurDevice = () =>{
+        window.pywebview.api.getCurDevice().then((res)=>{
+            setSN(res['msg'])
+        })
     }
         return (
             // <div className={classes.root}>
@@ -110,7 +121,7 @@ export default function MainPage(){
                             <PropTable/>
                         </div>
                         <div className={'middle'}>
-                            <EditorCard/>
+                            <EditorCard ShowMsg={showMsg}/>
                             <ConsoleCard/>
                         </div>
                         <div className={'right'}>

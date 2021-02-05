@@ -99,18 +99,24 @@ function ConsoleContent(){
                 let l = consoleData
                 l.push(res)
                 setConsoleData([...l])
+                setHeight()
             }
         })
     }
     useInterval(()=>{
         getNewLog()
     },500)
+    const setHeight = () =>{
+        console.log('change')
+        const textarea = document.getElementById('consoleArea');
+        textarea.scrollTop = textarea.scrollHeight;
+    }
     return(
         <div  className={classes.textArea}>{
             // consoleData.map((item)=>{
             //     return <div>{item}</div>
             // })
-            <textarea value={consoleData}  className={classes.textArea}/>
+            <textarea value={consoleData}  className={classes.textArea} onChange={setHeight} id={'consoleArea'}/>
         }</div>
     )
 }

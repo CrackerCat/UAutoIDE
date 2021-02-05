@@ -5,8 +5,28 @@ import argparse
 
 def AutoRun(udriver):
 	try:
-		time.sleep(3.509033)
-		udriver.find_object(By.PATH,"//UICanvas//UIGMView//Button").tap()
+		time.sleep(1.969818)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole1").tap()
+		time.sleep(0.6347961)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole3").tap()
+		time.sleep(0.5344238)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole5").tap()
+		time.sleep(0.7349854)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole7").tap()
+		time.sleep(0.818573)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole9").tap()
+		time.sleep(0.8843994)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole2").tap()
+		time.sleep(0.4173889)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole4").tap()
+		time.sleep(0.3840332)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole6").tap()
+		time.sleep(0.3674927)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole8").tap()
+		time.sleep(1.686523)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole10").tap()
+		time.sleep(1.385315)
+		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//btnMale2").tap()
 	except Exception as e:
 		print(f'{e}')
 		raise e

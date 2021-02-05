@@ -54,41 +54,55 @@ function useInterval(callback, delay) {
 
 
 
-export default function EditorCard () {
+export default function EditorCard (props) {
+    let {ShowMsg} = props
     const [scriptsData,setScriptsData] = React.useState('')
+    const [isRecording,setIsRecording] = React.useState(false)
+    const [isRunning,setIsRunning] = React.useState(false)
     const classes = useStyles()
     useInterval(()=>{
-        window.pywebview.api.test().then((res)=>{
+        window.pywebview.api.updateScripts().then((res)=>{
             setScriptsData(res['msg'])
         })
     },1000)
 
     function record(){
+        setIsRecording(true)
+        ShowMsg('开始录制，长按屏幕5秒结束录制')
         window.pywebview.api.record().then((res)=>{
-            setScriptsData(res['msg'])
+            ShowMsg(res['msg'])
+            setIsRecording(false)
         })
     }
 
+    function runCase(){
+        setIsRunning(true)
+        ShowMsg('开始运行')
+        window.pywebview.api.runCase().then((res)=>{
+            ShowMsg(res['msg'])
+            setIsRunning(false)
+        })
+    }
 
     return (
         <Card variant={'outlined'} className={classes.root}>
             <CardHeader title={'Coding'} action={[
-                <IconButton aria-label="settings" title={'录制'} onClick={record}>
+                <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning}>
                     <MissedVideoCall/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'重置'}>
+                <IconButton aria-label="settings" title={'重置'} disabled={isRecording || true}>
                     <RotateLeft/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'下载'}>
+                <IconButton aria-label="settings" title={'下载'} disabled={isRecording || true}>
                     <GetApp/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'运行'}>
+                <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning}>
                     <SendOutlined/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'调试'}>
+                <IconButton aria-label="settings" title={'调试'} disabled={isRecording || true}>
                     <Adb/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'停止'}>
+                <IconButton aria-label="settings" title={'停止'} disabled={isRecording || true}>
                     <Stop/>
                 </IconButton>
             ]}/>

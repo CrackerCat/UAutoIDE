@@ -16,8 +16,6 @@ class Api:
         sys.stder = self
         # self.p = subprocess.Popen('python miniperf/Test.py',stdin=subprocess.PIPE)
 
-
-
     def connect(self, data):
         # print(data)
         # self.p.stdin.write("data")
@@ -63,6 +61,9 @@ class Api:
     def test(self):
         return extension.getTempFile()
 
+    def updateScripts(self):
+        return extension.getTempFile()
+
     def showItem(self):
         return extension.showItem()
 
@@ -71,6 +72,12 @@ class Api:
             temp = self.output.pop(0)
             return temp
         return '405null'
+
+    def runCase(self):
+        return extension.runCase()
+
+    def getCurDevice(self):
+        return extension.getCurDevice()
 
     def get_file_list(xlsxpath):
         file_list = []
