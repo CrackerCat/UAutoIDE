@@ -69,7 +69,11 @@ class Api:
 
     def PythonOutput(self):
         if len(self.output) > 0:
-            temp = self.output.pop(0)
+            # temp = self.output.pop(0)
+            temp = ''
+            for s in self.output:
+                temp += s
+            self.output.clear()
             return temp
         return '405null'
 
