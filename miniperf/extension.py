@@ -93,16 +93,22 @@ def GetDevices():
             devices_dir[device_number] = device_name
     return devices_dir
 
+def LoadModuleByPath(name,path):
+    spec = importlib.util.spec_from_file_location(name,path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
 
-def runCase():
+def CasePath(name):
+    return os.path.join(ROOT_DIR, 'asset', name)
+
+def runCase(case = 'temp_test'):
     global phone
     if phone.isConnected:
         # case = importlib.import_module('miniperf.asset.temp_test')
         # temp_test = importlib.util.find_loader('temp_test', os.path.join(ROOT_DIR, 'asset', 'temp_test.py'))
-        spec = importlib.util.spec_from_file_location('temp_test', os.path.join(ROOT_DIR, 'asset', 'temp_test.py'))
-        module = importlib.util.module_from_spec(spec)
-        sys.modules['temp_test'] = module
-        spec.loader.exec_module(module)
+        module = LoadModuleByPath(case,CasePath(case + ".py"))
         module.AutoRun(phone.device)
         return {"ok": True, "msg": '运行完成'}
 
