@@ -36,7 +36,9 @@ const Draw = function () {
     image.onload = ()=>{
         context.drawImage(image,0,0,screen.width,screen.height)
     }
-    window.pywebview.api.test();
+    window.pywebview.api.test().then((res)=>{
+        console.log(res)
+    })
 }
 
 export default function ScreenCard () {

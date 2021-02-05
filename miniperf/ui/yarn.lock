@@ -1272,6 +1272,11 @@
   resolved "https://registry.npm.taobao.org/@xtuc/long/download/@xtuc/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha1-0pHGpOl5ibXGHZrPOWrk/hM6cY0=
 
+ace-builds@^1.4.12, ace-builds@^1.4.6:
+  version "1.4.12"
+  resolved "https://registry.npm.taobao.org/ace-builds/download/ace-builds-1.4.12.tgz#888efa386e36f4345f40b5233fcc4fe4c588fae7"
+  integrity sha1-iI76OG429DRfQLUjP8xP5MWI+uc=
+
 acorn-jsx@^5.0.0:
   version "5.3.1"
   resolved "https://registry.npm.taobao.org/acorn-jsx/download/acorn-jsx-5.3.1.tgz?cache=0&sync_timestamp=1599499155970&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Facorn-jsx%2Fdownload%2Facorn-jsx-5.3.1.tgz#fc8661e11b7ac1539c47dbfea2e72b3af34d267b"
@@ -2578,6 +2583,11 @@ des.js@^1.0.0:
     inherits "^2.0.1"
     minimalistic-assert "^1.0.0"
 
+diff-match-patch@^1.0.4:
+  version "1.0.5"
+  resolved "https://registry.npm.taobao.org/diff-match-patch/download/diff-match-patch-1.0.5.tgz#abb584d5f10cd1196dfc55aa03701592ae3f7b37"
+  integrity sha1-q7WE1fEM0Rlt/FWqA3AVkq4/ezc=
+
 diffie-hellman@^5.0.0:
   version "5.0.3"
   resolved "https://registry.npm.taobao.org/diffie-hellman/download/diffie-hellman-5.0.3.tgz#40e8ee98f55a2149607146921c63e1ae5f3d2875"
@@ -3872,7 +3882,12 @@ lodash.debounce@^4.0.8:
   resolved "https://registry.npm.taobao.org/lodash.debounce/download/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
 
-lodash.isequal@^4.1.1:
+lodash.get@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.npm.taobao.org/lodash.get/download/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
+  integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
+
+lodash.isequal@^4.1.1, lodash.isequal@^4.5.0:
   version "4.5.0"
   resolved "https://registry.npm.taobao.org/lodash.isequal/download/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
   integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
@@ -4703,6 +4718,17 @@ re-resizable@^6.1.1:
   integrity sha1-nDBZs4nO1q3mAiNMxbseEtIxzUc=
   dependencies:
     fast-memoize "^2.5.1"
+
+react-ace@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.npm.taobao.org/react-ace/download/react-ace-9.3.0.tgz#9643fdd30026e2d7b5202536962c48c4d94de279"
+  integrity sha1-lkP90wAm4te1ICU2lixIxNlN4nk=
+  dependencies:
+    ace-builds "^1.4.6"
+    diff-match-patch "^1.0.4"
+    lodash.get "^4.4.2"
+    lodash.isequal "^4.5.0"
+    prop-types "^15.7.2"
 
 react-bootstrap@^1.0.0-beta.9:
   version "1.4.0"

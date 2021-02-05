@@ -1,10 +1,39 @@
 import glob
+import json
 import subprocess
 import webview
 import os
 from miniperf import extension
-
+import sys
+import subprocess
 class Api:
+
+    def __init__(self):
+        self.output = []
+        self.stdoutbak = sys.stdout
+        self.stderrbak = sys.stderr
+        sys.stdout = self
+        sys.stder = self
+        # self.p = subprocess.Popen('python miniperf/Test.py',stdin=subprocess.PIPE)
+
+
+
+    def connect(self, data):
+        # print(data)
+        # self.p.stdin.write("data")
+        # self.p.stdin.flush()
+        return extension.connect(data['sn'])
+    def disConnect(self):
+        return extension.disConnect()
+
+
+    def write(self, info):
+        self.output.append(info)
+
+    def restoreStd(self):
+        sys.stdout = self.stdoutbak
+        sys.stderr = self.stderrbak
+
     def pywebviewready(self):
         print('pywebviewready')
     
@@ -27,6 +56,21 @@ class Api:
         print('ls')
         return os.listdir('.')
 
+
+    def record(self):
+        return extension.record()
+
+    def test(self):
+        return extension.getTempFile()
+
+    def showItem(self):
+        return extension.showItem()
+
+    def PythonOutput(self):
+        if len(self.output) > 0:
+            temp = self.output.pop(0)
+            return temp
+        return '405null'
 
     def get_file_list(xlsxpath):
         file_list = []

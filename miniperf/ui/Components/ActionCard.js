@@ -33,34 +33,34 @@ export default function ActionCard () {
     return(
         <Card variant={'outlined'} className={classes.root}>
             <CardContent className={classes.itemContent}>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<TouchApp/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<TouchApp/>} disabled>
                     Click
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={[<TouchApp/>,<Adjust/>]}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={[<TouchApp/>,<Adjust/>]} disabled>
                     Long Click
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<Send/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<Send/>} disabled>
                     Send Key
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<CancelScheduleSend/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<CancelScheduleSend/>} disabled>
                     Clear Key
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<TrendingFlat/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<TrendingFlat/>} disabled>
                     Swipe
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<PanTool/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<PanTool/>} disabled>
                     Drag
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<AspectRatio/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<AspectRatio/>} disabled>
                     ScreenShot
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<Crop/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<Crop/>} disabled>
                     Crop
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<Search/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<Search/>} disabled>
                     Match
                 </Button>
-                <Button variant="contained" color="primary" className={classes.item} endIcon={<GetApp/>}>
+                <Button variant="contained" color="primary" className={classes.item} endIcon={<GetApp/>} disabled>
                     Install APK
                 </Button>
             </CardContent>
