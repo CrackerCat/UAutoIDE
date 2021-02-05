@@ -1,0 +1,171 @@
+{
+	"objs": {
+		"id": "root",
+		"name": "root",
+		"children": [{
+			"id": -26096,
+			"name": "[Debug Updater]"
+		}, {
+			"id": -7760,
+			"name": "GameObject"
+		}, {
+			"id": 16816,
+			"name": "Canvas",
+			"children": [{
+				"id": 16840,
+				"name": "Text (TMP)"
+			}]
+		}, {
+			"id": 16830,
+			"name": "Post-process Volume"
+		}, {
+			"id": 16836,
+			"name": "Example Assets",
+			"children": [{
+				"id": -1170,
+				"name": "Workshop Set",
+				"children": [{
+					"id": -1188,
+					"name": "Drywall Panel"
+				}, {
+					"id": -1182,
+					"name": "Ground"
+				}, {
+					"id": -1190,
+					"name": "OSB Panel"
+				}, {
+					"id": -1186,
+					"name": "Stud Frame"
+				}, {
+					"id": -1184,
+					"name": "Stud Pile"
+				}]
+			}, {
+				"id": -1216,
+				"name": "Props",
+				"children": [{
+					"id": -1224,
+					"name": "Paint Supplies",
+					"children": [{
+						"id": -1312,
+						"name": "Paint 1G Bucket"
+					}, {
+						"id": -1292,
+						"name": "Paint 1G Lid"
+					}, {
+						"id": -1270,
+						"name": "Paint 5G Bucket"
+					}, {
+						"id": -1290,
+						"name": "Brush"
+					}]
+				}, {
+					"id": -1252,
+					"name": "Construction Light Low",
+					"children": [{
+						"id": -1268,
+						"name": "Legs_Low"
+					}, {
+						"id": -1266,
+						"name": "Light_Bulbs_low"
+					}, {
+						"id": -1314,
+						"name": "Light_Heads_Low"
+					}, {
+						"id": -1316,
+						"name": "Spot Light"
+					}]
+				}, {
+					"id": -1234,
+					"name": "Workbench",
+					"children": [{
+						"id": -1276,
+						"name": "Workbench_LOD0",
+						"children": [{
+							"id": -1378,
+							"name": "Bench Bottom"
+						}, {
+							"id": -1374,
+							"name": "Bench Legs"
+						}, {
+							"id": -1380,
+							"name": "Bench Top"
+						}, {
+							"id": -1366,
+							"name": "Supports"
+						}, {
+							"id": -1382,
+							"name": "Upper Covers"
+						}]
+					}, {
+						"id": -1298,
+						"name": "Workbench_LOD1",
+						"children": [{
+							"id": -1372,
+							"name": "Bench Bottom Low"
+						}, {
+							"id": -1370,
+							"name": "Bench Legs Low"
+						}, {
+							"id": -1386,
+							"name": "Bench Top Low"
+						}, {
+							"id": -1384,
+							"name": "Supports Low"
+						}, {
+							"id": -1376,
+							"name": "Upper Covers Low"
+						}]
+					}, {
+						"id": -1272,
+						"name": "Stud",
+						"children": [{
+							"id": -1368,
+							"name": "Stud"
+						}]
+					}, {
+						"id": -1264,
+						"name": "Jigsaw"
+					}, {
+						"id": -1310,
+						"name": "Hammer"
+					}, {
+						"id": -1288,
+						"name": "Safety Hat"
+					}, {
+						"id": -1294,
+						"name": "Magnetic Level"
+					}, {
+						"id": -1296,
+						"name": "Safety Goggles"
+					}]
+				}]
+			}, {
+				"id": 16806,
+				"name": "Reflection Probes",
+				"children": [{
+					"id": 16884,
+					"name": "Reflection Probe Main"
+				}, {
+					"id": 16810,
+					"name": "Reflection Probe Behind Wall"
+				}, {
+					"id": 16848,
+					"name": "Reflection Probe Behind Frame"
+				}]
+			}, {
+				"id": 16864,
+				"name": "Light Probe Group"
+			}]
+		}, {
+			"id": 16856,
+			"name": "EventSystem"
+		}, {
+			"id": 16872,
+			"name": "Main Camera"
+		}, {
+			"id": 16890,
+			"name": "Directional Light"
+		}]
+	}
+}
