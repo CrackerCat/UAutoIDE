@@ -17,14 +17,15 @@ version = '1.0.1'
 appname = "UAutoIDE"
 with open(os.path.join("miniperf", "__init__.py"), encoding="utf8") as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
-    
-    tag = os.environ['tag']
-    print(f'SOURCE_TAG={tag}')
-
-    # add version
-    x_y_z = [int(x) for x in version.split('.')]
-    x_y_z[-1] += 1
-    version = '.'.join(str(x) for x in x_y_z)
+    # for github action
+    tag = os.getenv('tag')
+    if tag and tag.startswith("refs/tags/v"):
+        version = tag.replace("refs/tags/v", "")
+    else:    
+        # add version
+        x_y_z = [int(x) for x in version.split('.')]
+        x_y_z[-1] += 1
+        version = '.'.join(str(x) for x in x_y_z)
 
 with open(os.path.join("miniperf", "__init__.py"), 'w', encoding="utf8") as f:
     f.write(f'__version__ = "{version}"')
@@ -278,8 +279,8 @@ def main():
 
     print("--- TPT Build System ----")
     print("Target Task: `%s`" % task_name)
-    # result = execute_task(task_name)
-    # print("Build Result: %s" % ("Success" if result else "Fail"))
+    result = execute_task(task_name)
+    print("Build Result: %s" % ("Success" if result else "Fail"))
 
 
 if __name__ == "__main__":

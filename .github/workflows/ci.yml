@@ -51,15 +51,15 @@ jobs:
       env:
         tag: ${{ github.ref }}
       run: |        
-        python build.py $tag
+        python build.py
 
-    # - name: Upload Github Assets
-    #   uses: softprops/action-gh-release@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     files: ./dist/*release.zip
-    #     prerelease: ${{ contains(github.ref, '-') }}
+    - name: Upload Github Assets
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ./dist/*release.zip
+        prerelease: ${{ contains(github.ref, '-') }}
     # - name: Create Release
     #   id: create_release
     #   uses: actions/create-release@v1
