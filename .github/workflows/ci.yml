@@ -40,13 +40,11 @@ jobs:
         python -m pip install pynsist
         pip install -r requirements.txt
     
-    - name: Branch name
-      id: branch_name
-      run: |
-        echo ::set-env name=SOURCE_NAME::${GITHUB_REF#refs/*/}
-        echo ::set-env name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
-        echo ::set-env name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
-
+    - name: RELEASE_VERSION
+      id: release_version
+      run: |        
+        echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/tags/}
+        echo ${{ env.RELEASE_VERSION }}
     - name: PyBuild
       run: |
         python build.py   
