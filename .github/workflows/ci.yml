@@ -49,7 +49,7 @@ jobs:
     
     - name: PyBuild      
       env:
-        tag: ${{ github.ref#refs/tags/ }}
+        tag: ${{ github.ref }}
       run: |        
         python build.py $tag
 
