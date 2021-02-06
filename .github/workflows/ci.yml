@@ -3,7 +3,7 @@ on:
   push:
     tags:
       - v*
-
+    branches: [ main ]
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -19,6 +19,12 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
+    - name: Build Verison
+      id: release_version
+      run: |        
+        echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/tags/}
+        echo "${{ env.RELEASE_VERSION }}"
+
     - name: Get pip cache dir
       id: pip-cache
       run: |
@@ -40,11 +46,6 @@ jobs:
         python -m pip install pynsist
         pip install -r requirements.txt
     
-    - name: RELEASE_VERSION
-      id: release_version
-      run: |        
-        echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/tags/}
-        echo "${{ env.RELEASE_VERSION }}"
     - name: PyBuild
       run: |
         python build.py   
