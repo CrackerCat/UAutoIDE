@@ -72,14 +72,17 @@ def main():
     static_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui", "index.html")
     # print(static_file)
     # window  = webview.create_window('TableConvertTool', html=html, background_color='#333333', js_api=api.Api())
-    window  = webview.create_window('TableConvertTool', os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui", "index.html"), js_api=api.Api())
+    window  = webview.create_window('UAutoIDE', os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui", "index.html"), fullscreen=True, js_api=api.Api())
     window.closed += on_closed
     window.closing += on_closing
     window.shown += on_shown
     window.loaded += on_loaded
 
     # webview.start(api_ls, gui='cef', http_server=True, debug=True)
-    webview.start(gui='cef', func=api_ls, debug=True)
+    if sys.platform == 'darwin':
+        webview.start(func=api_ls, debug=True)
+    else:
+        webview.start(gui='cef', func=api_ls, debug=True)
 
 if __name__ == "__main__":
     main()

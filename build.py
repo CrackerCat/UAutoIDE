@@ -79,7 +79,7 @@ def build_wheel(ctx):
 
 def build_nsis(ctx):
     print("Task: Build NSIS")
-    icon = r'miniperf\ui\res\img\icon.ico'
+    icon = r'miniperf/ui/res/img/icon.ico'
     no_wheels = [
         "adb",
         "mmgui",
@@ -91,7 +91,8 @@ def build_nsis(ctx):
     ]
 
     def req_wheel(x):
-        if x.startswith('-e'): return False
+        if x.startswith('-e'):
+            return False
         for nw in no_wheels:
             if nw in x:
                 return False
@@ -101,10 +102,10 @@ def build_nsis(ctx):
     name = "app"
 
     builder = nsist.InstallerBuilder(
-        appname = name,
-        version = version,
-        icon = icon,
-        shortcuts = {
+        appname=name,
+        version=version,
+        icon=icon,
+        shortcuts={
             name: {
                 'entry_point': 'miniperf.app:main',
                 'console': False,
@@ -114,7 +115,7 @@ def build_nsis(ctx):
         py_version='3.7.0',
         py_bitness=64,
         pypi_wheel_reqs=requirements,
-        packages = [                               
+        packages=[
             "openpyxl",
             "et_xmlfile",
             "wcwidth"   
@@ -181,6 +182,7 @@ def build_package(ctx):
     shutil.copyfile("Main.exe", os.path.join(nsis_dir, f"{appname}.exe"))
     shutil.copyfile("LICENSE", os.path.join(nsis_dir, "LICENSE"))
     shutil.copyfile("run.bat", os.path.join(nsis_dir, "run.bat"))
+    shutil.copyfile("run.sh", os.path.join(nsis_dir, "run.sh"))
 
     zip_dir(nsis_dir, release_zip_file, excludes=["msvcrt", "installer.nsi", "app_%s.exe" % version])
 
