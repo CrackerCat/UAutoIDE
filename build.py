@@ -278,8 +278,8 @@ def main():
 
     print("--- TPT Build System ----")
     print("Target Task: `%s`" % task_name)
-    result = execute_task(task_name)
-    print("Build Result: %s" % ("Success" if result else "Fail"))
+    # result = execute_task(task_name)
+    # print("Build Result: %s" % ("Success" if result else "Fail"))
 
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJSON(github) }}
       run: |
-        echo "$GITHUB_CONTEXT"      
+        echo "$GITHUB_CONTEXT"
 
     # - name: Get pip cache dir
     #   id: pip-cache
@@ -47,9 +47,11 @@ jobs:
     #     python -m pip install pynsist
     #     pip install -r requirements.txt
     
-    # - name: PyBuild
-    #   run: |
-    #     python build.py   
+    - name: PyBuild      
+      env:
+        tag: ${{ github.ref#refs/tags/ }}
+      run: |        
+        python build.py $tag
 
     # - name: Upload Github Assets
     #   uses: softprops/action-gh-release@v1
