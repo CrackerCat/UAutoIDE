@@ -1,20 +1,11 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT license.
-
-# This continuous integration pipeline is triggered anytime a user pushes code to the repo.
-# This pipeline builds the Wpf project, runs unit tests, then saves the MSIX build artifact.
-name: BuildWindows
-
+name: Build Releases
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  schedule:
-    - cron: '0 18 * * *'
+    tags:
+      - v*
+
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -48,25 +39,32 @@ jobs:
         python -m pip install wheel
         python -m pip install pynsist
         pip install -r requirements.txt
-        
+
     - name: PyBuild
       run: |
         python build.py   
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Upload Github Assets
+      uses: softprops/action-gh-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          Changes in this Release
-          - First Change
-          - Second Change
-        draft: false
-        prerelease: false
+        files: /dist/*
+        prerelease: ${{ contains(github.ref, '-') }}    
+    # - name: Create Release
+    #   id: create_release
+    #   uses: actions/create-release@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+    #   with:
+    #     tag_name: ${{ github.ref }}
+    #     release_name: Release ${{ github.ref }}
+    #     body: |
+    #       Changes in this Release
+    #       - First Change
+    #       - Second Change
+    #     draft: false
+    #     prerelease: false
     # - name: Create Release
     #   id: create_release
     #   uses: actions/create-release@v1
