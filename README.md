@@ -103,4 +103,4 @@ linux和mac os仅支持pip安装。
 
 ## 前端学习文档
 
-https://react-bootstrap.github.io/components/buttons/
+https://react-bootstrap.github.io
