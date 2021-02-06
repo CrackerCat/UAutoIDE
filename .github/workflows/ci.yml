@@ -26,26 +26,26 @@ jobs:
       run: |
         echo "$GITHUB_CONTEXT"
 
-    # - name: Get pip cache dir
-    #   id: pip-cache
-    #   run: |
-    #     echo "::set-output name=dir::$(pip cache dir)"
+    - name: Get pip cache dir
+      id: pip-cache
+      run: |
+        echo "::set-output name=dir::$(pip cache dir)"
 
-    # - name: pip cache
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: ${{ steps.pip-cache.outputs.dir }}
-    #     key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-pip-
+    - name: pip cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
-    # - name: Install dependencies
-    #   run: |
-    #     python -m pip install --upgrade pip
-    #     python -m pip install --upgrade setuptools
-    #     python -m pip install wheel
-    #     python -m pip install pynsist
-    #     pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install wheel
+        python -m pip install pynsist
+        pip install -r requirements.txt
     
     - name: PyBuild      
       env:
