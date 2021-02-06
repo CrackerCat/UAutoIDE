@@ -18,6 +18,9 @@ appname = "UAutoIDE"
 with open(os.path.join("miniperf", "__init__.py"), encoding="utf8") as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
     
+    tag = os.environ['SOURCE_TAG']
+    print(f'SOURCE_TAG={tag}')
+
     # add version
     x_y_z = [int(x) for x in version.split('.')]
     x_y_z[-1] += 1
