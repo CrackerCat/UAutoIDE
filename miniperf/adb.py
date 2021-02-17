@@ -1,16 +1,8 @@
 import json
 import os
 import subprocess
-import whichcraft
+
 from u3driver import AltrunUnityDriver, By
-
-
-def adb_path():
-    """ get adb path
-    Return:
-        adb path
-    """
-    return whichcraft.which("adb")
 
 class Device:
     def __init__(self,tempFilePath,serial_num = ''):
