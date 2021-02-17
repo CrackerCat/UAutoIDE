@@ -116,9 +116,7 @@ def build_nsis(ctx):
         py_bitness=64,
         pypi_wheel_reqs=requirements,
         packages=[
-            "openpyxl",
-            "et_xmlfile",
-            "wcwidth"   
+             
         ],
         local_wheels = wheels,
         extra_files = [
