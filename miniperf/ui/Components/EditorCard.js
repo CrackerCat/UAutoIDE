@@ -1,14 +1,10 @@
 import React, {useEffect, useRef} from "react";
-import {UnControlled as CodeMirror} from "react-codemirror2";
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/lib/codemirror'
-
-import 'codemirror/theme/ayu-mirage.css'
-import 'codemirror/mode/clike/clike'
-import 'codemirror/mode/python/python'
 import {Card, CardContent, CardHeader, IconButton, makeStyles, TextareaAutosize} from "@material-ui/core";
 import {Adb, GetApp, MissedVideoCall, RotateLeft, SendOutlined, Stop} from "@material-ui/icons";
 import AceEditor from "react-ace";
+import 'brace/mode/python'
+import 'brace/theme/pastel_on_dark'
+
 import {useInterval,useUpdate} from "../Util/Util"
 
 const useStyles = makeStyles((theme) => ({
@@ -108,19 +104,9 @@ export default function EditorCard (props) {
                 </IconButton>
             ]}/>
             <CardContent className={classes.content}>
-                {/*<CodeMirror*/}
-                {/*    value='re'*/}
-                {/*    options={{*/}
-                {/*        lineNumbers: true,*/}
-                {/*        theme:'ayu-mirage',*/}
-                {/*        mode:'python'*/}
-                {/*    }}*/}
-                {/*    */}
-                {/*>*/}
-                {/*</CodeMirror>*/}
                 <AceEditor
-                    mode="java"
-                    theme="github"
+                    mode="python"
+                    theme="pastel_on_dark"
                     name="UNIQUE_ID_OF_DIV"
                     editorProps={{ $blockScrolling: true }}
                     className={classes.textArea}

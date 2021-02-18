@@ -3,7 +3,7 @@
     height: 80%;
     display: flex;
     flex: 1;
-    /*background:lightgrey;*/
+    background-color:#424242
 }
 #container {
     width: 100%;
