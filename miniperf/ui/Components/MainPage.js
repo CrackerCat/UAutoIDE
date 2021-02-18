@@ -14,8 +14,7 @@ import PropTable from "./PropTable";
 import EditorCard from "./EditorCard";
 import ConsoleCard from "./ConsoleCard";
 import ScreenCard from "./ScreenCard";
-import {purple,blue} from "@material-ui/core/colors";
-
+import {useInterval} from "../Util/Util"
 
 const theme = createMuiTheme({
     palette: {
@@ -31,8 +30,15 @@ const theme = createMuiTheme({
 
 const useStyle = makeStyles((style)=>({
     Input:{
-
+        color:'#f44336 !important'
     },
+    AppBarON:{
+        'background-color':'green'
+    },
+    AppBarOFF:{
+        'background-color':'#11698e'
+    },
+
     Button:{
         'border-radius': 0
     }
@@ -50,6 +56,22 @@ export default function MainPage(){
     const [message, setMessage] = React.useState('');
     const [sn, setSN] = useState("");
     const [ip, setIP] = useState("");
+    const [consoleData,setConsoleData] = useState([])//console的输出信息
+
+    //获取console的输出信息
+    const getNewLog =  function(){
+        window.pywebview.api.PythonOutput().then((res)=>{
+            if(res !== "405null") {
+                let l = consoleData
+                l.push(res)
+                setConsoleData([...l])
+            }
+        })
+    }
+
+    useInterval(()=>{
+        getNewLog()
+    },500)
 
     const changeSNValue = (e) =>{
         setSN(e.target.value);
@@ -57,27 +79,29 @@ export default function MainPage(){
     const changeIPValue = (e) =>{
         setIP(e.target.value);
     }
+    //底部消息弹窗关闭事件
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
         setOkOpen(false);
     };
-
+    //底部消息弹窗
     let showMsg = (msg)=>{
         setMessage(msg)
         setOkOpen(true)
     }
-
+    //连接设备
     const connect = function (){
         window.pywebview.api.connect({'sn':sn,'ip':ip}).then((res)=>{
-            setIsConnected(res['ok'])
+            // setIsConnected(res['ok'])
             showMsg(res['msg'])
         })
     }
+    //断开连接
     const disConnect = function (){
         window.pywebview.api.disConnect().then((res)=>{
-            setIsConnected(false)
+            // setIsConnected(false)
             showMsg(res['msg'])
         })
     }
@@ -86,6 +110,17 @@ export default function MainPage(){
             showMsg(res['msg'])
         })
     }
+    //检测连接状态
+    const checkConnection = function (){
+        window.pywebview.api.checkConnection().then((res)=>{
+            let status = res['msg']
+            setIsConnected(status['isConnected'])
+        })
+    }
+
+    useInterval(()=>{
+        checkConnection()
+    },1000)
 
     useEffect(()=>{
         setTimeout(()=>{
@@ -102,7 +137,7 @@ export default function MainPage(){
             // <div className={classes.root}>
             <ThemeProvider theme={theme}>
                 <div className={'container'}>
-                    <AppBar position={"static"}>
+                    <AppBar position={"static"} className={isConnected?classes.AppBarON:classes.AppBarOFF}>
                         <Toolbar>
                             <TextField
                                 id="filled-helperText"
@@ -131,8 +166,8 @@ export default function MainPage(){
                             <PropTable/>
                         </div>
                         <div className={'middle'}>
-                            <EditorCard ShowMsg={showMsg}/>
-                            <ConsoleCard/>
+                            <EditorCard ShowMsg={showMsg} isConnected={isConnected}/>
+                            <ConsoleCard consoleData={consoleData}/>
                         </div>
                         <div className={'right'}>
                             <ScreenCard/>

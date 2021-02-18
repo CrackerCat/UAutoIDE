@@ -9,6 +9,7 @@ import 'codemirror/mode/python/python'
 import {Card, CardContent, CardHeader, IconButton, makeStyles, TextareaAutosize} from "@material-ui/core";
 import {Adb, GetApp, MissedVideoCall, RotateLeft, SendOutlined, Stop} from "@material-ui/icons";
 import AceEditor from "react-ace";
+import {useInterval,useUpdate} from "../Util/Util"
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,39 +33,39 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function useInterval(callback, delay) {
-    const savedCallback = useRef();
-
-    // Remember the latest callback.
-    useEffect(() => {
-        savedCallback.current = callback;
-    });
-
-    // Set up the interval.
-    useEffect(() => {
-        function tick() {
-            savedCallback.current();
-        }
-        if (delay !== null) {
-            let id = setInterval(tick, delay);
-            return () => clearInterval(id);
-        }
-    }, [delay]);
-}
-
-
 
 export default function EditorCard (props) {
-    let {ShowMsg} = props
+    let {ShowMsg,isConnected} = props
     const [scriptsData,setScriptsData] = React.useState('')
     const [isRecording,setIsRecording] = React.useState(false)
     const [isRunning,setIsRunning] = React.useState(false)
     const classes = useStyles()
+
     useInterval(()=>{
-        window.pywebview.api.updateScripts().then((res)=>{
-            setScriptsData(res['msg'])
-        })
+        //更新脚本信息
+        if(isRecording)
+        {
+            window.pywebview.api.updateScripts().then((res)=>{
+                setScriptsData(res['msg'])
+            })
+        }
     },1000)
+    useUpdate(()=>{
+        if(!isConnected){
+            init()
+        }
+        else{
+            window.pywebview.api.updateScripts().then((res)=>{
+                setScriptsData(res['msg'])
+            })
+        }
+    },isConnected)
+
+    let init = function (){
+        // setScriptsData('')
+        setIsRecording(false)
+        setIsRunning(false)
+    }
 
     function record(){
         setIsRecording(true)
@@ -87,22 +88,22 @@ export default function EditorCard (props) {
     return (
         <Card variant={'outlined'} className={classes.root}>
             <CardHeader title={'Coding'} action={[
-                <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning}>
+                <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected}>
                     <MissedVideoCall/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'重置'} disabled={isRecording || true}>
+                <IconButton aria-label="settings" title={'重置'} disabled={isRecording || !isConnected || true}>
                     <RotateLeft/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'下载'} disabled={isRecording || true}>
+                <IconButton aria-label="settings" title={'下载'} disabled={isRecording || !isConnected || true}>
                     <GetApp/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning}>
+                <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning || !isConnected}>
                     <SendOutlined/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'调试'} disabled={isRecording || true}>
+                <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
                     <Adb/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'停止'} disabled={isRecording || true}>
+                <IconButton aria-label="settings" title={'停止'} disabled={isRecording || !isConnected || true}>
                     <Stop/>
                 </IconButton>
             ]}/>

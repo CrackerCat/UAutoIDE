@@ -1,7 +1,8 @@
 import React, {useEffect, useRef} from "react";
-import {AppBar, Card, CardContent, makeStyles, Paper, Tab, Tabs} from "@material-ui/core";
+import {AppBar, Card, CardContent, makeStyles, Paper, Slide, Tab, Tabs} from "@material-ui/core";
 import {TreeItem, TreeView} from "@material-ui/lab";
 import {ChevronRight, ExpandMore} from "@material-ui/icons";
+import {useUpdate} from "../Util/Util";
 
 const testData = {
     id : 'root',
@@ -64,78 +65,87 @@ function HierarchyContent(){
         </TreeItem>
     );
     const [hierarchyData,setHierarchyData] = React.useState({})
-
+    const [hasData,setHasData] = React.useState(false)
     function getData(){
         window.pywebview.api.showItem().then((res)=>{
-            console.log(res)
+            // console.log('res',res)
             setHierarchyData(res['msg']['objs'])
         })
     }
     useEffect(()=>{
-        // console.log("第一次渲染");
-        getData()
+        setTimeout(()=>{
+            getData()
+        },1000)
     },[])
-    return(
-        <TreeView
-            defaultCollapseIcon={<ExpandMore />}
-            defaultExpandIcon={<ChevronRight />}
-            defaultExpanded={['root']}
-        >
-            {renderTree(hierarchyData)}
-        </TreeView>
-    )
+
+        return(
+            <TreeView
+                defaultCollapseIcon={<ExpandMore />}
+                defaultExpandIcon={<ChevronRight />}
+                defaultExpanded={['root']}
+            >
+                {renderTree(hierarchyData)}
+            </TreeView>
+        )
+
+
 }
 
-function ConsoleContent(){
+function ConsoleContent(props){
+    const {consoleData} = props
     const classes = useStyles()
-    const [consoleData,setConsoleData] = React.useState([])
-    const getNewLog =  function(){
-        window.pywebview.api.PythonOutput().then((res)=>{
-            if(res === "405null")
-            {
 
-            }
-            else{
-                let l = consoleData
-                l.push(res)
-                setConsoleData([...l])
-                setHeight()
-            }
-        })
-    }
-    useInterval(()=>{
-        getNewLog()
-    },500)
+    useUpdate(()=>{
+        setHeight()
+    },consoleData)
+
     const setHeight = () =>{
         console.log('change')
         const textarea = document.getElementById('consoleArea');
         textarea.scrollTop = textarea.scrollHeight;
     }
     return(
-        <div  className={classes.textArea}>{
-            // consoleData.map((item)=>{
-            //     return <div>{item}</div>
-            // })
-            <textarea value={consoleData}  className={classes.textArea} onChange={setHeight} id={'consoleArea'}/>
-        }</div>
+            <div  className={classes.textArea}>
+                <textarea value={consoleData}  className={classes.textArea} onChange={setHeight} id={'consoleArea'}/>
+            </div>
+
     )
 }
 
 function Content(props){
     console.log(props)
-    const {index,...others} = props
+    const {index,consoleData,...others} = props
+    // return (
+    //     <div>
+    //         <Slide direction={"left"} in={index === 0}>
+    //             <div>
+    //                 <HierarchyContent/>
+    //             </div>
+    //         </Slide>
+    //         <Slide direction={"left"} in={index === 1}  mountOnEnter unmountOnExit>
+    //             <div className={classes.textArea}>
+    //                 <ConsoleContent consoleData={consoleData}/>
+    //             </div>
+    //         </Slide>
+    //     </div>
+    // )
     if(index === 0){
         return(
-            <HierarchyContent/>
+            <Slide direction={"left"} in={true}>
+                <div>
+                    <HierarchyContent/>
+                </div>
+            </Slide>
         )
     }else{
         return(
-            <ConsoleContent/>
+            <ConsoleContent consoleData={consoleData}/>
         )
     }
 }
 
-export default function ConsoleCard () {
+export default function ConsoleCard (props) {
+    let {consoleData} = props
     const classes = useStyles()
     const [page,setPage] = React.useState(1)
 
@@ -157,7 +167,7 @@ export default function ConsoleCard () {
                     <Tab label={'Hierarchy'}/>
                     <Tab label={'Console'}/>
                 </Tabs>
-                <Content index={page}/>
+                <Content index={page} consoleData={consoleData}/>
                 {/*</Paper>*/}
 
             </CardContent>

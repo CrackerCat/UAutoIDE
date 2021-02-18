@@ -24,6 +24,8 @@ class Api:
     def disConnect(self):
         return extension.disConnect()
 
+    def checkConnection(self):
+        return extension.checkConnection()
 
     def write(self, info):
         self.output.append(info)

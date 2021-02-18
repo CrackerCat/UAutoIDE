@@ -4,36 +4,50 @@ import subprocess
 
 from u3driver import AltrunUnityDriver, By
 
+
 class Device:
-    def __init__(self,tempFilePath,serial_num = ''):
+    def __init__(self, tempFilePath, serial_num=''):
         self.serial_num = serial_num
         self.screenshot_path = os.path.join('C:\image', 'screenshot_pic')
-        self.tempFilePath = os.path.join(tempFilePath,'asset','temp_test.py')
+        self.tempFilePath = os.path.join(tempFilePath, 'asset', 'temp_test.py')
+        # if not serial_num == '':
+        #     ip = self.getIP()
+        #     self.device = AltrunUnityDriver(serial_num, '', ip)
+        #     self.__isConnected = True
+        # else:
+        #     self.__isConnected = False
         if not serial_num == '':
             ip = self.getIP()
             self.device = AltrunUnityDriver(serial_num, '', ip)
-            self.isConnected = True
-        else:
-            self.isConnected = False
         pass
 
-    def connect(self,serial_num,ip):
+    @property
+    def isConnected(self):
+        return self.device.connect and getattr(self.device.socket, '_closed') is False
+
+    def connect(self, serial_num, ip):
         self.serial_num = serial_num
         if ip == '':
             ip = self.getIP()
-        self.device = AltrunUnityDriver(serial_num,'',ip)
-        self.isConnected = True
+        self.device = AltrunUnityDriver(serial_num, '', ip)
+        # self.isConnected = True
         return ip
 
     def disConnect(self):
         self.device.stop()
-        self.isConnected = False
+        # self.isConnected = False
 
     def test(self):
         return self.tempFilePath
 
     def showItem(self):
         return self.device.get_all_object()
+
+    def checkConnection(self):
+        status = {}
+        status['isConnected'] = self.isConnected
+        return status
+
     # def screenshot(self):
     #     adb = adb_path()
     #     cmdline = adb + ' -s ' + self.serial_num + ' shell screencap -p'

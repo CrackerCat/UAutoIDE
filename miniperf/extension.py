@@ -78,6 +78,9 @@ def getCurDevice():
         first_key = list(res.keys())[0]
     return {"ok": True, "msg": first_key}
 
+# 当前连接状态
+def checkConnection():
+    return {"ok": True, "msg": phone.checkConnection()}
 def GetDevices():
     devices = os.popen("adb devices").read()
     devices = devices.split('\n')
@@ -105,9 +108,12 @@ def runCase(case = 'temp_test'):
     if phone.isConnected:
         # case = importlib.import_module('miniperf.asset.temp_test')
         # temp_test = importlib.util.find_loader('temp_test', os.path.join(ROOT_DIR, 'asset', 'temp_test.py'))
-        module = LoadModuleByPath(case,CasePath(case + ".py"))
-        module.AutoRun(phone.device)
-        return {"ok": True, "msg": '运行完成'}
+        try:
+            module = LoadModuleByPath(case, CasePath(case + ".py"))
+            module.AutoRun(phone.device)
+            return {"ok": True, "msg": '运行完成'}
+        except:
+            return {"ok": True, "msg": '运行失败'}
 
 def registered_webview(webview):
     global g_webview
