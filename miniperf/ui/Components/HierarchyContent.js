@@ -6,6 +6,7 @@ import {Card, CardContent, CardHeader, IconButton, makeStyles} from "@material-u
 
 const useStyles = makeStyles((theme) => ({
     root:{
+        height: '100%',
         'overflow-y':'auto'
     },
     content:{
@@ -15,18 +16,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function HierarchyContent(){
+export default function HierarchyContent(props){
+    const {ShowMsg} = props
     const classes = useStyles()
+    const select = (e,id) =>{
+        ShowMsg(id)
+    }
     const renderTree = (nodes) => (
         <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
             {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
         </TreeItem>
     );
     const [hierarchyData,setHierarchyData] = React.useState({})
-    const [hasData,setHasData] = React.useState(false)
     function getData(){
         window.pywebview.api.showItem().then((res)=>{
-            // console.log('res',res)
             setHierarchyData(res['msg']['objs'])
         })
     }
@@ -44,13 +47,14 @@ export default function HierarchyContent(){
                 </IconButton>
             ]}/>
             <CardContent>
-                    <TreeView
-                        defaultCollapseIcon={<ExpandMore />}
-                        defaultExpandIcon={<ChevronRight />}
-                        defaultExpanded={['root']}
-                    >
-                        {renderTree(hierarchyData)}
-                    </TreeView>
+                <TreeView
+                    defaultCollapseIcon={<ExpandMore />}
+                    defaultExpandIcon={<ChevronRight />}
+                    defaultExpanded={['root']}
+                    onNodeSelect={select}
+                >
+                    {renderTree(hierarchyData)}
+                </TreeView>
             </CardContent>
         </Card>
     )

@@ -41,7 +41,7 @@ class Device:
         return self.tempFilePath
 
     def showItem(self):
-        return self.device.get_all_object()
+        return self.device.get_hierarchy()
 
     def checkConnection(self):
         status = {}

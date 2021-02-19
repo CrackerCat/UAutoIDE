@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import MuiAlert from '@material-ui/lab/Alert';
 import {
     AppBar,
-    Button,
+    Button, CircularProgress,
     Input,
     InputAdornment, Snackbar, TextField,
     Toolbar
@@ -42,7 +42,25 @@ const useStyle = makeStyles((style)=>({
 
     Button:{
         'border-radius': 0
-    }
+    },
+    ButtonConnect:{
+        'background-color':'green'
+    },
+    ButtonDisConnect:{
+
+    },
+    buttonProgress: {
+        color: 'white',
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+    },
+    wrapper: {
+        margin: theme.spacing(1),
+        position: 'relative',
+    },
 }))
 
 function Alert(props) {
@@ -54,6 +72,7 @@ export default function MainPage(){
     const classes = useStyle()
     const [okOpen, setOkOpen] = React.useState(false);
     const [isConnected, setIsConnected] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
     const [message, setMessage] = React.useState('');
     const [sn, setSN] = useState("");
     const [ip, setIP] = useState("");
@@ -79,16 +98,20 @@ export default function MainPage(){
     }
     //连接设备
     const connect = function (){
+        setLoading(true)
         window.pywebview.api.connect({'sn':sn,'ip':ip}).then((res)=>{
             // setIsConnected(res['ok'])
             showMsg(res['msg'])
+            setLoading(false)
         })
     }
     //断开连接
     const disConnect = function (){
+        setLoading(true)
         window.pywebview.api.disConnect().then((res)=>{
             // setIsConnected(false)
             showMsg(res['msg'])
+            setLoading(false)
         })
     }
     const test = function (){
@@ -143,8 +166,11 @@ export default function MainPage(){
                                 value={ip}
                                 onChange={changeIPValue}
                             />
-                            <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={connect} disabled={isConnected}>连接</Button>
-                            <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={disConnect} disabled={!isConnected}>断开</Button>
+                            <div className={classes.wrapper}>
+                                {!isConnected && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
+                                {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
+                                {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+                            </div>
                             {/*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={test}>test</Button>*/}
                         </Toolbar>
                     </AppBar>
@@ -152,7 +178,7 @@ export default function MainPage(){
                         <div className={'left'}>
                             {/*<ActionCard/>*/}
                             {/*<PropTable/>*/}
-                            <HierarchyContent/>
+                            <HierarchyContent ShowMsg={showMsg}/>
                         </div>
                         <div className={'middle'}>
                             <EditorCard ShowMsg={showMsg} isConnected={isConnected}/>

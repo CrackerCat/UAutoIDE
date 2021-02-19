@@ -1,7 +1,12 @@
-import React, {useEffect, useRef, useState} from "react";
-import {AppBar, Card, CardContent, makeStyles, Paper, Slide, Tab, Tabs} from "@material-ui/core";
-import {TreeItem, TreeView} from "@material-ui/lab";
-import {ChevronRight, ExpandMore} from "@material-ui/icons";
+import React, {useImperativeHandle, useRef, useState} from "react";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    IconButton,
+    makeStyles,
+} from "@material-ui/core";
+import {DeleteForever} from "@material-ui/icons";
 import {useInterval, useUpdate} from "../Util/Util";
 
 const testData = {
@@ -72,9 +77,15 @@ const useStyles = makeStyles((theme) => ({
 //
 // }
 
-function ConsoleContent(props){
+const ConsoleContent = React.forwardRef((props,ref)=>{
     const classes = useStyles()
     const [consoleData,setConsoleData] = useState('')//console的输出信息
+    const inputRef = useRef();
+    useImperativeHandle(ref, () => ({
+        clear: () => {
+            setConsoleData('')
+        }
+    }));
 
     //获取console的输出信息
     const getNewLog =  function(){
@@ -86,7 +97,6 @@ function ConsoleContent(props){
             }
         })
     }
-
     useInterval(()=>{
         getNewLog()
     },500)
@@ -106,52 +116,28 @@ function ConsoleContent(props){
             </div>
 
     )
-}
-
-// function Content(props){
-//     console.log(props)
-//     const {index,consoleData,...others} = props
-//     if(index === 0){
-//         return(
-//             <Slide direction={"left"} in={true}>
-//                 <div>
-//                     <HierarchyContent/>
-//                 </div>
-//             </Slide>
-//         )
-//     }else{
-//         return(
-//             <ConsoleContent consoleData={consoleData}/>
-//         )
-//     }
-// }
+})
 
 export default function ConsoleCard (props) {
     const classes = useStyles()
     const [page,setPage] = React.useState(0)
-
+    const clearInfo = useRef()
     const ChangePage = (e,v)=>{
         setPage(v)
     }
 
     return (
         <Card variant={'outlined'} className={classes.root}>
+            <CardHeader
+                title={'Console'}
+                action={[
+                    <IconButton aria-label="settings" title={'清空'} onClick={()=>{clearInfo.current.clear()}}>
+                        <DeleteForever/>
+                    </IconButton>
+                ]}
+            />
             <CardContent className={classes.content}>
-                {/*<Paper square>*/}
-                <Tabs
-                    value={page}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    onChange={ChangePage}
-                    aria-label="disabled tabs example"
-                >
-                    {/*<Tab label={'Hierarchy'}/>*/}
-                    <Tab label={'Console'}/>
-                </Tabs>
-                {/*<Content index={page} consoleData={consoleData}/>*/}
-                {/*</Paper>*/}
-                <ConsoleContent/>
-
+                <ConsoleContent ref={clearInfo}/>
             </CardContent>
         </Card>
     )

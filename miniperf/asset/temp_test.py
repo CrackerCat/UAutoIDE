@@ -5,28 +5,10 @@ import argparse
 
 def AutoRun(udriver):
 	try:
-		time.sleep(2.421875)
+		time.sleep(2.742188)
 		udriver.find_object(By.PATH,"//UIModule//Group1//UILoginChannelInner//imgBG//btnEnterGame").tap()
-		time.sleep(1.054688)
+		time.sleep(5.828125)
 		udriver.find_object(By.PATH,"//UIModule//Group1//UILoginServer//imgBG//btnLoginServer").tap()
-		time.sleep(2.007813)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole6").tap()
-		time.sleep(0.4296875)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole4").tap()
-		time.sleep(0.3984375)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole2").tap()
-		time.sleep(0.7734375)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole8").tap()
-		time.sleep(0.3203125)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole7").tap()
-		time.sleep(0.328125)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole5").tap()
-		time.sleep(0.2890625)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole3").tap()
-		time.sleep(0.328125)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole4").tap()
-		time.sleep(0.3359375)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectRole//imgBG//imgSelectRole//btnRole6").tap()
 	except Exception as e:
 		print(f'{e}')
 		raise e
