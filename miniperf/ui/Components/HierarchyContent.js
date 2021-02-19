@@ -17,10 +17,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function HierarchyContent(props){
-    const {ShowMsg} = props
+    const {ShowMsg,getCurID} = props
     const classes = useStyles()
     const select = (e,id) =>{
-        ShowMsg(id)
+        getCurID(id)
     }
     const renderTree = (nodes) => (
         <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>

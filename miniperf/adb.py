@@ -48,6 +48,11 @@ class Device:
         status['isConnected'] = self.isConnected
         return status
 
+    # 获取对应ID的GameObject详情
+    def get_inspector(self,id):
+        s = self.device.get_inspector(id)
+        data = json.loads(s)
+        return data
     # def screenshot(self):
     #     adb = adb_path()
     #     cmdline = adb + ' -s ' + self.serial_num + ' shell screencap -p'

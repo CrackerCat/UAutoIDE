@@ -45,6 +45,14 @@ def showItem():
         return {"ok": True, "msg": data}
         # return data
 
+# 获取对应ID的GameObject详情
+def get_inspector(data):
+    global phone
+    if phone.isConnected:
+        d = phone.get_inspector(data['ID'])
+        return {"ok": True, "msg": d}
+
+
 def getTempFile():
     global phone
     data = phone.getTempFile()

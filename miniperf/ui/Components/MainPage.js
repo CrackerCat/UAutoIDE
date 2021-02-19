@@ -60,7 +60,7 @@ const useStyle = makeStyles((style)=>({
     wrapper: {
         margin: theme.spacing(1),
         position: 'relative',
-    },
+    }
 }))
 
 function Alert(props) {
@@ -76,7 +76,7 @@ export default function MainPage(){
     const [message, setMessage] = React.useState('');
     const [sn, setSN] = useState("");
     const [ip, setIP] = useState("");
-
+    const [curObjID,setCurObjID] = useState(0)
 
     const changeSNValue = (e) =>{
         setSN(e.target.value);
@@ -114,10 +114,12 @@ export default function MainPage(){
             setLoading(false)
         })
     }
-    const test = function (){
-        window.pywebview.api.test().then((res)=>{
-            showMsg(res['msg'])
-        })
+    const test = function (e){
+        const reader = new FileReader();
+        reader.readAsText(e.target.files[0])
+        reader.onload = function (e){
+            showMsg(e.target.result)
+        }
     }
     //检测连接状态
     const checkConnection = function (){
@@ -144,6 +146,11 @@ export default function MainPage(){
             setSN(res['msg'])
         })
     }
+
+    let getCurID = (e) =>{
+        setCurObjID(e)
+    }
+
         return (
             // <div className={classes.root}>
             <ThemeProvider theme={theme}>
@@ -171,14 +178,26 @@ export default function MainPage(){
                                 {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
                                 {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                             </div>
-                            {/*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={test}>test</Button>*/}
+                            {/*<input*/}
+                            {/*    id="contained-button-file"*/}
+                            {/*    className={classes.upload}*/}
+                            {/*    multiple*/}
+                            {/*    type="file"*/}
+                            {/*    onChange={test}*/}
+                            {/*/>*/}
+                            {/*<label htmlFor="contained-button-file">*/}
+                            {/*    <Button variant="contained" color="primary" component="span">*/}
+                            {/*        Upload*/}
+                            {/*    </Button>*/}
+                            {/*/!*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button}>test</Button>*!/*/}
+                            {/*</label>*/}
                         </Toolbar>
                     </AppBar>
                     <div id={'content'}>
                         <div className={'left'}>
                             {/*<ActionCard/>*/}
                             {/*<PropTable/>*/}
-                            <HierarchyContent ShowMsg={showMsg}/>
+                            <HierarchyContent ShowMsg={showMsg} getCurID={getCurID}/>
                         </div>
                         <div className={'middle'}>
                             <EditorCard ShowMsg={showMsg} isConnected={isConnected}/>
@@ -186,7 +205,7 @@ export default function MainPage(){
                         </div>
                         <div className={'right'}>
                             {/*<ScreenCard/>*/}
-                            <PropTable/>
+                            <PropTable curID={curObjID}/>
                         </div>
                     </div>
                 </div>

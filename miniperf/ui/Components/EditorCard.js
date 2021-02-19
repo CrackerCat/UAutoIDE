@@ -1,6 +1,15 @@
 import React, {useEffect, useRef} from "react";
-import {Card, CardContent, CardHeader, IconButton, makeStyles, TextareaAutosize} from "@material-ui/core";
-import {Adb, GetApp, MissedVideoCall, RotateLeft, Save, SendOutlined, Stop} from "@material-ui/icons";
+import {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    CircularProgress,
+    IconButton,
+    makeStyles,
+    TextareaAutosize, Toolbar
+} from "@material-ui/core";
+import {Adb, Backup, GetApp, MissedVideoCall, RotateLeft, Save, SendOutlined, Stop} from "@material-ui/icons";
 import AceEditor from "react-ace";
 import 'brace/mode/python'
 import 'brace/theme/pastel_on_dark'
@@ -18,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
         position:'relative',
         flex:'1'
     },
+    hightLight:{
+        color:'red'
+    },
     textArea:{
         height: '100% !important',
         width: '100% !important',
@@ -26,6 +38,28 @@ const useStyles = makeStyles((theme) => ({
         right:0,
         bottom:0,
         top:0
+    },
+    recoverContent:{
+        position: 'absolute',
+        top:0,
+        left:0,
+        right:0,
+        bottom:0,
+        background:'lightgrey',
+        opacity: 0.5,
+        'z-index':5
+    },
+    recoverProgress: {
+        color: 'red',
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+        'z-index':6
+    },
+    upload: {
+        display: 'none',
     }
 }));
 
@@ -35,6 +69,7 @@ export default function EditorCard (props) {
     const [scriptsData,setScriptsData] = React.useState('')
     const [isRecording,setIsRecording] = React.useState(false)
     const [isRunning,setIsRunning] = React.useState(false)
+    const [needSave,setNeedSave] = React.useState(false)
     const classes = useStyles()
 
     useInterval(()=>{
@@ -82,6 +117,7 @@ export default function EditorCard (props) {
         window.pywebview.api.record().then((res)=>{
             ShowMsg(res['msg'])
             setIsRecording(false)
+            setNeedSave(false)
         })
     }
 
@@ -112,13 +148,31 @@ export default function EditorCard (props) {
         // ShowMsg(scriptsData)
         window.pywebview.api.saveTempFile({'fileInfo':scriptsData}).then((res)=>{
             ShowMsg(res['msg'])
+            setNeedSave(false)
         })
     }
     const changeHandle = (e) =>{
         setScriptsData(e)
+        setNeedSave(true)
+    }
+    const upload = function (e){
+        const reader = new FileReader();
+        reader.readAsText(e.target.files[0])
+        reader.onload = function (e){
+            setScriptsData(e.target.result)
+            setNeedSave(true)
+        }
     }
     return (
         <Card variant={'outlined'} className={classes.root}>
+            <input
+                id="contained-button-file"
+                className={classes.upload}
+                multiple
+                type="file"
+                onChange={upload}
+                accept={'.py'}
+            />
             <CardHeader title={'Coding'} action={[
                 <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected}>
                     <MissedVideoCall/>
@@ -126,7 +180,7 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning || !isConnected}>
                     <SendOutlined/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected}>
+                <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected} className={needSave?classes.hightLight:''}>
                     <Save/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'下载脚本'} onClick={saveAs} disabled={isRecording || isRunning}>
@@ -138,6 +192,12 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'停止'} disabled={isRecording || !isConnected || true}>
                     <Stop/>
                 </IconButton>,
+                <label htmlFor="contained-button-file">
+                    <IconButton component={"span"} aria-label="settings" title={'上传'} disabled={isRecording || !isConnected}>
+                        <Backup/>
+                    </IconButton>
+                    {/*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button}>test</Button>*/}
+                </label>
                 // <IconButton aria-label="settings" title={'重置'} disabled={isRecording || !isConnected || true}>
                 //     <RotateLeft/>
                 // </IconButton>
@@ -152,6 +212,11 @@ export default function EditorCard (props) {
                     value={scriptsData}
                     onChange={changeHandle}
                 />
+                {isRecording &&
+                <div className={classes.recoverContent}>
+                    <CircularProgress size={24} className={classes.recoverProgress}/>
+                </div>
+                }
             </CardContent>
         </Card>
 

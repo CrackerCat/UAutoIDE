@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
     Box,
     Collapse,
@@ -151,8 +151,21 @@ Row.propTypes = {
     }).isRequired,
 };
 
-export default function PropTable() {
+export default function PropTable(props) {
+    const {curID} = props
     const classes = useStyle()
+    const [componentsInfo,setComponents] = useState(components)
+
+
+    useEffect(()=>{
+        if(curID !== 0)
+        {
+            window.pywebview.api.get_inspector({'ID':curID}).then((res)=>{
+                setComponents(res['msg']['components'])
+            })
+        }
+    },[curID])
+
     return (
         <TableContainer component={Paper} className={classes.root}>
             <Table>
@@ -163,7 +176,7 @@ export default function PropTable() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {components.map((row) => (
+                    {componentsInfo.map((row) => (
                         <Row key={row.id} row={row} />
                     ))}
                 </TableBody>

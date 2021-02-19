@@ -71,7 +71,7 @@ class Api:
         return extension.getTempFile()
 
     def showItem(self):
-        return extension.loadTree()
+        return extension.showItem()
 
     def PythonOutput(self):
         if len(self.output) > 0:
@@ -88,3 +88,7 @@ class Api:
 
     def getCurDevice(self):
         return extension.getCurDevice()
+
+    # 获取对应ID的GameObject详情
+    def get_inspector(self,data):
+        return extension.get_inspector(data)

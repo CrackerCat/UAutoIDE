@@ -5,10 +5,16 @@ import argparse
 
 def AutoRun(udriver):
 	try:
-		time.sleep(2.742188)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UILoginChannelInner//imgBG//btnEnterGame").tap()
-		time.sleep(5.828125)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UILoginServer//imgBG//btnLoginServer").tap()
+		time.sleep(1.254883)
+		udriver.find_object(By.PATH,"//Canvas//Button").tap()
+		time.sleep(0.2998047)
+		udriver.find_object(By.PATH,"//Canvas//Button").tap()
+		time.sleep(0.2841797)
+		udriver.find_object(By.PATH,"//Canvas//Button").tap()
+		time.sleep(0.2495117)
+		udriver.find_object(By.PATH,"//Canvas//Button").tap()
+		time.sleep(0.2475586)
+		udriver.find_object(By.PATH,"//Canvas//Button").tap()
 	except Exception as e:
 		print(f'{e}')
 		raise e
