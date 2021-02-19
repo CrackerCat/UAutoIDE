@@ -51,7 +51,18 @@ def get_inspector(data):
     if phone.isConnected:
         d = phone.get_inspector(data['ID'])
         return {"ok": True, "msg": d}
+# 暂停运行案例
+def pause():
+    global phone
+    if phone.isConnected:
+        phone.pause()
+        return {"ok": True, "msg": '已停止'}
 
+def continuePlay():
+    global phone
+    if phone.isConnected:
+        phone.continuePlay()
+        return {"ok": True, "msg": '已继续运行'}
 
 def getTempFile():
     global phone

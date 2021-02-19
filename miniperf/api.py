@@ -63,6 +63,14 @@ class Api:
     def test(self):
         return extension.getTempFile()
 
+    # 暂停案例运行
+    def pause(self):
+        return extension.pause()
+
+    # 继续脚本运行
+    def continuePlay(self):
+        return extension.continuePlay()
+
     # 保存temp案例
     def saveTempFile(self,data):
         return extension.saveTempFile(data['fileInfo'])

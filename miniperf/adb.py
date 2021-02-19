@@ -48,6 +48,14 @@ class Device:
         status['isConnected'] = self.isConnected
         return status
 
+    # 暂停运行案例
+    def pause(self):
+        self.device.Pause(True)
+
+    # 继续运行案例
+    def continuePlay(self):
+        self.device.Pause(False)
+
     # 获取对应ID的GameObject详情
     def get_inspector(self,id):
         s = self.device.get_inspector(id)

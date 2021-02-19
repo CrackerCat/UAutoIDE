@@ -9,7 +9,17 @@ import {
     makeStyles,
     TextareaAutosize, Toolbar
 } from "@material-ui/core";
-import {Adb, Backup, GetApp, MissedVideoCall, RotateLeft, Save, SendOutlined, Stop} from "@material-ui/icons";
+import {
+    Adb,
+    Backup,
+    GetApp,
+    MissedVideoCall,
+    PauseCircleFilled, PlayCircleFilled,
+    RotateLeft,
+    Save,
+    SendOutlined,
+    Stop
+} from "@material-ui/icons";
 import AceEditor from "react-ace";
 import 'brace/mode/python'
 import 'brace/theme/pastel_on_dark'
@@ -70,6 +80,7 @@ export default function EditorCard (props) {
     const [isRecording,setIsRecording] = React.useState(false)
     const [isRunning,setIsRunning] = React.useState(false)
     const [needSave,setNeedSave] = React.useState(false)
+    const [isPausing,setIsPausing] = React.useState(false)
     const classes = useStyles()
 
     useInterval(()=>{
@@ -151,6 +162,21 @@ export default function EditorCard (props) {
             setNeedSave(false)
         })
     }
+    //暂停案例运行
+    const pause = () =>{
+        window.pywebview.api.pause().then((res)=>{
+            ShowMsg(res['msg'])
+            setIsPausing(true)
+        })
+    }
+    //继续脚本运行
+    const continuePlay = ()=>{
+        window.pywebview.api.continuePlay().then((res)=>{
+            ShowMsg(res['msg'])
+            setIsPausing(false)
+        })
+    }
+
     const changeHandle = (e) =>{
         setScriptsData(e)
         setNeedSave(true)
@@ -189,8 +215,11 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
                     <Adb/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'停止'} disabled={isRecording || !isConnected || true}>
-                    <Stop/>
+                <IconButton aria-label="settings" title={'继续'} onClick={continuePlay} disabled={isRecording || !isConnected || !isRunning || !isPausing}>
+                    <PlayCircleFilled/>
+                </IconButton>,
+                <IconButton aria-label="settings" title={'暂停'} onClick={pause} disabled={isRecording || !isConnected || !isRunning || isPausing}>
+                    <PauseCircleFilled/>
                 </IconButton>,
                 <label htmlFor="contained-button-file">
                     <IconButton component={"span"} aria-label="settings" title={'上传'} disabled={isRecording || !isConnected}>
