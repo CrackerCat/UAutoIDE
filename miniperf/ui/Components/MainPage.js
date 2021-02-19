@@ -14,6 +14,7 @@ import PropTable from "./PropTable";
 import EditorCard from "./EditorCard";
 import ConsoleCard from "./ConsoleCard";
 import ScreenCard from "./ScreenCard";
+import HierarchyContent from "./HierarchyContent";
 import {useInterval} from "../Util/Util"
 
 const theme = createMuiTheme({
@@ -56,22 +57,7 @@ export default function MainPage(){
     const [message, setMessage] = React.useState('');
     const [sn, setSN] = useState("");
     const [ip, setIP] = useState("");
-    const [consoleData,setConsoleData] = useState([])//console的输出信息
 
-    //获取console的输出信息
-    const getNewLog =  function(){
-        window.pywebview.api.PythonOutput().then((res)=>{
-            if(res !== "405null") {
-                let l = consoleData
-                l.push(res)
-                setConsoleData([...l])
-            }
-        })
-    }
-
-    useInterval(()=>{
-        getNewLog()
-    },500)
 
     const changeSNValue = (e) =>{
         setSN(e.target.value);
@@ -114,7 +100,9 @@ export default function MainPage(){
     const checkConnection = function (){
         window.pywebview.api.checkConnection().then((res)=>{
             let status = res['msg']
-            setIsConnected(status['isConnected'])
+            if (isConnected !== status['isConnected']) {
+                setIsConnected(status['isConnected'])
+            }
         })
     }
 
@@ -157,20 +145,22 @@ export default function MainPage(){
                             />
                             <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={connect} disabled={isConnected}>连接</Button>
                             <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={disConnect} disabled={!isConnected}>断开</Button>
-                            <Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={test}>test</Button>
+                            {/*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button} onClick={test}>test</Button>*/}
                         </Toolbar>
                     </AppBar>
                     <div id={'content'}>
                         <div className={'left'}>
-                            <ActionCard/>
-                            <PropTable/>
+                            {/*<ActionCard/>*/}
+                            {/*<PropTable/>*/}
+                            <HierarchyContent/>
                         </div>
                         <div className={'middle'}>
                             <EditorCard ShowMsg={showMsg} isConnected={isConnected}/>
-                            <ConsoleCard consoleData={consoleData}/>
+                            <ConsoleCard/>
                         </div>
                         <div className={'right'}>
-                            <ScreenCard/>
+                            {/*<ScreenCard/>*/}
+                            <PropTable/>
                         </div>
                     </div>
                 </div>

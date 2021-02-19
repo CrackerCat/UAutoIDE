@@ -81,6 +81,13 @@ def getCurDevice():
 # 当前连接状态
 def checkConnection():
     return {"ok": True, "msg": phone.checkConnection()}
+
+# 保存temp脚本
+def saveTempFile(s):
+    global phone
+    phone.saveTempFile(s)
+    return {"ok": True, "msg": "保存成功"}
+
 def GetDevices():
     devices = os.popen("adb devices").read()
     devices = devices.split('\n')
@@ -151,52 +158,6 @@ def select_app(window):
     return {"ok": False, "msg": "未选择文件"}
 
 
-def get_svn_status(xlsxpath):
-    ret = {}
-    output = subprocess.check_output([get_tpsvn(), 'status', xlsxpath]).decode().replace('\r', '').replace(' ', '')
-    lines = output.split('\n')
-    for line in lines:
-        status = line[:1]
-        name = line[1:]
-        # ret.append({'status': line[:1], 'name': line[1:]})
-        ret[name] = status
-    return ret
-
-
-def rpc_get_file_list(xlsxpath):
-    file_list = []
-    try:
-        files_status = get_svn_status(xlsxpath)
-        print(files_status)
-
-        files = glob.glob(xlsxpath + '/**/*.xls*', recursive=True)
-        for f in files:
-            if not os.path.basename(f).startswith('~'):
-                status = files_status.get(f, 'o')
-                file_list.append({'name': os.path.basename(f), 'path': f, 'status': status})
-
-        # list = output.replace(' ', '')
-        # list = list[2:]
-        # list = list.split(r'\n')        
-        # for f in list:
-        #     name = f[1:-2].split(r'\\')[-1]
-        #     if 'xls' in name and not name.startswith('~'):
-        #         file_list.append({'name': name, 'path': f[1:-2].replace('\\\\','\\'), 'status':f[0]})
-    except Exception as e:
-        print(e)
-        files = glob.glob(xlsxpath + '/**/*.xls*', recursive=True)
-        for f in files:
-            if not os.path.basename(f).startswith('~'):
-                file_list.append({'name': os.path.basename(f), 'path': f, 'status': 'o'})
-    # print(xlsxpath)
-    # files = glob.glob(xlsxpath + '/**/*.xls*', recursive=True)
-    # for f in files:
-    #     if not os.path.basename(f).startswith('~'):
-    #             file_list.append({'name': os.path.basename(f), 'path': f})
-    print(file_list)
-    return file_list
-
-
 def get_scrcpy():
     global phone
     if phone == None:
@@ -210,7 +171,7 @@ def loadTree():
     with open(r"D:\frontProject\pywebview\miniperf\asset\data.json", 'r') as f:
         loadData = json.load(f)
         print(loadData)
-        return {"ok": True, "data": loadData}
+        return {"ok": True, "msg": loadData}
 
 
 def get_cstemplate_file():

@@ -158,7 +158,7 @@ export default function PropTable() {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Components</TableCell>
+                        <TableCell align={"left"}>Components</TableCell>
                         {/*<TableCell align="right">Value</TableCell>*/}
                     </TableRow>
                 </TableHead>

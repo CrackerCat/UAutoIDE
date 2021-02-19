@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import {Card, CardContent, CardHeader, IconButton, makeStyles, TextareaAutosize} from "@material-ui/core";
-import {Adb, GetApp, MissedVideoCall, RotateLeft, SendOutlined, Stop} from "@material-ui/icons";
+import {Adb, GetApp, MissedVideoCall, RotateLeft, Save, SendOutlined, Stop} from "@material-ui/icons";
 import AceEditor from "react-ace";
 import 'brace/mode/python'
 import 'brace/theme/pastel_on_dark'
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function EditorCard (props) {
-    let {ShowMsg,isConnected} = props
+    const {ShowMsg,isConnected} = props
     const [scriptsData,setScriptsData] = React.useState('')
     const [isRecording,setIsRecording] = React.useState(false)
     const [isRunning,setIsRunning] = React.useState(false)
@@ -46,7 +46,19 @@ export default function EditorCard (props) {
             })
         }
     },1000)
-    useUpdate(()=>{
+    // useUpdate(()=>{
+    //     if(!isConnected){
+    //         init()
+    //     }
+    //     else{
+    //         window.pywebview.api.updateScripts().then((res)=>{
+    //             setScriptsData(res['msg'])
+    //
+    //         })
+    //     }
+    // },isConnected)
+
+    useEffect(()=>{
         if(!isConnected){
             init()
         }
@@ -55,7 +67,8 @@ export default function EditorCard (props) {
                 setScriptsData(res['msg'])
             })
         }
-    },isConnected)
+    },[isConnected])
+
 
     let init = function (){
         // setScriptsData('')
@@ -80,28 +93,54 @@ export default function EditorCard (props) {
             setIsRunning(false)
         })
     }
+    function saveAs() {
 
+        const element = document.createElement("a");
+
+        const file = new Blob([scriptsData], {type: 'text/plain'});
+
+        element.href = URL.createObjectURL(file);
+
+        element.download = "code.py";
+
+        document.body.appendChild(element); // Required for this to work in FireFox
+
+        element.click();
+
+    }
+    function save(){
+        // ShowMsg(scriptsData)
+        window.pywebview.api.saveTempFile({'fileInfo':scriptsData}).then((res)=>{
+            ShowMsg(res['msg'])
+        })
+    }
+    const changeHandle = (e) =>{
+        setScriptsData(e)
+    }
     return (
         <Card variant={'outlined'} className={classes.root}>
             <CardHeader title={'Coding'} action={[
                 <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected}>
                     <MissedVideoCall/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'重置'} disabled={isRecording || !isConnected || true}>
-                    <RotateLeft/>
-                </IconButton>,
-                <IconButton aria-label="settings" title={'下载'} disabled={isRecording || !isConnected || true}>
-                    <GetApp/>
-                </IconButton>,
                 <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning || !isConnected}>
                     <SendOutlined/>
+                </IconButton>,
+                <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected}>
+                    <Save/>
+                </IconButton>,
+                <IconButton aria-label="settings" title={'下载脚本'} onClick={saveAs} disabled={isRecording || isRunning}>
+                    <GetApp/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
                     <Adb/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'停止'} disabled={isRecording || !isConnected || true}>
                     <Stop/>
-                </IconButton>
+                </IconButton>,
+                // <IconButton aria-label="settings" title={'重置'} disabled={isRecording || !isConnected || true}>
+                //     <RotateLeft/>
+                // </IconButton>
             ]}/>
             <CardContent className={classes.content}>
                 <AceEditor
@@ -111,6 +150,7 @@ export default function EditorCard (props) {
                     editorProps={{ $blockScrolling: true }}
                     className={classes.textArea}
                     value={scriptsData}
+                    onChange={changeHandle}
                 />
             </CardContent>
         </Card>

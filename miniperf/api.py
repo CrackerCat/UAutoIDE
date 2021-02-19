@@ -63,11 +63,15 @@ class Api:
     def test(self):
         return extension.getTempFile()
 
+    # 保存temp案例
+    def saveTempFile(self,data):
+        return extension.saveTempFile(data['fileInfo'])
+
     def updateScripts(self):
         return extension.getTempFile()
 
     def showItem(self):
-        return extension.showItem()
+        return extension.loadTree()
 
     def PythonOutput(self):
         if len(self.output) > 0:
