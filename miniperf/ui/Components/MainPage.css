@@ -17,7 +17,7 @@
     height: 100%;
 }
 .left {
-    width: 35vh;
+    width: 50vh;
     display: flex;
     flex-direction: column;
     padding-right: 2px;

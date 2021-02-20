@@ -24,6 +24,8 @@ class Api:
     def disConnect(self):
         return extension.disConnect()
 
+    def checkConnection(self):
+        return extension.checkConnection()
 
     def write(self, info):
         self.output.append(info)
@@ -61,6 +63,18 @@ class Api:
     def test(self):
         return extension.getTempFile()
 
+    # 暂停案例运行
+    def pause(self):
+        return extension.pause()
+
+    # 继续脚本运行
+    def continuePlay(self):
+        return extension.continuePlay()
+
+    # 保存temp案例
+    def saveTempFile(self,data):
+        return extension.saveTempFile(data['fileInfo'])
+
     def updateScripts(self):
         return extension.getTempFile()
 
@@ -82,3 +96,7 @@ class Api:
 
     def getCurDevice(self):
         return extension.getCurDevice()
+
+    # 获取对应ID的GameObject详情
+    def get_inspector(self,data):
+        return extension.get_inspector(data)
