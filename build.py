@@ -21,7 +21,7 @@ with open(os.path.join("miniperf", "__init__.py"), encoding="utf8") as f:
     tag = os.getenv('tag')
     if tag and tag.startswith("refs/tags/v"):
         version = tag.replace("refs/tags/v", "")
-    else:    
+    else:
         # add version
         x_y_z = [int(x) for x in version.split('.')]
         x_y_z[-1] += 1
@@ -29,17 +29,22 @@ with open(os.path.join("miniperf", "__init__.py"), encoding="utf8") as f:
 
 with open(os.path.join("miniperf", "__init__.py"), 'w', encoding="utf8") as f:
     f.write(f'__version__ = "{version}"')
-    
 
 tasks = {}
+
+
 def task(name, depends):
     def inner_task(func):
-        #print("register_task, name=%s" % (name))
+        # print("register_task, name=%s" % (name))
         tasks[name] = [func, depends]
+
         def wrap(*largs, **kwargs):
             return func(*largs, **kwargs)
+
         return wrap
+
     return inner_task
+
 
 def get_configs_file_name(ctx):
     """
@@ -62,18 +67,22 @@ def get_release_file_name(ctx):
     if build_type == "release" and flavor == "public":
         return f"{appname}-{version}.zip"  # eg: UAutoIDE-v1.0.0.zip
     else:
-        return "%s-%s-%s-%s.zip" % (appname, version, flavor, build_type)  # eg: PywebTableConvertTool-v1.0.0-internal-debug.zip
+        return "%s-%s-%s-%s.zip" % (
+        appname, version, flavor, build_type)  # eg: PywebTableConvertTool-v1.0.0-internal-debug.zip
 
 
 def build_ui(ctx):
     print("Task: Build UI")
-    pass # TODO: cd miniperf/ui; yarn package
+    pass  # TODO: cd miniperf/ui; yarn package
     print("Task: Build UI done")
 
 
 def build_wheel(ctx):
     print("Task: Build Wheel")
     subprocess.check_call(['python', 'setup.py', 'bdist', 'bdist_wheel'])
+
+    for filename in os.listdir('src'):
+        subprocess.check_call(['python', 'setup.py', 'bdist', 'bdist_wheel', '-d', '../../dist/'], cwd=f'src/{filename}')
     print("Task: Build Wheel done")
 
 
@@ -87,7 +96,6 @@ def build_nsis(ctx):
         "openpyxl",
         "et-xmlfile",
         "ifaddr",
-        "wcwidth"
     ]
 
     def req_wheel(x):
@@ -97,10 +105,12 @@ def build_nsis(ctx):
             if nw in x:
                 return False
         return True
-    requirements = list(filter(req_wheel, open('requirements.txt').read().strip().split('\n')))
-    wheels = list(map(lambda y: os.path.join('dist', y), filter(lambda x: version in x and x.endswith('whl'), os.listdir('dist'))))
-    name = "app"
 
+    requirements = list(filter(req_wheel, open('requirements.txt').read().strip().split('\n')))
+    wheels = list(map(lambda y: os.path.join('dist', y),
+                      filter(lambda x: x.endswith('whl'), os.listdir('dist'))))
+    name = "app"
+    print('---------', wheels)
     builder = nsist.InstallerBuilder(
         appname=name,
         version=version,
@@ -116,21 +126,21 @@ def build_nsis(ctx):
         py_bitness=64,
         pypi_wheel_reqs=requirements,
         packages=[
-             
+
         ],
-        local_wheels = wheels,
-        extra_files = [
+        local_wheels=wheels,
+        extra_files=[
             (get_configs_file_name(ctx), ''),
         ]
     )
 
     builder.run(makensis=False)
-    #input("press any key to continue")
+    # input("press any key to continue")
     builder.run_nsis()
     print("Task: Build NSIS done")
 
 
-def zip_dir(dir_name, output_file, excludes = None):
+def zip_dir(dir_name, output_file, excludes=None):
     zip_file = zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED)
     # ziph is zipfile handle
     for root, dirs, files in os.walk(dir_name):
@@ -140,7 +150,7 @@ def zip_dir(dir_name, output_file, excludes = None):
             include = True
             if excludes:
                 for exclude in excludes:
-                    #print("file_rel_path=%s exclude=%s" % (file_rel_path, exclude.replace("/", os.path.sep)))
+                    # print("file_rel_path=%s exclude=%s" % (file_rel_path, exclude.replace("/", os.path.sep)))
                     if exclude.replace("/", os.path.sep) in file_rel_path:
                         include = False
                         continue
@@ -200,7 +210,7 @@ def build_package(ctx):
     print("Task: Build Package done")
 
 
-@task(name = "help", depends = [])
+@task(name="help", depends=[])
 def task_help():
     global tasks
     print("Usage: build [task_name]")
@@ -208,7 +218,8 @@ def task_help():
         print("\tTask: %s" % task_name)
     return True
 
-@task(name = "clean", depends = [])
+
+@task(name="clean", depends=[])
 def clean():
     print("Task: Clean")
     build_dir = os.path.join(".", "build")
@@ -218,10 +229,11 @@ def clean():
     print(f"Delete dir: {build_dir} and {dist_dir}")
     return True
 
-@task(name = "debug", depends = [])
+
+@task(name="debug", depends=[])
 def build_debug():
-    FORMAT="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    logging.basicConfig(level = logging.DEBUG, format = FORMAT)
+    FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    logging.basicConfig(level=logging.DEBUG, format=FORMAT)
 
     """
     Build Type(打包版本)：
@@ -238,8 +250,8 @@ def build_debug():
     # args = argparser.parse_args()
 
     ctx = {
-        "build_type" : "release",
-        "flavor" : "internal"
+        "build_type": "release",
+        "flavor": "internal"
     }
 
     print("Building...")
@@ -250,6 +262,7 @@ def build_debug():
     build_package(ctx)
     print("Build Success.")
     return True
+
 
 def execute_task(task_name):
     global tasks
@@ -273,7 +286,7 @@ def execute_task(task_name):
 
 
 def main():
-    task_name = "debug" # default build debug version
+    task_name = "debug"  # default build debug version
     if len(sys.argv) > 1:
         task_name = sys.argv[1]
 
@@ -284,4 +297,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()    
+    main()
