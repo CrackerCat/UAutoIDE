@@ -16,5 +16,6 @@ setup(
     license='GPLv3',
     include_package_data=True,
     packages=find_namespace_packages(include=['miniperf.*', "miniperf"]),
-    install_requires=''''''.split('\n'),
+    install_requires='''u3driver
+    '''.split('\n'),
     zip_safe=False)
