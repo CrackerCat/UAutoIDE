@@ -77,13 +77,18 @@ export default function MainPage(){
     const [sn, setSN] = useState("");
     const [ip, setIP] = useState("");
     const [curObjID,setCurObjID] = useState(0)
-
+    const [leftP,setLeftP] = useState(24.5)
+    const [rightP,setRightP] = useState(24.5)
+    const [mouseMoving,setMouseMoving] = useState(false)
     const changeSNValue = (e) =>{
         setSN(e.target.value);
     }
     const changeIPValue = (e) =>{
         setIP(e.target.value);
     }
+
+
+
     //底部消息弹窗关闭事件
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -147,6 +152,37 @@ export default function MainPage(){
         })
     }
 
+    const handleMouseDown=(e)=>{
+        setMouseMoving(true)
+    }
+    const handleMouseMove=(e)=>{
+        let content = document.getElementById('content')
+        let w = content.offsetWidth
+        let cw = e.pageX
+        let id = e.target.id
+        if(id === 'scroller1'){
+            setLeftP(cw/w * 100)
+        }
+        else{
+            setRightP((1 - cw/w) * 100)
+        }
+
+    }
+    const handleMouseUp=(e)=>{
+
+    }
+    const setWidth = (e) =>{
+        if(e === 1)
+        {
+            return {'width':leftP + '%'}
+        }
+        else if(e === 2)
+        {
+            return {'width':rightP + '%'}
+        }
+    }
+
+
     let getCurID = (e) =>{
         setCurObjID(e)
     }
@@ -194,16 +230,22 @@ export default function MainPage(){
                         </Toolbar>
                     </AppBar>
                     <div id={'content'}>
-                        <div className={'left'}>
+                        <div className={'left'} style={setWidth(1)}>
                             {/*<ActionCard/>*/}
                             {/*<PropTable/>*/}
                             <HierarchyContent ShowMsg={showMsg} getCurID={getCurID}/>
+                        </div>
+                        <div className={'scroller'} id={'scroller1'} draggable={"true"} onDragEnd={handleMouseMove}>
+
                         </div>
                         <div className={'middle'}>
                             <EditorCard ShowMsg={showMsg} isConnected={isConnected}/>
                             <ConsoleCard/>
                         </div>
-                        <div className={'right'}>
+                        <div className={'scroller'} id={'scroller2'} draggable={"true"} onDragEnd={handleMouseMove}>
+
+                        </div>
+                        <div className={'right'} style={setWidth(2)}>
                             {/*<ScreenCard/>*/}
                             <PropTable curID={curObjID}/>
                         </div>
