@@ -154,7 +154,7 @@ Row.propTypes = {
 export default function PropTable(props) {
     const {curID} = props
     const classes = useStyle()
-    const [componentsInfo,setComponents] = useState(components)
+    const [componentsInfo,setComponents] = useState([])
 
 
     useEffect(()=>{

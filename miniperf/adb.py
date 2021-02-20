@@ -87,7 +87,7 @@ class Device:
             return f.read()
 
     def saveTempFile(self,s):
-        with open(self.tempFilePath, 'w') as f:
+        with open(self.tempFilePath, 'w',encoding='utf-8') as f:
             return f.write(s)
 
     def screenshot(self, filename=None, format='pillow'):
