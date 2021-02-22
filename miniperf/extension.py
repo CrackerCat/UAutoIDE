@@ -95,7 +95,7 @@ def getCurDevice():
     first_key = ''
     if len(res) > 0:
         first_key = list(res.keys())[0]
-    return {"ok": True, "msg": first_key}
+    return {"ok": True, "msg": res}
 
 # 当前连接状态
 def checkConnection():

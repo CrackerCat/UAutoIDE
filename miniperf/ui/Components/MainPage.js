@@ -2,9 +2,9 @@ import React, {useEffect, useRef, useState} from 'react'
 import MuiAlert from '@material-ui/lab/Alert';
 import {
     AppBar,
-    Button, CircularProgress,
+    Button, CircularProgress, FormControl,
     Input,
-    InputAdornment, Snackbar, TextField,
+    InputAdornment, InputLabel, MenuItem, Select, Snackbar, TextField,
     Toolbar
 } from "@material-ui/core";
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
@@ -31,7 +31,8 @@ const theme = createMuiTheme({
 
 const useStyle = makeStyles((style)=>({
     Input:{
-        color:'#f44336 !important'
+        color:'#f44336 !important',
+        width:'200px'
     },
     AppBarON:{
         'background-color':'green'
@@ -149,6 +150,7 @@ export default function MainPage(){
     const getCurDevice = () =>{
         window.pywebview.api.getCurDevice().then((res)=>{
             setSN(res['msg'])
+            showMsg(res['msg'])
         })
     }
 
@@ -193,14 +195,31 @@ export default function MainPage(){
                 <div className={'container'}>
                     <AppBar position={"static"} className={isConnected?classes.AppBarON:classes.AppBarOFF}>
                         <Toolbar>
-                            <TextField
-                                id="filled-helperText"
-                                label="设备号"
-                                variant="filled"
-                                className={classes.Input}
-                                value={sn}
-                                onChange={changeSNValue}
-                            />
+                            <FormControl variant="filled" className={classes.Input}>
+                                <InputLabel id="demo-simple-select-filled-label">手机设备</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-filled-label"
+                                    id="demo-simple-select-filled"
+                                    value={'s'}
+                                    // onChange={handleChange}
+                                    onClick={getCurDevice}
+                                >
+                                    <MenuItem value="">
+                                        <em>None</em>
+                                    </MenuItem>
+                                    <MenuItem value={10}>Ten</MenuItem>
+                                    <MenuItem value={20}>Twenty</MenuItem>
+                                    <MenuItem value={30}>Thirty</MenuItem>
+                                </Select>
+                            </FormControl>
+                            {/*<TextField*/}
+                            {/*    id="filled-helperText"*/}
+                            {/*    label="设备号"*/}
+                            {/*    variant="filled"*/}
+                            {/*    className={classes.Input}*/}
+                            {/*    value={sn}*/}
+                            {/*    onChange={changeSNValue}*/}
+                            {/*/>*/}
                             <TextField
                                 id="filled-helperText"
                                 label="IP地址"
