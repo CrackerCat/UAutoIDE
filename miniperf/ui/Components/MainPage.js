@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import MuiAlert from '@material-ui/lab/Alert';
 import {
     AppBar,
-    Button, CircularProgress, FormControl,
+    Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormControl,
     Input,
     InputAdornment, InputLabel, MenuItem, Select, Snackbar, TextField,
     Toolbar
@@ -16,6 +16,8 @@ import ConsoleCard from "./ConsoleCard";
 import ScreenCard from "./ScreenCard";
 import HierarchyContent from "./HierarchyContent";
 import {useInterval} from "../Util/Util"
+import * as PropTypes from "prop-types";
+import TutorialsBoard from "./TutorialsBoard";
 
 const theme = createMuiTheme({
     palette: {
@@ -61,6 +63,9 @@ const useStyle = makeStyles((style)=>({
     wrapper: {
         margin: theme.spacing(1),
         position: 'relative',
+    },
+    beginCard:{
+        'text-align':'center',
     }
 }))
 
@@ -69,19 +74,35 @@ function Alert(props) {
 }
 
 
+class SimpleDialog extends React.Component {
+    render() {
+        return null;
+    }
+}
+
+SimpleDialog.propTypes = {
+    onClose: PropTypes.func,
+    open: PropTypes.func,
+    selectedValue: PropTypes.any
+};
 export default function MainPage(){
     const classes = useStyle()
-    const [okOpen, setOkOpen] = React.useState(false);
-    const [isConnected, setIsConnected] = React.useState(false);
-    const [loading, setLoading] = React.useState(false);
-    const [message, setMessage] = React.useState('');
-    const [sn, setSN] = useState("");
-    const [ip, setIP] = useState("");
-    const [curObjID,setCurObjID] = useState(0)
-    const [leftP,setLeftP] = useState(24.5)
-    const [rightP,setRightP] = useState(24.5)
-    const [mouseMoving,setMouseMoving] = useState(false)
-    const changeSNValue = (e) =>{
+    const [okOpen, setOkOpen] = React.useState(false);//底部消息弹窗是否打开
+    const [logType,setLogType] = useState('success')//底部消息弹窗类型
+    const [isConnected, setIsConnected] = React.useState(false);//是否连接上的设备
+    const [loading, setLoading] = React.useState(false);//连接中
+    const [message, setMessage] = React.useState('');//提示框的内容
+    const [sn, setSN] = useState("");//设备的设备号
+    const [ip, setIP] = useState("");//设备的ip
+    const [curObjID,setCurObjID] = useState(0)//当前选择的game object的ID
+    const [leftP,setLeftP] = useState(24.5)//左框宽度
+    const [rightP,setRightP] = useState(24.5)//右框宽度
+    const [phoneList,setPhoneList] = useState([])//手机列表
+    const [phone,setPhone] = useState('')//当前选择的手机
+    const [tutorialsWindowOpen,setTutorialsWindowOpen] = useState(false)//教学模式弹窗
+    const [tutorialsMode,setTutorialsMode] = useState(false)//教学模式
+    const [isFirst,setIsFirst] = useState(false)//新用户
+    let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
     const changeIPValue = (e) =>{
@@ -89,7 +110,13 @@ export default function MainPage(){
     }
 
 
-
+    //教学弹窗关闭事件
+    let handleCloseTutorials = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setTutorialsWindowOpen(false);
+    };
     //底部消息弹窗关闭事件
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -98,16 +125,21 @@ export default function MainPage(){
         setOkOpen(false);
     };
     //底部消息弹窗
-    let showMsg = (msg)=>{
+    let showMsg = (msg,type = 'success')=>{
         setMessage(msg)
+        setLogType(type)
         setOkOpen(true)
     }
     //连接设备
-    const connect = function (){
+    let connect = function (d,e = '',name = ''){
         setLoading(true)
-        window.pywebview.api.connect({'sn':sn,'ip':ip}).then((res)=>{
+        if(e !== ''){
+            setSN(e)
+            setPhone(name)
+        }
+        window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
             // setIsConnected(res['ok'])
-            showMsg(res['msg'])
+            showMsg(res['msg'],res['ok']?'success':'error')
             setLoading(false)
         })
     }
@@ -116,16 +148,16 @@ export default function MainPage(){
         setLoading(true)
         window.pywebview.api.disConnect().then((res)=>{
             // setIsConnected(false)
-            showMsg(res['msg'])
+            showMsg(res['msg'],'error')
             setLoading(false)
         })
     }
     const test = function (e){
-        const reader = new FileReader();
-        reader.readAsText(e.target.files[0])
-        reader.onload = function (e){
-            showMsg(e.target.result)
-        }
+        // setTutorialsMode(true)
+        // setTutorialsWindowOpen(true)
+        window.pywebview.api.test().then((res)=>{
+            console.log(res['msg'])
+        })
     }
     //检测连接状态
     const checkConnection = function (){
@@ -139,24 +171,56 @@ export default function MainPage(){
 
     useInterval(()=>{
         checkConnection()
+        if(!isConnected && !loading){
+            getCurDevice()
+        }
     },1000)
 
-    useEffect(()=>{
-        setTimeout(()=>{
-            getCurDevice()
-        },2000)
-    },[])
-
-    const getCurDevice = () =>{
-        window.pywebview.api.getCurDevice().then((res)=>{
-            setSN(res['msg'])
-            showMsg(res['msg'])
+    //检测是否为新用户
+    const isNewUser = () =>{
+        window.pywebview.api.isNewUser().then((res)=>{
+            setIsFirst(res['msg'])
+        })
+    }
+    //新用户设置完毕
+    const finishNewUser = () =>{
+        window.pywebview.api.finishNewUser().then((res)=>{
+            setIsFirst(false)
         })
     }
 
-    const handleMouseDown=(e)=>{
-        setMouseMoving(true)
+    const beginTutorial = () =>{
+        window.pywebview.api.finishNewUser().then((res)=>{
+            setIsFirst(false)
+            setTutorialsMode(true)
+            setTutorialsWindowOpen(true)
+        })
     }
+
+    useEffect(()=>{
+        setTimeout(isNewUser,2000)
+    },[])
+
+    //获取连接在电脑的手机列表
+    const getCurDevice = () =>{
+        window.pywebview.api.getCurDevice().then((res)=>{
+            let list = res['msg']
+            setPhoneList(list)
+        })
+    }
+
+    //选择需要连接的手机
+    const handleChange = (e) =>{
+        setPhone(e.target.value)
+        for (let i in phoneList){
+            let p = phoneList[i]
+            if(p['name'] === e.target.value){
+
+                setSN(p['sn'])
+            }
+        }
+    }
+
     const handleMouseMove=(e)=>{
         let content = document.getElementById('content')
         let w = content.offsetWidth
@@ -168,9 +232,6 @@ export default function MainPage(){
         else{
             setRightP((1 - cw/w) * 100)
         }
-
-    }
-    const handleMouseUp=(e)=>{
 
     }
     const setWidth = (e) =>{
@@ -200,26 +261,17 @@ export default function MainPage(){
                                 <Select
                                     labelId="demo-simple-select-filled-label"
                                     id="demo-simple-select-filled"
-                                    value={'s'}
-                                    // onChange={handleChange}
-                                    onClick={getCurDevice}
+                                    value={phone}
+                                    onChange={handleChange}
+                                    onOpen={getCurDevice}
+                                    disabled={isConnected || loading}
                                 >
-                                    <MenuItem value="">
-                                        <em>None</em>
-                                    </MenuItem>
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                    <MenuItem value={20}>Twenty</MenuItem>
-                                    <MenuItem value={30}>Thirty</MenuItem>
+                                    {phoneList.map((v)=>{
+                                        return <MenuItem value={v.name}>{v.name}</MenuItem>
+                                    })}
+                                    {phoneList.length === 0 && <MenuItem><em>None</em></MenuItem>}
                                 </Select>
                             </FormControl>
-                            {/*<TextField*/}
-                            {/*    id="filled-helperText"*/}
-                            {/*    label="设备号"*/}
-                            {/*    variant="filled"*/}
-                            {/*    className={classes.Input}*/}
-                            {/*    value={sn}*/}
-                            {/*    onChange={changeSNValue}*/}
-                            {/*/>*/}
                             <TextField
                                 id="filled-helperText"
                                 label="IP地址"
@@ -233,21 +285,27 @@ export default function MainPage(){
                                 {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
                                 {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                             </div>
-                            {/*<input*/}
-                            {/*    id="contained-button-file"*/}
-                            {/*    className={classes.upload}*/}
-                            {/*    multiple*/}
-                            {/*    type="file"*/}
-                            {/*    onChange={test}*/}
-                            {/*/>*/}
-                            {/*<label htmlFor="contained-button-file">*/}
-                            {/*    <Button variant="contained" color="primary" component="span">*/}
-                            {/*        Upload*/}
-                            {/*    </Button>*/}
-                            {/*/!*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button}>test</Button>*!/*/}
-                            {/*</label>*/}
+                            <Button variant="contained" color="primary" size="medium" disableElevation onClick={test}>Test</Button>
                         </Toolbar>
                     </AppBar>
+                    <Dialog open={isFirst} className={classes.beginCard}>
+                        <DialogTitle id="simple-dialog-title">新用户？</DialogTitle>
+                        <DialogContent>
+                            <Button variant="contained" color="primary" size="medium" disableElevation onClick={beginTutorial}>进行教学</Button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <Button variant="contained" color="secondary" size="medium" disableElevation onClick={finishNewUser}>跳过</Button>
+                        </DialogContent>
+                    </Dialog>
+                    <TutorialsBoard
+                        open={tutorialsWindowOpen}
+                        onClose={handleCloseTutorials}
+                        isConnected={isConnected}
+                        loading={loading}
+                        connect={connect}
+                        changeSNValue={changeSNValue}
+                        phoneList={phoneList}
+                        showMsg={showMsg}
+                    />
                     <div id={'content'}>
                         <div className={'left'} style={setWidth(1)}>
                             {/*<ActionCard/>*/}
@@ -258,7 +316,7 @@ export default function MainPage(){
 
                         </div>
                         <div className={'middle'}>
-                            <EditorCard ShowMsg={showMsg} isConnected={isConnected}/>
+                            <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode}/>
                             <ConsoleCard/>
                         </div>
                         <div className={'scroller'} id={'scroller2'} draggable={"true"} onDragEnd={handleMouseMove}>
@@ -270,8 +328,8 @@ export default function MainPage(){
                         </div>
                     </div>
                 </div>
-                <Snackbar open={okOpen} autoHideDuration={6000} onClose={handleClose}>
-                    <Alert severity="success" onClose={handleClose}>
+                <Snackbar open={okOpen} autoHideDuration={3000} onClose={handleClose}>
+                    <Alert severity={logType} onClose={handleClose}>
                         {message}
                     </Alert>
                 </Snackbar>

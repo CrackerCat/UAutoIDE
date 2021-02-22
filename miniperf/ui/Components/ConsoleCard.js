@@ -106,7 +106,6 @@ const ConsoleContent = React.forwardRef((props,ref)=>{
     },consoleData)
 
     const setHeight = () =>{
-        console.log('change')
         const textarea = document.getElementById('consoleArea');
         textarea.scrollTop = textarea.scrollHeight;
     }

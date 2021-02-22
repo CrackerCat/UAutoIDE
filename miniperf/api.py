@@ -61,7 +61,7 @@ class Api:
         return extension.record()
 
     def test(self):
-        return extension.getTempFile()
+        return extension.isNewUser()
 
     # 暂停案例运行
     def pause(self):
@@ -91,12 +91,32 @@ class Api:
             return temp
         return '405null'
 
-    def runCase(self):
-        return extension.runCase()
-
+    def runCase(self,data):
+        return extension.runCase(data)
     def getCurDevice(self):
         return extension.getCurDevice()
 
     # 获取对应ID的GameObject详情
     def get_inspector(self,data):
         return extension.get_inspector(data)
+
+    # 安装Demo
+    def installDemo(self):
+        return extension.installDemo()
+
+    # # 是否安装了指定包名的应用
+    # def isInstalled(self,name):
+
+    def openDemo(self):
+        return extension.openDemo()
+
+    def getDemoScripts(self):
+        return extension.getDemoScripts()
+
+    # 是否为新用户
+    def isNewUser(self):
+        return extension.isNewUser()
+
+    # 完成新用户设置
+    def finishNewUser(self):
+        return extension.finishNewUser()

@@ -4,12 +4,16 @@ import subprocess
 
 from u3driver import AltrunUnityDriver, By
 
+demoPackageName = 'com.DefaultName.DefaultName'
+demoPackageActivity = 'com.unity3d.player.UnityPlayerActivity'
 
 class Device:
-    def __init__(self, tempFilePath, serial_num=''):
+    def __init__(self, ROOT_DIR, serial_num=''):
         self.serial_num = serial_num
         self.screenshot_path = os.path.join('C:\image', 'screenshot_pic')
-        self.tempFilePath = os.path.join(tempFilePath, 'asset', 'temp_test.py')
+        self.tempFilePath = os.path.join(ROOT_DIR, 'asset', 'temp_test.py')
+        self.adbPath = os.path.join(ROOT_DIR,'asset','ADB','adb.exe')
+        self.demoPath = os.path.join(ROOT_DIR, 'asset', 'demo.apk')
         # if not serial_num == '':
         #     ip = self.getIP()
         #     self.device = AltrunUnityDriver(serial_num, '', ip)
@@ -23,7 +27,10 @@ class Device:
 
     @property
     def isConnected(self):
-        return self.device.connect and getattr(self.device.socket, '_closed') is False
+        try:
+            return self.device.connect and getattr(self.device.socket, '_closed') is False
+        except:
+            return False
 
     def connect(self, serial_num, ip):
         self.serial_num = serial_num
@@ -56,6 +63,19 @@ class Device:
     def continuePlay(self):
         self.device.Pause(False)
 
+    # 是否安装了指定包名的应用
+    def isInstalled(self):
+        res = os.popen(f"{self.adbPath} shell pm path {demoPackageName}").read()
+        if res is not '':
+            return True
+        else:
+            return False
+
+    # 打开应用
+    def openAPP(self,packageName = demoPackageName,activity = demoPackageActivity):
+        res = os.popen(f"{self.adbPath} shell am start -n {packageName}/{activity} ").read()
+        return res
+
     # 获取对应ID的GameObject详情
     def get_inspector(self,id):
         s = self.device.get_inspector(id)
@@ -72,13 +92,18 @@ class Device:
     def record(self):
         self.device.debug_mode(self.tempFilePath)
 
+    # 安装Demo
+    def installDemo(self):
+        res = os.popen(f"{self.adbPath} install -g {self.demoPath}").read()
+        return res
+
     def getIP(self):
         try:
-            res = os.popen(f"adb -s {self.serial_num} shell ifconfig").read()
+            res = os.popen(f"{self.adbPath} -s {self.serial_num} shell ifconfig").read()
             ip = res.split('wlan0')[1].split('inet addr:')[1].split(' ')[0]
             return ip
         except:
-            res = os.popen(f'adb -s {self.serial_num} shell netcfg').read()
+            res = os.popen(f'{self.adbPath} -s {self.serial_num} shell netcfg').read()
             ip = res.split('wlan0')[1].split('UP')[1].split('/')[0].split()[0]
             return ip
 

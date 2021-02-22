@@ -2,21 +2,19 @@ import importlib
 import json
 import logging
 import os
-import time
 import traceback
-import shutil
 import sys
-import threading
-import datetime
-import time
-import glob
-import subprocess
+import configparser
 from miniperf.adb import Device
 
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 python_path = os.path.join(os.path.split(sys.executable)[0], "python.exe")
+
+configPath = os.path.join(ROOT_DIR,os.path.pardir,'configs.ini')
+config = configparser.ConfigParser()
+config.read(configPath, encoding='UTF-8')
 
 g_webview = None
 phone = Device(ROOT_DIR)
@@ -34,7 +32,7 @@ class Header(object):
 
 
 def test():
-    return {"ok": True, "msg": phone.tempFilePath}
+    return phone.openAPP()
 
 def showItem():
     global phone
@@ -93,8 +91,8 @@ def record():
 def getCurDevice():
     res = GetDevices()
     first_key = ''
-    if len(res) > 0:
-        first_key = list(res.keys())[0]
+    # if len(res) > 0:
+    #     first_key = list(res.keys())[0]
     return {"ok": True, "msg": res}
 
 # 当前连接状态
@@ -107,17 +105,34 @@ def saveTempFile(s):
     phone.saveTempFile(s)
     return {"ok": True, "msg": "保存成功"}
 
+# 打开Demo
+def openDemo():
+    global phone
+    if not phone.isInstalled():
+        phone.installDemo()
+        # time.sleep(2)
+    phone.openAPP()
+    return {"ok": True, "msg": "已打开Demo"}
+
+def getDemoScripts():
+    with open(os.path.join(ROOT_DIR, 'asset', 'demo.py'), 'r') as f:
+        res = f.read()
+        return {"ok": True, "msg": res}
+
 def GetDevices():
     devices = os.popen("adb devices").read()
     devices = devices.split('\n')
-    devices_dir = {}
+    devicesList = []
     for i in range(1,len(devices)):
         if devices[i] != '':
+            devices_dir = {}
             device_number = devices[i].replace('device',"").split('\t')[0]
             device_name = os.popen('adb -s ' + device_number + ' shell getprop ro.product.model ').read()
             device_name = device_name.replace("\n", "")
-            devices_dir[device_number] = device_name
-    return devices_dir
+            devices_dir['name'] = device_name
+            devices_dir['sn'] = device_number
+            devicesList.append(devices_dir)
+    return devicesList
 
 def LoadModuleByPath(name,path):
     spec = importlib.util.spec_from_file_location(name,path)
@@ -129,17 +144,39 @@ def LoadModuleByPath(name,path):
 def CasePath(name):
     return os.path.join(ROOT_DIR, 'asset', name)
 
-def runCase(case = 'temp_test'):
+def runCase(data):
     global phone
     if phone.isConnected:
         # case = importlib.import_module('miniperf.asset.temp_test')
         # temp_test = importlib.util.find_loader('temp_test', os.path.join(ROOT_DIR, 'asset', 'temp_test.py'))
         try:
+            case = 'temp_test'
+            saveTempFile(data['fileInfo'])
             module = LoadModuleByPath(case, CasePath(case + ".py"))
             module.AutoRun(phone.device)
             return {"ok": True, "msg": '运行完成'}
-        except:
-            return {"ok": True, "msg": '运行失败'}
+        except Exception as e:
+            return {"ok": False, "msg": f'运行失败:{e}'}
+
+# 是否为新用户
+def isNewUser():
+    return {"ok": True, "msg": config.getboolean('General','new_user')}
+
+# 完成新用户设置
+def finishNewUser():
+    config.set('General','new_user','False')
+    config.write(open(configPath,"r+",encoding='UTF-8'))
+    return {"ok": True, "msg": '设置完成'}
+
+# 安装Demo
+def installDemo():
+    global phone
+    msg = phone.installDemo()
+    return {"ok": True, "msg": msg}
+
+# 是否安装了指定包名的应用
+def isInstalled():
+    global phone
 
 def registered_webview(webview):
     global g_webview

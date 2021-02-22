@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function EditorCard (props) {
-    const {ShowMsg,isConnected} = props
+    const {ShowMsg,isConnected,tutorials,setTutorialsMode} = props
     const [scriptsData,setScriptsData] = React.useState('')
     const [isRecording,setIsRecording] = React.useState(false)
     const [isRunning,setIsRunning] = React.useState(false)
@@ -109,9 +109,16 @@ export default function EditorCard (props) {
             init()
         }
         else{
-            window.pywebview.api.updateScripts().then((res)=>{
-                setScriptsData(res['msg'])
-            })
+            if(tutorials){
+                window.pywebview.api.getDemoScripts().then((res)=>{
+                    setScriptsData(res['msg'])
+                })
+            }
+            else{
+                window.pywebview.api.updateScripts().then((res)=>{
+                    setScriptsData(res['msg'])
+                })
+            }
         }
     },[isConnected])
 
@@ -135,9 +142,14 @@ export default function EditorCard (props) {
     function runCase(){
         setIsRunning(true)
         ShowMsg('开始运行')
-        window.pywebview.api.runCase().then((res)=>{
-            ShowMsg(res['msg'])
+        window.pywebview.api.runCase({'fileInfo':scriptsData}).then((res)=>{
+            ShowMsg(res['msg'],res['ok']?'success':'error')
             setIsRunning(false)
+            setNeedSave(false)
+            if(tutorials){
+                setTutorialsMode(false)
+            }
+
         })
     }
     function saveAs() {
@@ -200,16 +212,16 @@ export default function EditorCard (props) {
                 accept={'.py'}
             />
             <CardHeader title={'Coding'} action={[
-                <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected}>
+                <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected || tutorials}>
                     <MissedVideoCall/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning || !isConnected}>
                     <SendOutlined/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected} className={needSave?classes.hightLight:''}>
+                <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected || tutorials} className={needSave?classes.hightLight:''}>
                     <Save/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'下载脚本'} onClick={saveAs} disabled={isRecording || isRunning}>
+                <IconButton aria-label="settings" title={'下载脚本'} onClick={saveAs} disabled={isRecording || isRunning || tutorials}>
                     <GetApp/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
@@ -222,7 +234,7 @@ export default function EditorCard (props) {
                     <PauseCircleFilled/>
                 </IconButton>,
                 <label htmlFor="contained-button-file">
-                    <IconButton component={"span"} aria-label="settings" title={'上传'} disabled={isRecording || !isConnected}>
+                    <IconButton component={"span"} aria-label="settings" title={'上传'} disabled={isRecording || !isConnected || tutorials}>
                         <Backup/>
                     </IconButton>
                     {/*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button}>test</Button>*/}
