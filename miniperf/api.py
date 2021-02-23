@@ -120,3 +120,7 @@ class Api:
     # 完成新用户设置
     def finishNewUser(self):
         return extension.finishNewUser()
+    
+    # fix: https://github.com/king3soft/UAutoIDE/issues/3#issue-814025994
+    def flush(self):
+        pass
