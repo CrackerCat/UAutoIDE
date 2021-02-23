@@ -83,13 +83,14 @@ export default function EditorCard (props) {
     const [needSave,setNeedSave] = React.useState(false)
     const [isPausing,setIsPausing] = React.useState(false)
     const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
+    const [caseName,setCaseName] = useState('')//当前案例名称
     const classes = useStyles()
 
     useInterval(()=>{
         //更新脚本信息
         if(isRecording)
         {
-            window.pywebview.api.updateScripts().then((res)=>{
+            window.pywebview.api.updateScripts({'caseName':caseName}).then((res)=>{
                 setScriptsData(res['msg'])
             })
         }
@@ -106,7 +107,7 @@ export default function EditorCard (props) {
                 })
             }
             else{
-                window.pywebview.api.updateScripts().then((res)=>{
+                window.pywebview.api.updateScripts({'caseName':caseName}).then((res)=>{
                     setScriptsData(res['msg'])
                 })
             }
@@ -118,6 +119,7 @@ export default function EditorCard (props) {
         // setScriptsData('')
         setIsRecording(false)
         setIsRunning(false)
+        setCaseName('')
     }
     //案例文件弹窗关闭事件
     let handleCloseCases = (event, reason) => {
@@ -129,7 +131,7 @@ export default function EditorCard (props) {
     function record(){
         setIsRecording(true)
         ShowMsg('开始录制，长按屏幕5秒结束录制')
-        window.pywebview.api.record().then((res)=>{
+        window.pywebview.api.record({'caseName': caseName}).then((res)=>{
             ShowMsg(res['msg'])
             setIsRecording(false)
             setNeedSave(false)
@@ -139,7 +141,7 @@ export default function EditorCard (props) {
     function runCase(){
         setIsRunning(true)
         ShowMsg('开始运行')
-        window.pywebview.api.runCase({'fileInfo':scriptsData}).then((res)=>{
+        window.pywebview.api.runCase({'fileInfo':scriptsData,'caseName':caseName}).then((res)=>{
             ShowMsg(res['msg'],res['ok'])
             setIsRunning(false)
             setNeedSave(false)
@@ -191,9 +193,9 @@ export default function EditorCard (props) {
         setNeedSave(true)
     }
     let upload = function (v){
-
-        window.pywebview.api.loadCase({'caseName':v + '.py'}).then((res)=>{
-            ShowMsg('加载',res['ok'])
+        window.pywebview.api.loadCase({'caseName':v}).then((res)=>{
+            setCaseName(v)
+            ShowMsg(v,res['ok'])
             setIsPausing(false)
             setScriptsData(res['msg'])
             handleCloseCases('','')

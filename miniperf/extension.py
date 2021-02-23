@@ -2,6 +2,7 @@ import importlib
 import json
 import logging
 import os
+import time
 import traceback
 import sys
 import configparser
@@ -19,8 +20,8 @@ g_webview = None
 phone = Device(ROOT_DIR)
 
 workSpacePath = config.get('Setting', 'cases_path')
-
-
+sys.path.append(os.path.join(workSpacePath))
+sys.path.append(r'D:\RunCaseTest\Abyss')
 class Header(object):
     def __init__(self, _comment, _filed, _type, _subtype):
         print("__HEADER__", _comment, _filed, _type, _subtype)
@@ -48,7 +49,7 @@ def loadCasesList():
 # 加载指定名称脚本
 def loadCase(data):
     try:
-        path = os.path.join(workSpacePath, 'pages', data['caseName'])
+        path = os.path.join(workSpacePath, 'pages', data['caseName'] + '.py')
         with open(path, 'r', encoding='UTF-8') as f:
             return {"ok": True, "msg": f.read()}
     except Exception as e:
@@ -62,11 +63,14 @@ def setWorkSpace():
 
 
 def initWorkSpace():
-    path = os.path.join(workSpacePath, 'pages')
+    # path = os.path.join(workSpacePath, 'pages')
+    path = r'\\10.11.86.64\share\nginx\jx1\pages'
+    print(os.path.abspath(path))
+    sys.path.append(path)
     list = scan_files(path, postfix='.py')
     for script in list:
-        print(script.split('\\')[-1].split('.')[0])
-        # LoadModuleByPath(script.split('.')[0], path)
+        # print()
+        LoadModuleByPath(script.split('\\')[-1].split('.')[0],script)
 
 
 def createWorkSpace(path: str, name: str):
@@ -130,6 +134,13 @@ def continuePlay():
         phone.continuePlay()
         return {"ok": True, "msg": '已继续运行'}
 
+def updateScripts(data):
+    case = data['caseName'] or 'temp_test'
+    if case == '':
+        case = 'temp_test'
+    data['caseName'] = case
+    return loadCase(data)
+
 
 def getTempFile():
     global phone
@@ -153,10 +164,13 @@ def disConnect():
         return {"ok": True, "msg": f"已断开"}
 
 
-def record():
+def record(data):
     global phone
     if phone.isConnected:
-        phone.record()
+        case = data['caseName'] or 'temp_test'
+        if case == '':
+            case = 'temp_test'
+        phone.record(CasePath(case + '.py'))
         return {"ok": True, "msg": '录制完成'}
 
 
@@ -179,13 +193,19 @@ def saveTempFile(s):
     phone.saveTempFile(s)
     return {"ok": True, "msg": "保存成功"}
 
+# 保存脚本
+def saveFile(s):
+    global workSpacePath
+    with open(os.path.join(workSpacePath,'pages'),'r+') as f:
+        f.write(s)
+    return {"ok": True, "msg": "保存成功"}
 
 # 打开Demo
 def openDemo():
     global phone
-    if not phone.isInstalled():
+    while not phone.isInstalled():
         phone.installDemo()
-        # time.sleep(2)
+        time.sleep(2)
     phone.openAPP()
     return {"ok": True, "msg": "已打开Demo"}
 
@@ -221,7 +241,8 @@ def LoadModuleByPath(name, path):
 
 
 def CasePath(name):
-    return os.path.join(ROOT_DIR, 'asset', name)
+    return os.path.join(workSpacePath, 'pages', name)
+    # return os.path.join(ROOT_DIR, 'asset', name)
 
 
 def runCase(data):
@@ -230,7 +251,9 @@ def runCase(data):
         # case = importlib.import_module('miniperf.asset.temp_test')
         # temp_test = importlib.util.find_loader('temp_test', os.path.join(ROOT_DIR, 'asset', 'temp_test.py'))
         try:
-            case = 'temp_test'
+            case = data['caseName'] or 'temp_test'
+            if case == '':
+                case = 'temp_test'
             saveTempFile(data['fileInfo'])
             module = LoadModuleByPath(case, CasePath(case + ".py"))
             module.AutoRun(phone.device)

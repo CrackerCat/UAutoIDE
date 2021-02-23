@@ -1,6 +1,7 @@
 from u3driver import AltrunUnityDriver
 from u3driver import By
 import time
+import uiautomator2 as u2
 import random
 import re
 import datetime

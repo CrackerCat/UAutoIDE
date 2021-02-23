@@ -14,7 +14,7 @@ class Api:
         self.stderrbak = sys.stderr
         sys.stdout = self
         sys.stder = self
-        extension.initWorkSpace()
+        # extension.initWorkSpace()
         # self.p = subprocess.Popen('python miniperf/Test.py',stdin=subprocess.PIPE)
 
     def connect(self, data):
@@ -58,8 +58,8 @@ class Api:
         return os.listdir('.')
 
 
-    def record(self):
-        return extension.record()
+    def record(self,data):
+        return extension.record(data)
 
     def test(self):
         return extension.createWorkSpace(r'D:\RunCaseTest','jsxxxx')
@@ -76,8 +76,8 @@ class Api:
     def saveTempFile(self,data):
         return extension.saveTempFile(data['fileInfo'])
 
-    def updateScripts(self):
-        return extension.getTempFile()
+    def updateScripts(self,data):
+        return extension.updateScripts(data)
 
     def showItem(self):
         return extension.showItem()
@@ -129,3 +129,7 @@ class Api:
     # 加载本地脚本列表
     def loadCasesList(self):
         return extension.loadCasesList()
+
+    # fix: https://github.com/king3soft/UAutoIDE/issues/3#issue-814025994
+    def flush(self):
+        pass

@@ -89,8 +89,8 @@ class Device:
     #     # linux
     #     return subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
 
-    def record(self):
-        self.device.debug_mode(self.tempFilePath)
+    def record(self,path):
+        self.device.debug_mode(path)
 
     # 安装Demo
     def installDemo(self):
