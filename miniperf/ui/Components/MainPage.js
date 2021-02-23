@@ -18,6 +18,7 @@ import HierarchyContent from "./HierarchyContent";
 import {useInterval} from "../Util/Util"
 import * as PropTypes from "prop-types";
 import TutorialsBoard from "./TutorialsBoard";
+import CaseList from "./CasesList";
 
 const theme = createMuiTheme({
     palette: {
@@ -102,6 +103,8 @@ export default function MainPage(){
     const [tutorialsWindowOpen,setTutorialsWindowOpen] = useState(false)//教学模式弹窗
     const [tutorialsMode,setTutorialsMode] = useState(false)//教学模式
     const [isFirst,setIsFirst] = useState(false)//新用户
+
+
     let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
@@ -125,9 +128,9 @@ export default function MainPage(){
         setOkOpen(false);
     };
     //底部消息弹窗
-    let showMsg = (msg,type = 'success')=>{
+    let showMsg = (msg,type = true)=>{
         setMessage(msg)
-        setLogType(type)
+        setLogType(type?'success':'error')
         setOkOpen(true)
     }
     //连接设备
@@ -139,7 +142,7 @@ export default function MainPage(){
         }
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
             // setIsConnected(res['ok'])
-            showMsg(res['msg'],res['ok']?'success':'error')
+            showMsg(res['msg'],res['ok'])
             setLoading(false)
         })
     }
@@ -148,7 +151,7 @@ export default function MainPage(){
         setLoading(true)
         window.pywebview.api.disConnect().then((res)=>{
             // setIsConnected(false)
-            showMsg(res['msg'],'error')
+            showMsg(res['msg'],false)
             setLoading(false)
         })
     }
@@ -158,6 +161,8 @@ export default function MainPage(){
         window.pywebview.api.test().then((res)=>{
             console.log(res['msg'])
         })
+        // setCasesWindowOpen(true)
+
     }
     //检测连接状态
     const checkConnection = function (){
@@ -306,6 +311,7 @@ export default function MainPage(){
                         phoneList={phoneList}
                         showMsg={showMsg}
                     />
+
                     <div id={'content'}>
                         <div className={'left'} style={setWidth(1)}>
                             {/*<ActionCard/>*/}

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     Button,
     Card,
@@ -7,7 +7,7 @@ import {
     CircularProgress,
     IconButton,
     makeStyles,
-    TextareaAutosize, Toolbar
+    TextareaAutosize, TextField, Toolbar
 } from "@material-ui/core";
 import {
     Adb,
@@ -25,6 +25,7 @@ import 'brace/mode/python'
 import 'brace/theme/pastel_on_dark'
 
 import {useInterval,useUpdate} from "../Util/Util"
+import CaseList from "./CasesList";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -81,6 +82,7 @@ export default function EditorCard (props) {
     const [isRunning,setIsRunning] = React.useState(false)
     const [needSave,setNeedSave] = React.useState(false)
     const [isPausing,setIsPausing] = React.useState(false)
+    const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
     const classes = useStyles()
 
     useInterval(()=>{
@@ -92,17 +94,6 @@ export default function EditorCard (props) {
             })
         }
     },1000)
-    // useUpdate(()=>{
-    //     if(!isConnected){
-    //         init()
-    //     }
-    //     else{
-    //         window.pywebview.api.updateScripts().then((res)=>{
-    //             setScriptsData(res['msg'])
-    //
-    //         })
-    //     }
-    // },isConnected)
 
     useEffect(()=>{
         if(!isConnected){
@@ -128,7 +119,13 @@ export default function EditorCard (props) {
         setIsRecording(false)
         setIsRunning(false)
     }
-
+    //案例文件弹窗关闭事件
+    let handleCloseCases = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setCasesWindowOpen(false);
+    };
     function record(){
         setIsRecording(true)
         ShowMsg('开始录制，长按屏幕5秒结束录制')
@@ -143,7 +140,7 @@ export default function EditorCard (props) {
         setIsRunning(true)
         ShowMsg('开始运行')
         window.pywebview.api.runCase({'fileInfo':scriptsData}).then((res)=>{
-            ShowMsg(res['msg'],res['ok']?'success':'error')
+            ShowMsg(res['msg'],res['ok'])
             setIsRunning(false)
             setNeedSave(false)
             if(tutorials){
@@ -193,24 +190,25 @@ export default function EditorCard (props) {
         setScriptsData(e)
         setNeedSave(true)
     }
-    const upload = function (e){
-        const reader = new FileReader();
-        reader.readAsText(e.target.files[0])
-        reader.onload = function (e){
-            setScriptsData(e.target.result)
-            setNeedSave(true)
-        }
+    let upload = function (v){
+
+        window.pywebview.api.loadCase({'caseName':v + '.py'}).then((res)=>{
+            ShowMsg('加载',res['ok'])
+            setIsPausing(false)
+            setScriptsData(res['msg'])
+            handleCloseCases('','')
+        })
     }
     return (
         <Card variant={'outlined'} className={classes.root}>
-            <input
-                id="contained-button-file"
-                className={classes.upload}
-                multiple
-                type="file"
-                onChange={upload}
-                accept={'.py'}
-            />
+            {/*<input*/}
+            {/*    id="contained-button-file"*/}
+            {/*    className={classes.upload}*/}
+            {/*    multiple*/}
+            {/*    type="file"*/}
+            {/*    onChange={upload}*/}
+            {/*    accept={'.py'}*/}
+            {/*/>*/}
             <CardHeader title={'Coding'} action={[
                 <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected || tutorials}>
                     <MissedVideoCall/>
@@ -218,9 +216,9 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning || !isConnected}>
                     <SendOutlined/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected || tutorials} className={needSave?classes.hightLight:''}>
-                    <Save/>
-                </IconButton>,
+                // <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected || tutorials} className={needSave?classes.hightLight:''}>
+                //     <Save/>
+                // </IconButton>,
                 <IconButton aria-label="settings" title={'下载脚本'} onClick={saveAs} disabled={isRecording || isRunning || tutorials}>
                     <GetApp/>
                 </IconButton>,
@@ -233,12 +231,10 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'暂停'} onClick={pause} disabled={isRecording || !isConnected || !isRunning || isPausing}>
                     <PauseCircleFilled/>
                 </IconButton>,
-                <label htmlFor="contained-button-file">
-                    <IconButton component={"span"} aria-label="settings" title={'上传'} disabled={isRecording || !isConnected || tutorials}>
-                        <Backup/>
-                    </IconButton>
-                    {/*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button}>test</Button>*/}
-                </label>
+                <IconButton aria-label="settings" title={'上传'} onClick={()=>{setCasesWindowOpen(true)}} >
+                    <Backup/>
+                </IconButton>
+                //disabled={isRecording || !isConnected || tutorials}
                 // <IconButton aria-label="settings" title={'重置'} disabled={isRecording || !isConnected || true}>
                 //     <RotateLeft/>
                 // </IconButton>
@@ -259,6 +255,11 @@ export default function EditorCard (props) {
                 </div>
                 }
             </CardContent>
+            <CaseList
+                open={casesWindowOpen}
+                onClose={handleCloseCases}
+                load={upload}
+            />
         </Card>
 
     )

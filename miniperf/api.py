@@ -14,6 +14,7 @@ class Api:
         self.stderrbak = sys.stderr
         sys.stdout = self
         sys.stder = self
+        extension.initWorkSpace()
         # self.p = subprocess.Popen('python miniperf/Test.py',stdin=subprocess.PIPE)
 
     def connect(self, data):
@@ -61,7 +62,7 @@ class Api:
         return extension.record()
 
     def test(self):
-        return extension.isNewUser()
+        return extension.createWorkSpace(r'D:\RunCaseTest','jsxxxx')
 
     # 暂停案例运行
     def pause(self):
@@ -120,3 +121,11 @@ class Api:
     # 完成新用户设置
     def finishNewUser(self):
         return extension.finishNewUser()
+
+    # 加载指定名称的脚本
+    def loadCase(self,data):
+        return extension.loadCase(data)
+
+    # 加载本地脚本列表
+    def loadCasesList(self):
+        return extension.loadCasesList()

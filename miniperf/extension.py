@@ -7,17 +7,18 @@ import sys
 import configparser
 from miniperf.adb import Device
 
-
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 python_path = os.path.join(os.path.split(sys.executable)[0], "python.exe")
 
-configPath = os.path.join(ROOT_DIR,os.path.pardir,'configs.ini')
+configPath = os.path.join(ROOT_DIR, os.path.pardir, 'configs.ini')
 config = configparser.ConfigParser()
 config.read(configPath, encoding='UTF-8')
 
 g_webview = None
 phone = Device(ROOT_DIR)
+
+workSpacePath = config.get('Setting', 'cases_path')
 
 
 class Header(object):
@@ -32,7 +33,70 @@ class Header(object):
 
 
 def test():
-    return phone.openAPP()
+    module = sys.modules['phase_Login']
+    module.AutoRun(phone.device)
+    return {"ok": True, "msg": '运行完成'}
+
+
+# 加载本地脚本列表
+def loadCasesList():
+    with open(os.path.join(workSpacePath, 'setting.json'), 'r', encoding='UTF-8') as f:
+        s = json.loads(f.read())
+    return {"ok": True, "msg": s}
+
+
+# 加载指定名称脚本
+def loadCase(data):
+    try:
+        path = os.path.join(workSpacePath, 'pages', data['caseName'])
+        with open(path, 'r', encoding='UTF-8') as f:
+            return {"ok": True, "msg": f.read()}
+    except Exception as e:
+        return {"ok": False, "msg": e}
+
+
+# 加载工作区
+def setWorkSpace():
+    global workSpacePath
+    workSpacePath = config.get('Setting', 'cases_path')
+
+
+def initWorkSpace():
+    path = os.path.join(workSpacePath, 'pages')
+    list = scan_files(path, postfix='.py')
+    for script in list:
+        print(script.split('\\')[-1].split('.')[0])
+        # LoadModuleByPath(script.split('.')[0], path)
+
+
+def createWorkSpace(path: str, name: str):
+    global workSpacePath
+    workSpacePath = os.path.join(path, name)
+    if not os.path.exists(workSpacePath):
+        os.mkdir(workSpacePath)
+        os.mkdir(os.path.join(workSpacePath, 'pages'))
+        f = open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w')
+        f.close()
+    return {"ok": True, "msg": 'ok'}
+
+
+# 扫描指定文件夹下特定后缀的文件
+def scan_files(directory, prefix=None, postfix=None):
+    files_list = []
+
+    for root, sub_dirs, files in os.walk(directory):
+        for special_file in files:
+            if postfix:
+                if special_file.endswith(postfix):
+                    files_list.append(os.path.join(root, special_file))
+            elif prefix:
+                if special_file.startswith(prefix):
+                    files_list.append(os.path.join(root, special_file))
+            else:
+                files_list.append(os.path.join(root, special_file))
+
+    return files_list
+
 
 def showItem():
     global phone
@@ -43,12 +107,15 @@ def showItem():
         return {"ok": True, "msg": data}
         # return data
 
+
 # 获取对应ID的GameObject详情
 def get_inspector(data):
     global phone
     if phone.isConnected:
         d = phone.get_inspector(data['ID'])
         return {"ok": True, "msg": d}
+
+
 # 暂停运行案例
 def pause():
     global phone
@@ -56,11 +123,13 @@ def pause():
         phone.pause()
         return {"ok": True, "msg": '已停止'}
 
+
 def continuePlay():
     global phone
     if phone.isConnected:
         phone.continuePlay()
         return {"ok": True, "msg": '已继续运行'}
+
 
 def getTempFile():
     global phone
@@ -71,10 +140,11 @@ def getTempFile():
 def connect(data):
     global phone
     try:
-        res = phone.connect(data['sn'],data['ip'])
+        res = phone.connect(data['sn'], data['ip'])
         return {"ok": True, "msg": f"连接成功：{res}"}
     except Exception as e:
         return {"ok": False, "msg": f"连接失败：{e}"}
+
 
 def disConnect():
     global phone
@@ -82,11 +152,13 @@ def disConnect():
         phone.disConnect()
         return {"ok": True, "msg": f"已断开"}
 
+
 def record():
     global phone
     if phone.isConnected:
         phone.record()
         return {"ok": True, "msg": '录制完成'}
+
 
 def getCurDevice():
     res = GetDevices()
@@ -95,15 +167,18 @@ def getCurDevice():
     #     first_key = list(res.keys())[0]
     return {"ok": True, "msg": res}
 
+
 # 当前连接状态
 def checkConnection():
     return {"ok": True, "msg": phone.checkConnection()}
+
 
 # 保存temp脚本
 def saveTempFile(s):
     global phone
     phone.saveTempFile(s)
     return {"ok": True, "msg": "保存成功"}
+
 
 # 打开Demo
 def openDemo():
@@ -114,19 +189,21 @@ def openDemo():
     phone.openAPP()
     return {"ok": True, "msg": "已打开Demo"}
 
+
 def getDemoScripts():
     with open(os.path.join(ROOT_DIR, 'asset', 'demo.py'), 'r') as f:
         res = f.read()
         return {"ok": True, "msg": res}
 
+
 def GetDevices():
     devices = os.popen("adb devices").read()
     devices = devices.split('\n')
     devicesList = []
-    for i in range(1,len(devices)):
+    for i in range(1, len(devices)):
         if devices[i] != '':
             devices_dir = {}
-            device_number = devices[i].replace('device',"").split('\t')[0]
+            device_number = devices[i].replace('device', "").split('\t')[0]
             device_name = os.popen('adb -s ' + device_number + ' shell getprop ro.product.model ').read()
             device_name = device_name.replace("\n", "")
             devices_dir['name'] = device_name
@@ -134,15 +211,18 @@ def GetDevices():
             devicesList.append(devices_dir)
     return devicesList
 
-def LoadModuleByPath(name,path):
-    spec = importlib.util.spec_from_file_location(name,path)
+
+def LoadModuleByPath(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module
     spec.loader.exec_module(module)
     return module
 
+
 def CasePath(name):
     return os.path.join(ROOT_DIR, 'asset', name)
+
 
 def runCase(data):
     global phone
@@ -158,15 +238,18 @@ def runCase(data):
         except Exception as e:
             return {"ok": False, "msg": f'运行失败:{e}'}
 
+
 # 是否为新用户
 def isNewUser():
-    return {"ok": True, "msg": config.getboolean('General','new_user')}
+    return {"ok": True, "msg": config.getboolean('General', 'new_user')}
+
 
 # 完成新用户设置
 def finishNewUser():
-    config.set('General','new_user','False')
-    config.write(open(configPath,"r+",encoding='UTF-8'))
+    config.set('General', 'new_user', 'False')
+    config.write(open(configPath, "r+", encoding='UTF-8'))
     return {"ok": True, "msg": '设置完成'}
+
 
 # 安装Demo
 def installDemo():
@@ -174,13 +257,16 @@ def installDemo():
     msg = phone.installDemo()
     return {"ok": True, "msg": msg}
 
+
 # 是否安装了指定包名的应用
 def isInstalled():
     global phone
 
+
 def registered_webview(webview):
     global g_webview
     g_webview = webview
+
 
 def mkdir_if_not_exists(path, *paths):
     dirname = os.path.join(path, *paths)
@@ -237,6 +323,7 @@ def get_cstemplate_file():
 def get_tpsvn():
     return os.path.join(ROOT_DIR, "asset", "tpsvn", "svn.exe")
 
+
 def rpc_open_folder(dir):
     if '.cs' in dir:
         dir = os.path.dirname(dir)
@@ -261,6 +348,7 @@ def rpc_get_default_setting(app):
 def return_log():
     pass
 
+
 def readOut(process):
     logging.info("readOut")
     for readOut_line in process.stdout:
@@ -269,6 +357,7 @@ def readOut(process):
         readOut_line = readOut_line.decode("utf-8")
         logging.info("readOut: %s", readOut_line)
         post_message_to_js(readOut_line, "out")
+
 
 def readErr(process):
     logging.info("readErr")
