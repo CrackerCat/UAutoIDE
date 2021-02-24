@@ -130,6 +130,10 @@ class Api:
     def loadCasesList(self):
         return extension.loadCasesList()
 
+    # 创建新脚本
+    def createCase(self,data):
+        return extension.createFile(data)
+
     # fix: https://github.com/king3soft/UAutoIDE/issues/3#issue-814025994
     def flush(self):
         pass

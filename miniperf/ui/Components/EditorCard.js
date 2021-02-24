@@ -4,13 +4,13 @@ import {
     Card,
     CardContent,
     CardHeader,
-    CircularProgress,
-    IconButton,
+    CircularProgress, Dialog, DialogContent, DialogTitle,
+    IconButton, Input, InputAdornment,
     makeStyles,
     TextareaAutosize, TextField, Toolbar
 } from "@material-ui/core";
 import {
-    Adb,
+    Adb, AddCircle,
     Backup,
     GetApp,
     MissedVideoCall,
@@ -84,6 +84,11 @@ export default function EditorCard (props) {
     const [isPausing,setIsPausing] = React.useState(false)
     const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
     const [caseName,setCaseName] = useState('')//当前案例名称
+    const [createWindowOpen,setCreateWindowOpen] = useState(false)
+
+    const [createCaseName,setCreateCaseName] = useState('')
+    const [createCaseFileName,setCreateCaseFileName] = useState('')
+
     const classes = useStyles()
 
     useInterval(()=>{
@@ -128,6 +133,34 @@ export default function EditorCard (props) {
         }
         setCasesWindowOpen(false);
     };
+    //创建案例文件弹窗关闭事件
+    let handleCloseCreate = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setCreateWindowOpen(false);
+    };
+
+    let createFile = (v) => {
+        if(createCaseFileName === '' || createCaseName === '')
+            return
+        window.pywebview.api.createCase({'name':createCaseFileName,'caseName':createCaseName}).then((res)=>{
+            if(res['ok']){
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                handleCloseCreate('','')
+                setCaseName(res['msg'])
+                setScriptsData('')
+            }else{
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                handleCloseCreate('','')
+                ShowMsg(res['msg'],res['ok'])
+            }
+        })
+    }
+
+
     function record(){
         setIsRecording(true)
         ShowMsg('开始录制，长按屏幕5秒结束录制')
@@ -235,12 +268,37 @@ export default function EditorCard (props) {
                 </IconButton>,
                 <IconButton aria-label="settings" title={'上传'} onClick={()=>{setCasesWindowOpen(true)}} >
                     <Backup/>
+                </IconButton>,
+                <IconButton aria-label="settings" title={'新建'} onClick={()=>{setCreateWindowOpen(true)}}>
+                    <AddCircle/>
                 </IconButton>
                 //disabled={isRecording || !isConnected || tutorials}
                 // <IconButton aria-label="settings" title={'重置'} disabled={isRecording || !isConnected || true}>
                 //     <RotateLeft/>
                 // </IconButton>
             ]}/>
+            <Dialog open={createWindowOpen}>
+                <DialogTitle>新建案例</DialogTitle>
+                <DialogContent>
+                        <TextField id="outlined-basic" label="案例名称" variant="outlined" value={createCaseName}
+                                   onChange={(e)=>{setCreateCaseName(e.target.value)}}
+                        />
+                        <TextField id="outlined-basic" label="案例文件名" variant="outlined" value={createCaseFileName}
+                                   onChange={(e)=>{setCreateCaseFileName(e.target.value)}}
+                        />
+                        <br/>
+                        <Button variant="contained" color="primary"
+                                onClick={(e)=>{
+                                    createFile(e)
+                            }}
+                        >
+                            创建
+                        </Button>
+                        <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseCreate('','')}}>
+                            取消
+                        </Button>
+                </DialogContent>
+            </Dialog>
             <CardContent className={classes.content}>
                 <AceEditor
                     mode="python"

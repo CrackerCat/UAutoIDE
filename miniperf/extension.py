@@ -22,6 +22,8 @@ phone = Device(ROOT_DIR)
 workSpacePath = config.get('Setting', 'cases_path')
 sys.path.append(os.path.join(workSpacePath))
 sys.path.append(r'D:\RunCaseTest\Abyss')
+
+
 class Header(object):
     def __init__(self, _comment, _filed, _type, _subtype):
         print("__HEADER__", _comment, _filed, _type, _subtype)
@@ -70,9 +72,10 @@ def initWorkSpace():
     list = scan_files(path, postfix='.py')
     for script in list:
         # print()
-        LoadModuleByPath(script.split('\\')[-1].split('.')[0],script)
+        LoadModuleByPath(script.split('\\')[-1].split('.')[0], script)
 
 
+# 新建工作区
 def createWorkSpace(path: str, name: str):
     global workSpacePath
     workSpacePath = os.path.join(path, name)
@@ -82,6 +85,33 @@ def createWorkSpace(path: str, name: str):
         f = open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w')
         f.close()
     return {"ok": True, "msg": 'ok'}
+
+
+# 新建脚本
+def createFile(data):
+    global workSpacePath
+    try:
+        path = os.path.join(workSpacePath, 'pages', data['name'] + '.py')
+        file = open(path, 'w')
+        file.close()
+
+        casesList = []
+        with open(os.path.join(workSpacePath, 'setting.json'), 'r', encoding='utf-8') as f:
+            setting = json.load(f)
+            for case in setting:
+                casesList.append(case)
+        newData = {
+            "test_name": data['name'],
+            "tag": data['caseName'],
+            "run_case": data['name'],
+        }
+        casesList.append(newData)
+        with open(os.path.join(workSpacePath, 'setting.json'), 'w', encoding='utf-8') as f:
+            json.dump(casesList, f, ensure_ascii=False)
+
+        return {"ok": True, "msg": data['name']}
+    except Exception as e:
+        return {"ok": False, "msg": e}
 
 
 # 扫描指定文件夹下特定后缀的文件
@@ -133,6 +163,7 @@ def continuePlay():
     if phone.isConnected:
         phone.continuePlay()
         return {"ok": True, "msg": '已继续运行'}
+
 
 def updateScripts(data):
     case = data['caseName'] or 'temp_test'
@@ -193,12 +224,14 @@ def saveTempFile(s):
     phone.saveTempFile(s)
     return {"ok": True, "msg": "保存成功"}
 
+
 # 保存脚本
 def saveFile(s):
     global workSpacePath
-    with open(os.path.join(workSpacePath,'pages'),'r+') as f:
+    with open(os.path.join(workSpacePath, 'pages'), 'r+') as f:
         f.write(s)
     return {"ok": True, "msg": "保存成功"}
+
 
 # 打开Demo
 def openDemo():
