@@ -107,7 +107,7 @@ export default function MainPage(){
     const [tutorialsWindowOpen,setTutorialsWindowOpen] = useState(false)//教学模式弹窗
     const [tutorialsMode,setTutorialsMode] = useState(false)//教学模式
     const [isFirst,setIsFirst] = useState(false)//新用户
-    const [enableAdvancedMode,setEnableAdvancedMode] = useState(false)//开启高级模式
+    let [enableAdvancedMode,setEnableAdvancedMode] = useState(false)//开启高级模式
     const [advancedModeDisable,setAdvancedModeDisable] = useState(true)//高级模式是否可更改
     const [enableHierarchy,setEnableHierarchy] = useState(true)//Hierarchy是否能用
     let changeSNValue = (e) =>{
@@ -149,6 +149,7 @@ export default function MainPage(){
             // setIsConnected(res['ok'])
             if(res['ok']){
                 showMsg('连接成功：' + res['msg']['ip'],res['ok'])
+                setIP(res['msg']['ip'])
                 let version = res['msg']['version']
                 let tmp = version.split('.')[0]
                 setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
@@ -167,6 +168,9 @@ export default function MainPage(){
             // setIsConnected(false)
             showMsg(res['msg'],false)
             setLoading(false)
+            setSN('')
+            setPhone('')
+            setIP('')
         })
     }
     const test = function (e){
@@ -225,8 +229,8 @@ export default function MainPage(){
             setLeftP(24.5)
             setRightP(24.5)
         }else{
-            setLeftP(50)
-            setRightP(50)
+            setLeftP(70)
+            setRightP(30)
         }
     },[enableAdvancedMode])
 
@@ -372,7 +376,7 @@ export default function MainPage(){
                         showMsg={showMsg}
                     />
 
-                    <div className={'content'}>
+                    <div id={'content'}>
                         {enableAdvancedMode && (
                             <div className={'left'} style={setWidth(1)}>
                                 <HierarchyContent isConnected={isConnected} getCurID={getCurID} enable={enableHierarchy}/>

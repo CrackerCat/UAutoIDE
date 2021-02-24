@@ -251,23 +251,23 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning || !isConnected}>
                     <SendOutlined/>
                 </IconButton>,
+                <IconButton aria-label="settings" title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
+                    <Backup/>
+                </IconButton>,
                 // <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected || tutorials} className={needSave?classes.hightLight:''}>
                 //     <Save/>
                 // </IconButton>,
-                <IconButton aria-label="settings" title={'导出脚本'} onClick={saveAs} disabled={isRecording || isRunning || tutorials}>
-                    <GetApp/>
-                </IconButton>,
-                <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
-                    <Adb/>
-                </IconButton>,
+                // <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
+                //     <Adb/>
+                // </IconButton>,
                 <IconButton aria-label="settings" title={'继续'} onClick={continuePlay} disabled={isRecording || !isConnected || !isRunning || !isPausing}>
                     <PlayCircleFilled/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'暂停'} onClick={pause} disabled={isRecording || !isConnected || !isRunning || isPausing}>
                     <PauseCircleFilled/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
-                    <Backup/>
+                <IconButton aria-label="settings" title={'导出脚本'} onClick={saveAs} disabled={isRecording || isRunning || tutorials}>
+                    <GetApp/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
                     <AddCircle/>

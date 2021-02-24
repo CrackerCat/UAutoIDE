@@ -1,4 +1,4 @@
-import React, {useImperativeHandle, useRef, useState} from "react";
+import React, {useEffect, useImperativeHandle, useRef, useState} from "react";
 import {
     Card,
     CardContent,
@@ -37,45 +37,13 @@ const useStyles = makeStyles((theme) => ({
         width : '100%',
         height: '100%',
         padding:0,
-        'background-color':'#424242',
+        'background-color':'#2C2828',
         border:0,
         color:'white',
         resize: 'none'
     }
 }));
 
-// function HierarchyContent(){
-//     const renderTree = (nodes) => (
-//         <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
-//             {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
-//         </TreeItem>
-//     );
-//     const [hierarchyData,setHierarchyData] = React.useState({})
-//     const [hasData,setHasData] = React.useState(false)
-//     function getData(){
-//         window.pywebview.api.showItem().then((res)=>{
-//             // console.log('res',res)
-//             setHierarchyData(res['msg']['objs'])
-//         })
-//     }
-//     useEffect(()=>{
-//         setTimeout(()=>{
-//             getData()
-//         },1000)
-//     },[])
-//
-//         return(
-//             <TreeView
-//                 defaultCollapseIcon={<ExpandMore />}
-//                 defaultExpandIcon={<ChevronRight />}
-//                 defaultExpanded={['root']}
-//             >
-//                 {renderTree(hierarchyData)}
-//             </TreeView>
-//         )
-//
-//
-// }
 
 const ConsoleContent = React.forwardRef((props,ref)=>{
     const classes = useStyles()
@@ -101,9 +69,13 @@ const ConsoleContent = React.forwardRef((props,ref)=>{
         getNewLog()
     },500)
 
-    useUpdate(()=>{
+    // useUpdate(()=>{
+    //     setHeight()
+    // },consoleData)
+
+    useEffect(()=>{
         setHeight()
-    },consoleData)
+    },[consoleData])
 
     const setHeight = () =>{
         const textarea = document.getElementById('consoleArea');
@@ -128,7 +100,7 @@ export default function ConsoleCard (props) {
     return (
         <Card variant={'outlined'} className={classes.root}>
             <CardHeader
-                title={'Console'}
+                title={'控制台输出'}
                 action={[
                     <IconButton aria-label="settings" title={'清空'} onClick={()=>{clearInfo.current.clear()}}>
                         <DeleteForever/>
