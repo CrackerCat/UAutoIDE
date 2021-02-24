@@ -9,6 +9,13 @@
     width: 100%;
     height: 100%;
 }
+.content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex: 1;
+    background-color:#424242
+}
 .container {
     width: 100%;
     height: 100%;
@@ -28,12 +35,21 @@
     height: 100%;
 }
 .scroller{
-    width: 0.3%;
+    width: 5px;
     height: 100%;
+    background: #8B8989;
+}
+.hScroller{
+    height: 5px;
+    width: 100%;
     background: #8B8989;
 }
 .scroller:hover{
     cursor: col-resize;
+    background: #757575;
+}
+.hScroller:hover{
+    cursor: row-resize;
     background: #757575;
 }
 .middle {
@@ -43,6 +59,9 @@
     flex: 1;
     padding-right: 2px;
     height: 100%;
+}
+.middle > .mBlock{
+    height: 49.5%;
 }
 .right {
     /*width: 24.5%;*/

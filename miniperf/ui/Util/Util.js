@@ -20,7 +20,7 @@ export function useInterval(callback, delay) {
     }, [delay]);
 }
 
-export const useUpdate = (fn, dep)=>{
+export let useUpdate = (fn, dep)=>{
     const [count,setCount] = React.useState(0)
     useEffect(()=>{
         setCount(x => x + 1);

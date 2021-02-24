@@ -183,7 +183,7 @@ def connect(data):
     global phone
     try:
         res = phone.connect(data['sn'], data['ip'])
-        return {"ok": True, "msg": f"连接成功：{res}"}
+        return {"ok": True, "msg": res}
     except Exception as e:
         return {"ok": False, "msg": f"连接失败：{e}"}
 

@@ -163,6 +163,8 @@ export default function PropTable(props) {
             window.pywebview.api.get_inspector({'ID':curID}).then((res)=>{
                 setComponents(res['msg']['components'])
             })
+        }else{
+            setComponents([])
         }
     },[curID])
 

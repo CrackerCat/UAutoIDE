@@ -52,6 +52,7 @@ def on_closed():
 
 
 def on_closing():
+    extension.disConnect()
     print('pywebview window is closing')
 
 

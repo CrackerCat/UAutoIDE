@@ -30,11 +30,11 @@ import CaseList from "./CasesList";
 const useStyles = makeStyles((theme) => ({
     root: {
         width : '100%',
-        height: '60%',
+        height: '100%',
         // background:'lightgrey'
     },
     content:{
-        height: '70%',
+        height: '100%',
         position:'relative',
         flex:'1'
     },
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function EditorCard (props) {
-    const {ShowMsg,isConnected,tutorials,setTutorialsMode} = props
+    const {ShowMsg,isConnected,tutorials,setTutorialsMode,changeADV} = props
     const [scriptsData,setScriptsData] = React.useState('')
     const [isRecording,setIsRecording] = React.useState(false)
     const [isRunning,setIsRunning] = React.useState(false)
@@ -254,7 +254,7 @@ export default function EditorCard (props) {
                 // <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected || tutorials} className={needSave?classes.hightLight:''}>
                 //     <Save/>
                 // </IconButton>,
-                <IconButton aria-label="settings" title={'下载脚本'} onClick={saveAs} disabled={isRecording || isRunning || tutorials}>
+                <IconButton aria-label="settings" title={'导出脚本'} onClick={saveAs} disabled={isRecording || isRunning || tutorials}>
                     <GetApp/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
@@ -266,10 +266,10 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'暂停'} onClick={pause} disabled={isRecording || !isConnected || !isRunning || isPausing}>
                     <PauseCircleFilled/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'上传'} onClick={()=>{setCasesWindowOpen(true)}} >
+                <IconButton aria-label="settings" title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
                     <Backup/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'新建'} onClick={()=>{setCreateWindowOpen(true)}}>
+                <IconButton aria-label="settings" title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
                     <AddCircle/>
                 </IconButton>
                 //disabled={isRecording || !isConnected || tutorials}

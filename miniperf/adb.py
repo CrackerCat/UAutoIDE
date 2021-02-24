@@ -38,7 +38,7 @@ class Device:
             ip = self.getIP()
         self.device = AltrunUnityDriver(serial_num, '', ip)
         # self.isConnected = True
-        return ip
+        return {'ip':ip,'version':self.device.get_server_version()}
 
     def disConnect(self):
         self.device.stop()
