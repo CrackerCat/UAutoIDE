@@ -206,7 +206,7 @@ def record(data):
 
 
 def getCurDevice():
-    res = GetDevices()
+    res = phone.GetDevices()
     first_key = ''
     # if len(res) > 0:
     #     first_key = list(res.keys())[0]
@@ -236,6 +236,8 @@ def saveFile(s):
 # 打开Demo
 def openDemo():
     global phone
+    while len(phone.GetDevices()) != 1:
+        time.sleep(1)
     while not phone.isInstalled():
         phone.installDemo()
         time.sleep(2)
@@ -247,23 +249,6 @@ def getDemoScripts():
     with open(os.path.join(ROOT_DIR, 'asset', 'demo.py'), 'r') as f:
         res = f.read()
         return {"ok": True, "msg": res}
-
-
-def GetDevices():
-    devices = os.popen("adb devices").read()
-    devices = devices.split('\n')
-    devicesList = []
-    for i in range(1, len(devices)):
-        if devices[i] != '':
-            devices_dir = {}
-            device_number = devices[i].replace('device', "").split('\t')[0]
-            device_name = os.popen('adb -s ' + device_number + ' shell getprop ro.product.model ').read()
-            device_name = device_name.replace("\n", "")
-            devices_dir['name'] = device_name
-            devices_dir['sn'] = device_number
-            devicesList.append(devices_dir)
-    return devicesList
-
 
 def LoadModuleByPath(name, path):
     spec = importlib.util.spec_from_file_location(name, path)

@@ -133,3 +133,18 @@ class Device:
         except Exception as e:
             # self.logger.error('--screenshot-- failed!!!!! Exception=' + str(e), exc_info=True)
             return None
+
+    def GetDevices(self):
+        devices = os.popen(f"{self.adbPath} devices").read()
+        devices = devices.split('\n')
+        devicesList = []
+        for i in range(1, len(devices)):
+            if devices[i] != '':
+                devices_dir = {}
+                device_number = devices[i].replace('device', "").split('\t')[0]
+                device_name = os.popen(f'{self.adbPath} -s ' + device_number + ' shell getprop ro.product.model ').read()
+                device_name = device_name.replace("\n", "")
+                devices_dir['name'] = device_name
+                devices_dir['sn'] = device_number
+                devicesList.append(devices_dir)
+        return devicesList
