@@ -1,9 +1,9 @@
 pythonnet==2.5.1
 cefpython3==66.0
 pywebview==3.4
-uiautomator2
-humanize
-requests
+uiautomator2==2.12.3
+humanize==3.2.0
+requests==2.25.1
 -e git+https://github.com/king3soft/u3driver.git#egg=u3driver
 -e .
 
