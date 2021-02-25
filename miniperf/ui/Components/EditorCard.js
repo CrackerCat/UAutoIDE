@@ -1,19 +1,19 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     Button,
     Card,
     CardContent,
     CardHeader,
-    CircularProgress,
-    IconButton,
+    CircularProgress, Dialog, DialogContent, DialogTitle,
+    IconButton, Input, InputAdornment,
     makeStyles,
-    TextareaAutosize, Toolbar
+    TextareaAutosize, TextField, Toolbar
 } from "@material-ui/core";
 import {
-    Adb,
+    Adb, AddCircle,
     Backup,
     GetApp,
-    MissedVideoCall,
+    MissedVideoCall, OpenInBrowser,
     PauseCircleFilled, PlayCircleFilled,
     RotateLeft,
     Save,
@@ -25,17 +25,18 @@ import 'brace/mode/python'
 import 'brace/theme/pastel_on_dark'
 
 import {useInterval,useUpdate} from "../Util/Util"
+import CaseList from "./CasesList";
 
 const useStyles = makeStyles((theme) => ({
     root: {
         width : '100%',
-        height: '60%',
+        height: '100%',
         // background:'lightgrey'
     },
     content:{
-        height: '70%',
+        height: '90%',
         position:'relative',
-        flex:'1'
+        padding:0,
     },
     hightLight:{
         color:'red'
@@ -43,11 +44,8 @@ const useStyles = makeStyles((theme) => ({
     textArea:{
         height: '100% !important',
         width: '100% !important',
-        position:'absolute',
-        left:0,
-        right:0,
-        bottom:0,
-        top:0
+        position:'relative',
+        padding:0
     },
     recoverContent:{
         position: 'absolute',
@@ -75,43 +73,46 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function EditorCard (props) {
-    const {ShowMsg,isConnected} = props
+    const {ShowMsg,isConnected,tutorials,setTutorialsMode,changeADV} = props
     const [scriptsData,setScriptsData] = React.useState('')
     const [isRecording,setIsRecording] = React.useState(false)
     const [isRunning,setIsRunning] = React.useState(false)
     const [needSave,setNeedSave] = React.useState(false)
     const [isPausing,setIsPausing] = React.useState(false)
+    const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
+    const [caseName,setCaseName] = useState('')//当前案例名称
+    const [createWindowOpen,setCreateWindowOpen] = useState(false)
+
+    const [createCaseName,setCreateCaseName] = useState('')
+    const [createCaseFileName,setCreateCaseFileName] = useState('')
+
     const classes = useStyles()
 
     useInterval(()=>{
         //更新脚本信息
         if(isRecording)
         {
-            window.pywebview.api.updateScripts().then((res)=>{
+            window.pywebview.api.updateScripts({'caseName':caseName}).then((res)=>{
                 setScriptsData(res['msg'])
             })
         }
     },1000)
-    // useUpdate(()=>{
-    //     if(!isConnected){
-    //         init()
-    //     }
-    //     else{
-    //         window.pywebview.api.updateScripts().then((res)=>{
-    //             setScriptsData(res['msg'])
-    //
-    //         })
-    //     }
-    // },isConnected)
 
     useEffect(()=>{
         if(!isConnected){
             init()
         }
         else{
-            window.pywebview.api.updateScripts().then((res)=>{
-                setScriptsData(res['msg'])
-            })
+            if(tutorials){
+                window.pywebview.api.getDemoScripts().then((res)=>{
+                    setScriptsData(res['msg'])
+                })
+            }
+            else{
+                window.pywebview.api.updateScripts({'caseName':caseName}).then((res)=>{
+                    setScriptsData(res['msg'])
+                })
+            }
         }
     },[isConnected])
 
@@ -120,12 +121,47 @@ export default function EditorCard (props) {
         // setScriptsData('')
         setIsRecording(false)
         setIsRunning(false)
+        setCaseName('')
     }
+    //案例文件弹窗关闭事件
+    let handleCloseCases = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setCasesWindowOpen(false);
+    };
+    //创建案例文件弹窗关闭事件
+    let handleCloseCreate = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setCreateWindowOpen(false);
+    };
+
+    let createFile = (v) => {
+        if(createCaseFileName === '' || createCaseName === '')
+            return
+        window.pywebview.api.createCase({'name':createCaseFileName,'caseName':createCaseName}).then((res)=>{
+            if(res['ok']){
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                handleCloseCreate('','')
+                setCaseName(res['msg'])
+                setScriptsData('')
+            }else{
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                handleCloseCreate('','')
+                ShowMsg(res['msg'],res['ok'])
+            }
+        })
+    }
+
 
     function record(){
         setIsRecording(true)
         ShowMsg('开始录制，长按屏幕5秒结束录制')
-        window.pywebview.api.record().then((res)=>{
+        window.pywebview.api.record({'caseName': caseName}).then((res)=>{
             ShowMsg(res['msg'])
             setIsRecording(false)
             setNeedSave(false)
@@ -135,9 +171,14 @@ export default function EditorCard (props) {
     function runCase(){
         setIsRunning(true)
         ShowMsg('开始运行')
-        window.pywebview.api.runCase().then((res)=>{
-            ShowMsg(res['msg'])
+        window.pywebview.api.runCase({'fileInfo':scriptsData,'caseName':caseName}).then((res)=>{
+            ShowMsg(res['msg'],res['ok'])
             setIsRunning(false)
+            setNeedSave(false)
+            if(tutorials){
+                setTutorialsMode(false)
+            }
+
         })
     }
     function saveAs() {
@@ -176,44 +217,44 @@ export default function EditorCard (props) {
             setIsPausing(false)
         })
     }
+    //通过vs code打开
+    const openInVS = () =>{
+        window.pywebview.api.openInVS().then((res)=>{
+            ShowMsg(res['msg'],res['ok'])
+        })
+    }
 
     const changeHandle = (e) =>{
         setScriptsData(e)
         setNeedSave(true)
     }
-    const upload = function (e){
-        const reader = new FileReader();
-        reader.readAsText(e.target.files[0])
-        reader.onload = function (e){
-            setScriptsData(e.target.result)
-            setNeedSave(true)
-        }
+    let upload = function (v){
+        window.pywebview.api.loadCase({'caseName':v}).then((res)=>{
+            setCaseName(v)
+            ShowMsg(v,res['ok'])
+            setIsPausing(false)
+            setScriptsData(res['msg'])
+            handleCloseCases('','')
+        })
     }
     return (
         <Card variant={'outlined'} className={classes.root}>
-            <input
-                id="contained-button-file"
-                className={classes.upload}
-                multiple
-                type="file"
-                onChange={upload}
-                accept={'.py'}
-            />
             <CardHeader title={'Coding'} action={[
-                <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected}>
+                <span>当前文件：{caseName}</span>,
+                <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected || tutorials}>
                     <MissedVideoCall/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'运行'} onClick={runCase} disabled={isRecording || isRunning || !isConnected}>
                     <SendOutlined/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected} className={needSave?classes.hightLight:''}>
-                    <Save/>
+                <IconButton aria-label="settings" title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
+                    <Backup/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'下载脚本'} onClick={saveAs} disabled={isRecording || isRunning}>
-                    <GetApp/>
-                </IconButton>,
-                <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
-                    <Adb/>
+                // <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected || tutorials} className={needSave?classes.hightLight:''}>
+                //     <Save/>
+                // </IconButton>,
+                <IconButton aria-label="settings" title={'通过VS CODE打开工作区'} onClick={()=>{openInVS()}} disabled={isRecording || isRunning}>
+                    <OpenInBrowser/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'继续'} onClick={continuePlay} disabled={isRecording || !isConnected || !isRunning || !isPausing}>
                     <PlayCircleFilled/>
@@ -221,16 +262,39 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'暂停'} onClick={pause} disabled={isRecording || !isConnected || !isRunning || isPausing}>
                     <PauseCircleFilled/>
                 </IconButton>,
-                <label htmlFor="contained-button-file">
-                    <IconButton component={"span"} aria-label="settings" title={'上传'} disabled={isRecording || !isConnected}>
-                        <Backup/>
-                    </IconButton>
-                    {/*<Button variant="contained" color="primary" size="medium" disableElevation className={classes.Button}>test</Button>*/}
-                </label>
+                <IconButton aria-label="settings" title={'导出脚本'} onClick={saveAs} disabled={isRecording || isRunning || tutorials}>
+                    <GetApp/>
+                </IconButton>,
+                <IconButton aria-label="settings" title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
+                    <AddCircle/>
+                </IconButton>
+                //disabled={isRecording || !isConnected || tutorials}
                 // <IconButton aria-label="settings" title={'重置'} disabled={isRecording || !isConnected || true}>
                 //     <RotateLeft/>
                 // </IconButton>
             ]}/>
+            <Dialog open={createWindowOpen}>
+                <DialogTitle>新建案例</DialogTitle>
+                <DialogContent>
+                        <TextField id="outlined-basic" label="案例名称" variant="outlined" value={createCaseName}
+                                   onChange={(e)=>{setCreateCaseName(e.target.value)}}
+                        />
+                        <TextField id="outlined-basic" label="案例文件名" variant="outlined" value={createCaseFileName}
+                                   onChange={(e)=>{setCreateCaseFileName(e.target.value)}}
+                        />
+                        <br/>
+                        <Button variant="contained" color="primary"
+                                onClick={(e)=>{
+                                    createFile(e)
+                            }}
+                        >
+                            创建
+                        </Button>
+                        <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseCreate('','')}}>
+                            取消
+                        </Button>
+                </DialogContent>
+            </Dialog>
             <CardContent className={classes.content}>
                 <AceEditor
                     mode="python"
@@ -247,6 +311,11 @@ export default function EditorCard (props) {
                 </div>
                 }
             </CardContent>
+            <CaseList
+                open={casesWindowOpen}
+                onClose={handleCloseCases}
+                load={upload}
+            />
         </Card>
 
     )

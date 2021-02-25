@@ -52,6 +52,7 @@ def on_closed():
 
 
 def on_closing():
+    extension.disConnect()
     print('pywebview window is closing')
 
 
@@ -86,6 +87,7 @@ def main():
     window.closing += on_closing
     window.shown += on_shown
     window.loaded += on_loaded
+
 
     # webview.start(api_ls, gui='cef', http_server=True, debug=True)
     if sys.platform == 'darwin':

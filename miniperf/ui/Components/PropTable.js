@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
-    Box,
+    Box, CardHeader,
     Collapse,
     IconButton,
     makeStyles,
@@ -95,10 +95,11 @@ function Row(props) {
                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
-                </TableCell>
-                <TableCell component="th" scope="row">
                     {row.type}
                 </TableCell>
+                {/*<TableCell component="th" scope="row" align={'left'}>*/}
+                {/*    {row.type}*/}
+                {/*</TableCell>*/}
                 {/*<TableCell align="right">{row.calories}</TableCell>*/}
             </TableRow>
             <TableRow>
@@ -154,7 +155,7 @@ Row.propTypes = {
 export default function PropTable(props) {
     const {curID} = props
     const classes = useStyle()
-    const [componentsInfo,setComponents] = useState(components)
+    const [componentsInfo,setComponents] = useState([])
 
 
     useEffect(()=>{
@@ -163,6 +164,8 @@ export default function PropTable(props) {
             window.pywebview.api.get_inspector({'ID':curID}).then((res)=>{
                 setComponents(res['msg']['components'])
             })
+        }else{
+            setComponents([])
         }
     },[curID])
 
@@ -171,7 +174,8 @@ export default function PropTable(props) {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell align={"left"}>Components</TableCell>
+                        {/*<TableCell align={"left"}></TableCell>*/}
+                        <CardHeader title={'Components'}/>
                         {/*<TableCell align="right">Value</TableCell>*/}
                     </TableRow>
                 </TableHead>

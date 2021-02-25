@@ -1,15 +1,19 @@
 import json
 import os
-import subprocess
 
 from u3driver import AltrunUnityDriver, By
 
+demoPackageName = 'com.DefaultName.DefaultName'
+demoPackageActivity = 'com.unity3d.player.UnityPlayerActivity'
 
 class Device:
-    def __init__(self, tempFilePath, serial_num=''):
+    def __init__(self, ROOT_DIR, serial_num=''):
         self.serial_num = serial_num
         self.screenshot_path = os.path.join('C:\image', 'screenshot_pic')
-        self.tempFilePath = os.path.join(tempFilePath, 'asset', 'temp_test.py')
+        self.tempFilePath = os.path.join(ROOT_DIR, 'asset', 'temp_test.py')
+        self.adbPath = os.path.join(ROOT_DIR,'asset','ADB','adb.exe')
+        self.demoPath = os.path.join(ROOT_DIR, 'asset', 'demo.apk')
+        # self.demoPath = r'https://github.com/king3soft/UAutoDemo_U3D/releases/download/v1.0.15/Android.apk'
         # if not serial_num == '':
         #     ip = self.getIP()
         #     self.device = AltrunUnityDriver(serial_num, '', ip)
@@ -23,7 +27,10 @@ class Device:
 
     @property
     def isConnected(self):
-        return self.device.connect and getattr(self.device.socket, '_closed') is False
+        try:
+            return self.device.connect and getattr(self.device.socket, '_closed') is False
+        except:
+            return False
 
     def connect(self, serial_num, ip):
         self.serial_num = serial_num
@@ -31,7 +38,7 @@ class Device:
             ip = self.getIP()
         self.device = AltrunUnityDriver(serial_num, '', ip)
         # self.isConnected = True
-        return ip
+        return {'ip':ip,'version':self.device.get_server_version()}
 
     def disConnect(self):
         self.device.stop()
@@ -56,6 +63,19 @@ class Device:
     def continuePlay(self):
         self.device.Pause(False)
 
+    # 是否安装了指定包名的应用
+    def isInstalled(self):
+        res = os.popen(f"{self.adbPath} shell pm path {demoPackageName}").read()
+        if res is not '':
+            return True
+        else:
+            return False
+
+    # 打开应用
+    def openAPP(self,packageName = demoPackageName,activity = demoPackageActivity):
+        res = os.popen(f"{self.adbPath} shell am start -n {packageName}/{activity} ").read()
+        return res
+
     # 获取对应ID的GameObject详情
     def get_inspector(self,id):
         s = self.device.get_inspector(id)
@@ -69,16 +89,21 @@ class Device:
     #     # linux
     #     return subprocess.Popen(cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
 
-    def record(self):
-        self.device.debug_mode(self.tempFilePath)
+    def record(self,path):
+        self.device.debug_mode(path)
+
+    # 安装Demo
+    def installDemo(self):
+        res = os.popen(f"{self.adbPath} install -g {self.demoPath}").read()
+        return res
 
     def getIP(self):
         try:
-            res = os.popen(f"adb -s {self.serial_num} shell ifconfig").read()
+            res = os.popen(f"{self.adbPath} -s {self.serial_num} shell ifconfig").read()
             ip = res.split('wlan0')[1].split('inet addr:')[1].split(' ')[0]
             return ip
         except:
-            res = os.popen(f'adb -s {self.serial_num} shell netcfg').read()
+            res = os.popen(f'{self.adbPath} -s {self.serial_num} shell netcfg').read()
             ip = res.split('wlan0')[1].split('UP')[1].split('/')[0].split()[0]
             return ip
 
@@ -87,7 +112,7 @@ class Device:
             return f.read()
 
     def saveTempFile(self,s):
-        with open(self.tempFilePath, 'w') as f:
+        with open(self.tempFilePath, 'w',encoding='utf-8') as f:
             return f.write(s)
 
     def screenshot(self, filename=None, format='pillow'):
@@ -108,3 +133,18 @@ class Device:
         except Exception as e:
             # self.logger.error('--screenshot-- failed!!!!! Exception=' + str(e), exc_info=True)
             return None
+
+    def GetDevices(self):
+        devices = os.popen(f"{self.adbPath} devices").read()
+        devices = devices.split('\n')
+        devicesList = []
+        for i in range(1, len(devices)):
+            if devices[i] != '':
+                devices_dir = {}
+                device_number = devices[i].replace('device', "").split('\t')[0]
+                device_name = os.popen(f'{self.adbPath} -s ' + device_number + ' shell getprop ro.product.model ').read()
+                device_name = device_name.replace("\n", "")
+                devices_dir['name'] = device_name
+                devices_dir['sn'] = device_number
+                devicesList.append(devices_dir)
+        return devicesList

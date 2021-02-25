@@ -14,6 +14,7 @@ class Api:
         self.stderrbak = sys.stderr
         sys.stdout = self
         sys.stder = self
+        # extension.initWorkSpace()
         # self.p = subprocess.Popen('python miniperf/Test.py',stdin=subprocess.PIPE)
 
     def connect(self, data):
@@ -57,11 +58,11 @@ class Api:
         return os.listdir('.')
 
 
-    def record(self):
-        return extension.record()
+    def record(self,data):
+        return extension.record(data)
 
     def test(self):
-        return extension.getTempFile()
+        return extension.createWorkSpace(r'D:\RunCaseTest','jsxxxx')
 
     # 暂停案例运行
     def pause(self):
@@ -75,8 +76,8 @@ class Api:
     def saveTempFile(self,data):
         return extension.saveTempFile(data['fileInfo'])
 
-    def updateScripts(self):
-        return extension.getTempFile()
+    def updateScripts(self,data):
+        return extension.updateScripts(data)
 
     def showItem(self):
         return extension.showItem()
@@ -91,12 +92,52 @@ class Api:
             return temp
         return '405null'
 
-    def runCase(self):
-        return extension.runCase()
-
+    def runCase(self,data):
+        return extension.runCase(data)
     def getCurDevice(self):
         return extension.getCurDevice()
 
     # 获取对应ID的GameObject详情
     def get_inspector(self,data):
         return extension.get_inspector(data)
+
+    # 安装Demo
+    def installDemo(self):
+        return extension.installDemo()
+
+    # # 是否安装了指定包名的应用
+    # def isInstalled(self,name):
+
+    def openDemo(self):
+        return extension.openDemo()
+
+    def getDemoScripts(self):
+        return extension.getDemoScripts()
+
+    # 是否为新用户
+    def isNewUser(self):
+        return extension.isNewUser()
+
+    # 完成新用户设置
+    def finishNewUser(self):
+        return extension.finishNewUser()
+
+    # 加载指定名称的脚本
+    def loadCase(self,data):
+        return extension.loadCase(data)
+
+    # 加载本地脚本列表
+    def loadCasesList(self):
+        return extension.loadCasesList()
+
+    # 创建新脚本
+    def createCase(self,data):
+        return extension.createFile(data)
+
+    # fix: https://github.com/king3soft/UAutoIDE/issues/3#issue-814025994
+    def flush(self):
+        pass
+
+    # 通过vs code打开
+    def openInVS(self):
+        return extension.openInVS()
