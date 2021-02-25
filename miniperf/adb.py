@@ -7,7 +7,7 @@ demoPackageName = 'com.DefaultName.DefaultName'
 demoPackageActivity = 'com.unity3d.player.UnityPlayerActivity'
 
 class Device:
-    def __init__(self, ROOT_DIR, serial_num=''):
+    def __init__(self, ROOT_DIR,serial_num=''):
         self.serial_num = serial_num
         self.screenshot_path = os.path.join('C:\image', 'screenshot_pic')
         self.tempFilePath = os.path.join(ROOT_DIR, 'asset', 'temp_test.py')
@@ -111,9 +111,6 @@ class Device:
         with open(self.tempFilePath, 'r') as f:
             return f.read()
 
-    def saveTempFile(self,s):
-        with open(self.tempFilePath, 'w',encoding='utf-8') as f:
-            return f.write(s)
 
     def screenshot(self, filename=None, format='pillow'):
         """ screenshot, Image format is JPEG

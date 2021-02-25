@@ -174,9 +174,12 @@ def updateScripts(data):
 
 
 def getTempFile():
-    global phone
-    data = phone.getTempFile()
-    return {"ok": True, "msg": data}
+    try:
+        with open(os.path.join(workSpacePath, 'pages', 'temp_test.py'), 'r', encoding='utf-8') as f:
+            return {"ok": True, "msg": f.read()}
+    except Exception as e:
+        return {"ok": False, "msg": e}
+
 
 
 def connect(data):
@@ -220,10 +223,9 @@ def checkConnection():
 
 # 保存temp脚本
 def saveTempFile(s):
-    global phone
-    phone.saveTempFile(s)
+    with open(os.path.join(workSpacePath,'pages','temp_test.py'), 'w', encoding='utf-8') as f:
+        f.write(s)
     return {"ok": True, "msg": "保存成功"}
-
 
 # 保存脚本
 def saveFile(s):
