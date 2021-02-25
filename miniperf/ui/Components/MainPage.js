@@ -342,7 +342,7 @@ export default function MainPage(){
                             {/*<Button variant="contained" color="primary" size="medium" disableElevation onClick={test}>Test</Button>*/}
                             <div className={classes.grow} />
                             <div>
-                                <Button variant="contained" color="primary" size="small" disableElevation onClick={()=>{setIsFirst(true)}} disabled={tutorialsMode}>新手指导</Button>
+                                <Button variant="contained" color="primary" size="small" disableElevation onClick={()=>{setIsFirst(true)}} disabled={tutorialsMode || isConnected}>新手指导</Button>
                                 <FormControlLabel
                                     control={
                                         <Switch

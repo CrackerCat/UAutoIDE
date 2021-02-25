@@ -34,9 +34,9 @@ const useStyles = makeStyles((theme) => ({
         // background:'lightgrey'
     },
     content:{
-        height: '100%',
+        height: '90%',
         position:'relative',
-        flex:'1'
+        padding:0,
     },
     hightLight:{
         color:'red'
@@ -44,11 +44,8 @@ const useStyles = makeStyles((theme) => ({
     textArea:{
         height: '100% !important',
         width: '100% !important',
-        position:'absolute',
-        left:0,
-        right:0,
-        bottom:0,
-        top:0
+        position:'relative',
+        padding:0
     },
     recoverContent:{
         position: 'absolute',

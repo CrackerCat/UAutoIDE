@@ -45,7 +45,7 @@ export default function HierarchyContent(props){
     return(
         <Card className={classes.root}>
             <CardHeader title={'Hierarchy'} action={[
-                <IconButton aria-label="settings" title={'刷新'} disabled={!enable} onClick={getData}>
+                <IconButton aria-label="settings" title={'刷新'} disabled={!enable || !isConnected} onClick={getData}>
                     <RotateLeft/>
                 </IconButton>
             ]}/>
