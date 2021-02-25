@@ -1,6 +1,5 @@
 import json
 import os
-import subprocess
 
 from u3driver import AltrunUnityDriver, By
 
@@ -14,6 +13,7 @@ class Device:
         self.tempFilePath = os.path.join(ROOT_DIR, 'asset', 'temp_test.py')
         self.adbPath = os.path.join(ROOT_DIR,'asset','ADB','adb.exe')
         self.demoPath = os.path.join(ROOT_DIR, 'asset', 'demo.apk')
+        # self.demoPath = r'https://github.com/king3soft/UAutoDemo_U3D/releases/download/v1.0.15/Android.apk'
         # if not serial_num == '':
         #     ip = self.getIP()
         #     self.device = AltrunUnityDriver(serial_num, '', ip)

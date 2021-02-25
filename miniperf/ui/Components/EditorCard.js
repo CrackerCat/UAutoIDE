@@ -236,15 +236,8 @@ export default function EditorCard (props) {
     }
     return (
         <Card variant={'outlined'} className={classes.root}>
-            {/*<input*/}
-            {/*    id="contained-button-file"*/}
-            {/*    className={classes.upload}*/}
-            {/*    multiple*/}
-            {/*    type="file"*/}
-            {/*    onChange={upload}*/}
-            {/*    accept={'.py'}*/}
-            {/*/>*/}
             <CardHeader title={'Coding'} action={[
+                <span>当前文件：{caseName}</span>,
                 <IconButton aria-label="settings" title={'录制'} onClick={record} disabled={isRecording || isRunning || !isConnected || tutorials}>
                     <MissedVideoCall/>
                 </IconButton>,

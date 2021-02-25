@@ -100,7 +100,7 @@ export default function ConsoleCard (props) {
     return (
         <Card variant={'outlined'} className={classes.root}>
             <CardHeader
-                title={'控制台输出'}
+                title={'Console'}
                 action={[
                     <IconButton aria-label="settings" title={'清空'} onClick={()=>{clearInfo.current.clear()}}>
                         <DeleteForever/>

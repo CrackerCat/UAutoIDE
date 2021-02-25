@@ -5,10 +5,24 @@ import argparse
 
 def AutoRun(udriver):
 	try:
-		time.sleep(6.014938)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UILoginChannelInner//imgBG//btnSelectZone").tap()
-		time.sleep(0.7852783)
-		udriver.find_object(By.PATH,"//UIModule//Group1//UISelectZone//imgBG//ZoneList//ZoneList//Element1").tap()
+		time.sleep(1.499985)
+		udriver.find_object(By.PATH,"//Canvas//StartButton").tap()
+		time.sleep(1.900574)
+		udriver.find_object(By.PATH,"//UICamera//Loadout//OpenLeaderboard").tap()
+		time.sleep(1.066669)
+		udriver.find_object(By.PATH,"//UICamera//Leaderboard//Background//Button").tap()
+		time.sleep(0.6998367)
+		udriver.find_object(By.PATH,"//UICamera//Loadout//StoreButton").tap()
+		time.sleep(0.7669754)
+		udriver.find_object(By.PATH,"//Canvas//Background//Button").tap()
+		time.sleep(0.5999718)
+		udriver.find_object(By.PATH,"//UICamera//Loadout//MissionButton").tap()
+		time.sleep(0.7333908)
+		udriver.find_object(By.PATH,"//UICamera//Loadout//MissionPopup//MissionBackground//CloseButton").tap()
+		time.sleep(0.6330109)
+		udriver.find_object(By.PATH,"//UICamera//Loadout//SettingButton").tap()
+		time.sleep(0.633503)
+		udriver.find_object(By.PATH,"//UICamera//Loadout//SettingPopup//Background//CloseButton").tap()
 	except Exception as e:
 		print(f'{e}')
 		raise e
