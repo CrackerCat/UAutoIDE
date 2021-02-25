@@ -137,3 +137,7 @@ class Api:
     # fix: https://github.com/king3soft/UAutoIDE/issues/3#issue-814025994
     def flush(self):
         pass
+
+    # 通过vs code打开
+    def openInVS(self):
+        return extension.openInVS()

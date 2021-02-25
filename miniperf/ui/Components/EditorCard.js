@@ -13,7 +13,7 @@ import {
     Adb, AddCircle,
     Backup,
     GetApp,
-    MissedVideoCall,
+    MissedVideoCall, OpenInBrowser,
     PauseCircleFilled, PlayCircleFilled,
     RotateLeft,
     Save,
@@ -220,6 +220,12 @@ export default function EditorCard (props) {
             setIsPausing(false)
         })
     }
+    //通过vs code打开
+    const openInVS = () =>{
+        window.pywebview.api.openInVS().then((res)=>{
+            ShowMsg(res['msg'],res['ok'])
+        })
+    }
 
     const changeHandle = (e) =>{
         setScriptsData(e)
@@ -250,9 +256,9 @@ export default function EditorCard (props) {
                 // <IconButton aria-label="settings" title={'保存'} onClick={save} disabled={isRecording || isRunning || !isConnected || tutorials} className={needSave?classes.hightLight:''}>
                 //     <Save/>
                 // </IconButton>,
-                // <IconButton aria-label="settings" title={'调试'} disabled={isRecording || !isConnected || true}>
-                //     <Adb/>
-                // </IconButton>,
+                <IconButton aria-label="settings" title={'通过VS CODE打开工作区'} onClick={()=>{openInVS()}} disabled={isRecording || isRunning}>
+                    <OpenInBrowser/>
+                </IconButton>,
                 <IconButton aria-label="settings" title={'继续'} onClick={continuePlay} disabled={isRecording || !isConnected || !isRunning || !isPausing}>
                     <PlayCircleFilled/>
                 </IconButton>,

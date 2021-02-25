@@ -284,6 +284,13 @@ def runCase(data):
 def isNewUser():
     return {"ok": True, "msg": config.getboolean('General', 'new_user')}
 
+# 通过VS CODE打开工作区
+def openInVS():
+    try:
+        os.popen(f'code {workSpacePath}')
+        return {"ok": True, "msg": '已打开'}
+    except:
+        return {"ok": False, "msg": '出错'}
 
 # 完成新用户设置
 def finishNewUser():
