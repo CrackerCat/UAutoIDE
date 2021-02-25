@@ -96,6 +96,7 @@ def build_nsis(ctx):
         "openpyxl",
         "et-xmlfile",
         "ifaddr",
+        "uiautomator2"
     ]
 
     def req_wheel(x):
