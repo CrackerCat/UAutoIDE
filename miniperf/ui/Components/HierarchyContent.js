@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function HierarchyContent(props){
-    const {ShowMsg,getCurID} = props
+    const {isConnected,getCurID,enable} = props
     const classes = useStyles()
     const select = (e,id) =>{
         getCurID(id)
@@ -30,19 +30,22 @@ export default function HierarchyContent(props){
     const [hierarchyData,setHierarchyData] = React.useState({})
     function getData(){
         window.pywebview.api.showItem().then((res)=>{
-            setHierarchyData(res['msg']['objs'])
+            if(res['ok']){
+                setHierarchyData(res['msg']['objs'])
+            }
         })
     }
     useEffect(()=>{
-        setTimeout(()=>{
-            getData()
-        },1000)
-    },[])
+        if(!isConnected){
+            setHierarchyData({})
+            getCurID(0)
+        }
+    },[isConnected])
 
     return(
         <Card className={classes.root}>
             <CardHeader title={'Hierarchy'} action={[
-                <IconButton aria-label="settings" title={'刷新'} disabled={false} onClick={getData}>
+                <IconButton aria-label="settings" title={'刷新'} disabled={!enable || !isConnected} onClick={getData}>
                     <RotateLeft/>
                 </IconButton>
             ]}/>

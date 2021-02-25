@@ -1,0 +1,67 @@
+
+02/20/2021 15:18:39: response received: System.Exception: error:notFound
+  at UAutoSDK.UAutoRuner.findObjectHandler (System.String[] pieces) [0x00000] in <00000000000000000000000000000000>:0 
+  at UAutoSDK.MsgParser+RpcMethod.Invoke (System.String[] param) [0x00000] in <00000000000000000000000000000000>:0 
+  at UAutoSDK.MsgParser.HandleMessage (System.String json) [0x00000] in <00000000000000000000000000000000>:0 
+  at UAutoSDK.UAutoRuner.<Update>m__1 (System.String msg) [0x00000] in <00000000000000000000000000000000>:0 
+  at System.Action`1[T].Invoke (T obj) [0x00000] in <00000000000000000000000000000000>:0 
+  at System.Collections.Generic.List`1[T].ForEach (System.Action`1[T] action) [0x00000] in <00000000000000000000000000000000>:0 
+
+02/20/2021 15:18:57: response received: {"name":"/UIModule/Group1/UILoginChannelInner/imgBG/btnSelectZone","id":"-45252"}
+
+02/20/2021 15:18:57: response received: {"name":"/UIModule/Group1/UILoginChannelInner/imgBG/btnSelectZone","id":"-45252"}
+
+02/20/2021 15:18:59: response received: {"name":"/UIModule/Group1/UISelectZone/imgBG/ZoneList/ZoneList/Element1","id":"-44564"}
+
+02/20/2021 15:18:59: response received: {"name":"/UIModule/Group1/UISelectZone/imgBG/ZoneList/ZoneList/Element1","id":"-44564"}
+
+02/20/2021 15:19:01: response received: {"name":"/UIModule/Group1/UILoginChannelInner/imgBG/btnEnterGame","id":"-45040"}
+
+02/20/2021 15:19:01: response received: {"name":"/UIModule/Group1/UILoginChannelInner/imgBG/btnEnterGame","id":"-45040"}
+
+02/20/2021 15:19:03: response received: 0
+
+02/20/2021 15:19:03: response received: {"name":"/UIModule/Group1/UILoginServer/imgBG/PanelServer/btnChange","id":"-44880"}
+
+02/20/2021 15:19:03: response received: {"name":"/UIModule/Group1/UILoginServer/imgBG/PanelServer/btnChange","id":"-44880"}
+
+02/20/2021 15:19:05: response received: 0
+
+02/20/2021 15:19:05: response received: {"name":"/UIModule/Group1/UISelectServer/imgBG/PanelKindList/MaskView/List/Element2","id":"-45760"}
+
+02/20/2021 15:19:05: response received: {"name":"/UIModule/Group1/UISelectServer/imgBG/PanelKindList/MaskView/List/Element2","id":"-45760"}
+
+02/20/2021 15:19:07: response received: {"name":"/UIModule/Group1/UISelectServer/imgBG/PanelServerList/MaskView/List/Element2","id":"-45856"}
+
+02/20/2021 15:19:07: response received: {"name":"/UIModule/Group1/UISelectServer/imgBG/PanelServerList/MaskView/List/Element2","id":"-45856"}
+
+02/20/2021 15:19:09: response received: {"name":"/UIModule/Group1/UILoginServer/imgBG/PanelServer/btnChange","id":"-44880"}
+
+02/20/2021 15:19:09: response received: {"name":"/UIModule/Group1/UILoginServer/imgBG/PanelServer/btnChange","id":"-44880"}
+
+02/20/2021 15:19:12: response received: {"name":"/UIModule/Group1/UISelectServer/imgBG/PanelServerList/MaskView/List/Element1","id":"-45788"}
+
+02/20/2021 15:19:12: response received: {"name":"/UIModule/Group1/UISelectServer/imgBG/PanelServerList/MaskView/List/Element1","id":"-45788"}
+
+02/20/2021 15:19:14: response received: {"name":"/UIModule/Group1/UILoginServer/imgBG/btnLoginServer","id":"-44676"}
+
+02/20/2021 15:19:14: response received: {"name":"/UIModule/Group1/UILoginServer/imgBG/btnLoginServer","id":"-44676"}
+
+02/20/2021 15:19:16: response received: {"name":"/UIModule/Group1/UISelectRole/imgBG/imgSelectRole/btnRole1","id":"-45978"}
+
+02/20/2021 15:19:16: response received: {"name":"/UIModule/Group1/UISelectRole/imgBG/imgSelectRole/btnRole1","id":"-45978"}
+
+02/20/2021 15:19:18: response received: System.Exception: error:notFound
+  at UAutoSDK.UAutoRuner.findObjectHandler (System.String[] pieces) [0x00000] in <00000000000000000000000000000000>:0 
+  at UAutoSDK.MsgParser+RpcMethod.Invoke (System.String[] param) [0x00000] in <00000000000000000000000000000000>:0 
+  at UAutoSDK.MsgParser.HandleMessage (System.String json) [0x00000] in <00000000000000000000000000000000>:0 
+  at UAutoSDK.UAutoRuner.<Update>m__1 (System.String msg) [0x00000] in <00000000000000000000000000000000>:0 
+  at System.Action`1[T].Invoke (T obj) [0x00000] in <00000000000000000000000000000000>:0 
+  at System.Collections.Generic.List`1[T].ForEach (System.Action`1[T] action) [0x00000] in <00000000000000000000000000000000>:0 
+
+02/20/2021 15:19:34: response received: error:exceptionOccur System.Collections.Generic.KeyNotFoundException: The given key was not present in the dictionary.
+  at System.Collections.Generic.Dictionary`2[TKey,TValue].get_Item (TKey key) [0x00000] in <00000000000000000000000000000000>:0 
+  at UAutoSDK.MsgParser.HandleMessage (System.String json) [0x00000] in <00000000000000000000000000000000>:0 
+  at UAutoSDK.UAutoRuner.<Update>m__1 (System.String msg) [0x00000] in <00000000000000000000000000000000>:0 
+  at System.Action`1[T].Invoke (T obj) [0x00000] in <00000000000000000000000000000000>:0 
+  at System.Collections.Generic.List`1[T].ForEach (System.Action`1[T] action) [0x00000] in <00000000000000000000000000000000>:0 
