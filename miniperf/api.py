@@ -141,3 +141,7 @@ class Api:
     # 通过vs code打开
     def openInVS(self):
         return extension.openInVS()
+
+    # 设置工作区
+    def setWorkSpace(self,data):
+        return extension.setWorkSpace(data)
