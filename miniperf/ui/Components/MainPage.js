@@ -237,8 +237,17 @@ export default function MainPage(){
     //获取连接在电脑的手机列表
     const getCurDevice = () =>{
         window.pywebview.api.getCurDevice().then((res)=>{
-            let list = res['msg']
-            setPhoneList(list)
+            if(res['ok']){
+                let list = res['msg']
+                setPhoneList(list)
+                let s = []
+                if(res['msg'].length > 0 && phone === ''){
+                    setPhone(res['msg'][0]['name'])
+                    setSN(res['msg'][0]['sn'])
+                }
+            }else{
+                showMsg(res['msg'],res['ok'])
+            }
         })
     }
 
@@ -291,7 +300,7 @@ export default function MainPage(){
         }
         else if(e === 3)
         {
-            return {'height':(middleTopP - 0.5) + '%'}
+            return {'height':(middleTopP) + '%'}
         }
         else if(e === 4)
         {
@@ -390,31 +399,48 @@ export default function MainPage(){
                             <div className={'scroller'} id={'scroller1'} draggable={"true"} onDragEnd={handleMouseMove}>
                             </div>
                         )}
-                        <div className={enableAdvancedMode?'middle':'content'}>
-                                <div className={enableAdvancedMode?'mBlock':'left'}  style={enableAdvancedMode?setWidth(3):setWidth(1)}>
-                                    <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>
-                                </div>
-                                {enableAdvancedMode && (
-                                    <div className={'hScroller'} id={'scroller3'} draggable={"true"} onDragEnd={handleMouseMove}>
-                                    </div>
-                                )}
-                                {!enableAdvancedMode && (
-                                    <div className={'scroller'} id={'scroller1'} draggable={"true"} onDragEnd={handleMouseMove}>
-                                    </div>
-                                )}
-                                <div className={enableAdvancedMode?'mBlock':'right'}  style={enableAdvancedMode?setWidth(4):setWidth(2)}>
-                                    <ConsoleCard/>
-                                </div>
+                        {/*<div className={enableAdvancedMode?'middle':'content'}>*/}
+                        {/*        <div className={enableAdvancedMode?'mBlock':'left'}  style={enableAdvancedMode?setWidth(3):setWidth(1)}>*/}
+                        {/*            <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
+                        {/*        </div>*/}
+                        {/*        {enableAdvancedMode && (*/}
+                        {/*            <div className={'hScroller'} id={'scroller3'} draggable={"true"} onDragEnd={handleMouseMove}>*/}
+                        {/*            </div>*/}
+                        {/*        )}*/}
+                        {/*        {!enableAdvancedMode && (*/}
+                        {/*            <div className={'scroller'} id={'scroller1'} draggable={"true"} onDragEnd={handleMouseMove}>*/}
+                        {/*            </div>*/}
+                        {/*        )}*/}
+                        {/*        <div className={enableAdvancedMode?'mBlock':'right'}  style={enableAdvancedMode?setWidth(4):setWidth(2)}>*/}
+                        {/*            <ConsoleCard/>*/}
+                        {/*        </div>*/}
+                        {/*</div>*/}
+                        <div className={'middle'}>
+                            <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>
                         </div>
+                        {/*<div className={'mBlock'}>*/}
+                        {/*    <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
+                        {/*</div>*/}
+                        {/*<div className={'mBlock'}>*/}
+                        {/*    <ConsoleCard/>*/}
+                        {/*</div>*/}
                         {enableAdvancedMode && (
                             <div className={'scroller'} id={'scroller2'} draggable={"true"} onDragEnd={handleMouseMove}>
                             </div>
                         )}
-                        {enableAdvancedMode && (
-                            <div className={'right'} style={setWidth(2)}>
-                                <PropTable curID={curObjID}/>
+                        <div className={'right'} style={setWidth(2)}>
+                            {enableAdvancedMode && (
+                                <div className={'mBlock1'}  style={setWidth(3)}>
+                                    <PropTable curID={curObjID}/>
+                                </div>
+                            )}
+                            {enableAdvancedMode && <div className={'hScroller'} id={'scroller3'} draggable={"true"} onDragEnd={handleMouseMove}></div>}
+                            <div className={'mBlock'}  style={setWidth(4)}>
+                                <ConsoleCard/>
                             </div>
-                        )}
+
+                        </div>
+
                     </div>
                 </div>
                 <Snackbar open={okOpen} autoHideDuration={3000} onClose={handleClose}>
