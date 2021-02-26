@@ -244,9 +244,9 @@ def saveTempFile(s):
     return {"ok": True, "msg": "保存成功"}
 
 # 保存脚本
-def saveFile(s):
+def saveFile(name,s):
     global workSpacePath
-    with open(os.path.join(workSpacePath, 'pages'), 'r+') as f:
+    with open(os.path.join(workSpacePath, 'pages',name + '.py'), 'w') as f:
         f.write(s)
     return {"ok": True, "msg": "保存成功"}
 
@@ -291,6 +291,7 @@ def runCase(data):
             if case == '':
                 case = 'temp_test'
             saveTempFile(data['fileInfo'])
+            saveFile(data['caseName'],data['fileInfo'])
             module = LoadModuleByPath(case, CasePath(case + ".py"))
             module.AutoRun(phone.device)
             return {"ok": True, "msg": '运行完成'}
