@@ -145,6 +145,7 @@ export default function MainPage(){
             setSN(e)
             setPhone(name)
         }
+        showMsg('连接中，请打开目标程序')
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
             // setIsConnected(res['ok'])
             if(res['ok']){
