@@ -2,6 +2,10 @@
 
 国内一流的Unity3D手游自动化录制与回放工具
 
+## 文档地址
+
+https://king3soft.github.io
+
 ## 功能说明
 
 1. 集成SDK(https://github.com/king3soft/UAutoSDK)
