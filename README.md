@@ -4,7 +4,7 @@
 
 ## 功能说明
 
-1. 集成SDK(git@gitlab.testplus.cn:UAuto/U3DAutoSDK.git)
+1. 集成SDK(https://github.com/king3soft/UAutoSDK)
 
 ## 如何参与开发
 
@@ -55,19 +55,10 @@ Package:(Windows only)
 
 output file: dist/UAutoIDE-x.x.x.zip
 
-## 目录结构
-
-* docs: 文档
-* miniperf: 
-    * ui: UI页面（HTML/JS/CSS)
-        * libs/tpt-ui-lib: UI库
-    * 自动化录制转表工具实现
-
-
 
 ## 分支说明
 
-* master, 用于发布，对应正式版。
+* main, 用于发布，对应正式版。
 * dev, 用于开发，并且对应测试版。
 * 其他分支, 用于实验性特性开发。
 
@@ -76,7 +67,7 @@ output file: dist/UAutoIDE-x.x.x.zip
 
 windows打包exe流程：
 ```python
-# python build.py --build_type release --flavor internal
+# python build.py
 ```
 打包成功后会打印 `Build Success.`, 输出的文件在dist目录下，例如：
 * UAutoIDE-1.0.1-internal-release.zip
@@ -85,12 +76,7 @@ windows打包exe流程：
 
 Build Type(打包版本)：
 * debug: 调试版本
-* prerelease: 预发布版本(用于提测)
 * release: 发布版本
-
-Project Flavor(产品变种):
-* internal: 内部版本(DSP账户系统，内网服务器，提供给内部测中用户使用)
-* public: 外部版本(Testplus账户系统，外网服务器，提供给外部用户使用)
 
 
 linux和mac os仅支持pip安装。
@@ -99,8 +85,8 @@ linux和mac os仅支持pip安装。
 
 1. 在dev分支开发下一个新版本。
 2. 新版本开发完成后提交测试版，提测并修复BUG。
-3. 测试通过后，合并dev分支到master分支，发布正式版。 
+3. 测试通过后，合并dev分支到main分支，发布正式版。 
 
-## 前端学习文档
+## bootstrap学习文档
 
 https://react-bootstrap.github.io
