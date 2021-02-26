@@ -80,7 +80,7 @@ def main():
     static_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui", "index.html")
     # print(static_file)
     # window  = webview.create_window('TableConvertTool', html=html, background_color='#333333', js_api=api.Api())
-    window = webview.create_window('TableConvertTool',
+    window = webview.create_window('UAutoIDE',
                                    os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui", "index.html"),
                                    width=1366, height=800, js_api=api.Api())
     window.closed += on_closed
