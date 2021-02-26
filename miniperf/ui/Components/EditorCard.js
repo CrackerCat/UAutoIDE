@@ -17,7 +17,7 @@ import {
     PauseCircleFilled, PlayCircleFilled,
     RotateLeft,
     Save,
-    SendOutlined,
+    SendOutlined, Settings,
     Stop
 } from "@material-ui/icons";
 import AceEditor from "react-ace";
@@ -81,10 +81,13 @@ export default function EditorCard (props) {
     const [isPausing,setIsPausing] = React.useState(false)
     const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
     const [caseName,setCaseName] = useState('')//当前案例名称
-    const [createWindowOpen,setCreateWindowOpen] = useState(false)
+    const [createWindowOpen,setCreateWindowOpen] = useState(false)//创建案例文件弹窗
 
-    const [createCaseName,setCreateCaseName] = useState('')
-    const [createCaseFileName,setCreateCaseFileName] = useState('')
+    const [createCaseName,setCreateCaseName] = useState('')//创建案例文件案例名
+    const [createCaseFileName,setCreateCaseFileName] = useState('')//创建案例文件文件名
+
+    const [settingWindowOpen,setSettingWindowOpen] = useState(false)//设置弹窗
+    const [workSpacePath,setWorkSpacePath] = useState('')//设置案例工作区路径
 
     const classes = useStyles()
 
@@ -137,6 +140,30 @@ export default function EditorCard (props) {
         }
         setCreateWindowOpen(false);
     };
+    //设置弹窗关闭事件
+    let handleCloseSetting = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setWorkSpacePath('')
+        setSettingWindowOpen(false);
+    };
+
+    let setWorkSpace = (v) => {
+        if(workSpacePath === '')
+            return
+        window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
+            if(res['ok']){
+                setWorkSpacePath('')
+                handleCloseSetting('','')
+                setCaseName('')
+                setScriptsData('')
+                ShowMsg(res['msg'],res['ok'])
+            }else{
+                ShowMsg(res['msg'],res['ok'])
+            }
+        })
+    }
 
     let createFile = (v) => {
         if(createCaseFileName === '' || createCaseName === '')
@@ -267,12 +294,16 @@ export default function EditorCard (props) {
                 </IconButton>,
                 <IconButton aria-label="settings" title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
                     <AddCircle/>
+                </IconButton>,
+                <IconButton aria-label="settings" title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}>
+                    <Settings/>
                 </IconButton>
                 //disabled={isRecording || !isConnected || tutorials}
                 // <IconButton aria-label="settings" title={'重置'} disabled={isRecording || !isConnected || true}>
                 //     <RotateLeft/>
                 // </IconButton>
             ]}/>
+            {/*创建新案例窗口*/}
             <Dialog open={createWindowOpen}>
                 <DialogTitle>新建案例</DialogTitle>
                 <DialogContent>
@@ -293,6 +324,25 @@ export default function EditorCard (props) {
                         <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseCreate('','')}}>
                             取消
                         </Button>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={settingWindowOpen} onClose={handleCloseSetting}>
+                <DialogTitle>设置</DialogTitle>
+                <DialogContent>
+                    <TextField id="outlined-basic" label="工作区路径" variant="outlined" value={workSpacePath}
+                               onChange={(e)=>{setWorkSpacePath(e.target.value)}}
+                    />
+                    <br/>
+                    <Button variant="contained" color="primary"
+                            onClick={(e)=>{
+                                setWorkSpace(e)
+                            }}
+                    >
+                        设置或创建
+                    </Button>
+                    <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseSetting('','')}}>
+                        取消
+                    </Button>
                 </DialogContent>
             </Dialog>
             <CardContent className={classes.content}>

@@ -12,8 +12,9 @@ ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 python_path = os.path.join(os.path.split(sys.executable)[0], "python.exe")
 
-configPath = os.path.join(ROOT_DIR, '..','..', 'configs.ini')
+configPath = os.path.abspath(os.path.join(".", "configs.ini"))
 # configPath = os.path.join(ROOT_DIR,os.path.pardir, 'configs.ini')
+
 config = configparser.ConfigParser()
 config.read(configPath, encoding='UTF-8')
 
@@ -21,9 +22,9 @@ g_webview = None
 phone = Device(ROOT_DIR)
 
 workSpacePath = config.get('Setting', 'cases_path')
+if workSpacePath == r'\\':
+    workSpacePath = os.path.join(ROOT_DIR,'asset','WorkSpace')
 sys.path.append(os.path.join(workSpacePath))
-sys.path.append(r'D:\RunCaseTest\Abyss')
-
 
 class Header(object):
     def __init__(self, _comment, _filed, _type, _subtype):
@@ -44,7 +45,7 @@ def test():
 
 # 加载本地脚本列表
 def loadCasesList():
-    with open(os.path.join(workSpacePath, 'setting.json'), 'r', encoding='UTF-8') as f:
+    with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
         s = json.loads(f.read())
     return {"ok": True, "msg": s}
 
@@ -60,9 +61,18 @@ def loadCase(data):
 
 
 # 加载工作区
-def setWorkSpace():
+def setWorkSpace(data):
     global workSpacePath
-    workSpacePath = config.get('Setting', 'cases_path')
+    if not os.path.exists(os.path.join(data['path'], 'setting.UAUTO')):
+        if os.listdir(data['path']):
+            return {"ok": False, "msg": '该路径不是项目路径且不为空'}
+        else:
+            createWorkSpace(data['path'])
+    else:
+        workSpacePath = data['path']
+    setConfig('Setting','cases_path',workSpacePath)
+    sys.path.append(os.path.join(workSpacePath))
+    return {"ok": True, "msg": '设置成功'}
 
 
 def initWorkSpace():
@@ -75,16 +85,21 @@ def initWorkSpace():
         # print()
         LoadModuleByPath(script.split('\\')[-1].split('.')[0], script)
 
+def create(path,name,type,default=''):
+    with open(os.path.join(path, name+'.'+type), 'w') as f:
+        f.write(default)
+        f.close()
 
 # 新建工作区
-def createWorkSpace(path: str, name: str):
+def createWorkSpace(path: str):
     global workSpacePath
-    workSpacePath = os.path.join(path, name)
+    workSpacePath = path
     if not os.path.exists(workSpacePath):
         os.mkdir(workSpacePath)
-        os.mkdir(os.path.join(workSpacePath, 'pages'))
-        f = open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w')
-        f.close()
+    os.mkdir(os.path.join(workSpacePath, 'pages'))
+    create(workSpacePath, 'setting', 'UAUTO', '[]')
+    create(os.path.join(workSpacePath, 'pages'), 'temp_test', 'py')
+
     return {"ok": True, "msg": 'ok'}
 
 
@@ -97,7 +112,7 @@ def createFile(data):
         file.close()
 
         casesList = []
-        with open(os.path.join(workSpacePath, 'setting.json'), 'r', encoding='utf-8') as f:
+        with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='utf-8') as f:
             setting = json.load(f)
             for case in setting:
                 casesList.append(case)
@@ -107,7 +122,7 @@ def createFile(data):
             "run_case": data['name'],
         }
         casesList.append(newData)
-        with open(os.path.join(workSpacePath, 'setting.json'), 'w', encoding='utf-8') as f:
+        with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='utf-8') as f:
             json.dump(casesList, f, ensure_ascii=False)
 
         return {"ok": True, "msg": data['name']}
@@ -294,6 +309,11 @@ def openInVS():
         return {"ok": True, "msg": '已打开'}
     except:
         return {"ok": False, "msg": '出错'}
+
+# 修改Config
+def setConfig(section,name,value):
+    config.set(section, name, value)
+    config.write(open(configPath, "r+", encoding='UTF-8'))
 
 # 完成新用户设置
 def finishNewUser():
