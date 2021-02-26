@@ -21,8 +21,8 @@ import {
     Stop
 } from "@material-ui/icons";
 import AceEditor from "react-ace";
-import 'brace/mode/python'
-import 'brace/theme/pastel_on_dark'
+import "ace-builds/src-noconflict/mode-python";
+import "ace-builds/src-noconflict/theme-pastel_on_dark";
 
 import {useInterval,useUpdate} from "../Util/Util"
 import CaseList from "./CasesList";
@@ -31,21 +31,26 @@ const useStyles = makeStyles((theme) => ({
     root: {
         width : '100%',
         height: '100%',
-        // background:'lightgrey'
+        // background:'lightgrey',
     },
     content:{
-        height: '90%',
+        height: 'calc(100% - 72px)',
         position:'relative',
+        flex:1,
         padding:0,
     },
     hightLight:{
         color:'red'
     },
     textArea:{
-        height: '100% !important',
-        width: '100% !important',
-        position:'relative',
-        padding:0
+        // 'height':'500px',
+        // width: '100% !important',
+        // position:'relative',
+        // padding:0
+        // position:'absolute',
+        // left:0,
+        // right:0,
+        // bottom:0,
     },
     recoverContent:{
         position: 'absolute',
@@ -351,9 +356,11 @@ export default function EditorCard (props) {
                     theme="pastel_on_dark"
                     name="UNIQUE_ID_OF_DIV"
                     editorProps={{ $blockScrolling: true }}
-                    className={classes.textArea}
                     value={scriptsData}
                     onChange={changeHandle}
+                    // style={{height:'90%',width:'100%'}}
+                    width={'100%'}
+                    height={'100%'}
                 />
                 {isRecording &&
                 <div className={classes.recoverContent}>

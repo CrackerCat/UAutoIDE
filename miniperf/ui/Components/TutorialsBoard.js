@@ -39,11 +39,6 @@ export default function TutorialsBoard(props){
                     connect('',phoneList[0]['sn'],phoneList[0]['name'])
                 }
             }
-            // else if(isConnected){
-            //     setProgress(66)
-            //     onClose('','')
-            //     setProgress(100)
-            // }
         }
 
 
