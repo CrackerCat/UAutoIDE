@@ -12,7 +12,8 @@ ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 python_path = os.path.join(os.path.split(sys.executable)[0], "python.exe")
 
-configPath = os.path.join(ROOT_DIR, os.path.pardir, 'configs.ini')
+configPath = os.path.join(ROOT_DIR, '..','..', 'configs.ini')
+# configPath = os.path.join(ROOT_DIR,os.path.pardir, 'configs.ini')
 config = configparser.ConfigParser()
 config.read(configPath, encoding='UTF-8')
 
