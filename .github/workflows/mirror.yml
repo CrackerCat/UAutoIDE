@@ -16,7 +16,7 @@ jobs:
         with:
           # 注意替换为你的 GitHub 源仓库地址
           source-repo: https://github.com/king3soft/UAutoIDE.git
-          # 注意替换为你的 Gitee 目标仓库地址,使用环境变量.
+          # 注意替换为你的 Gitee 目标仓库地址,使用环境变量
           destination-repo: git@gitee.com:king3soft/UAutoIDE.git
       
       # - name: Build Gitee Pages
