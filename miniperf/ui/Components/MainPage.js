@@ -2,13 +2,14 @@ import React, {useEffect, useRef, useState} from 'react'
 import MuiAlert from '@material-ui/lab/Alert';
 import {
     AppBar,
-    Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel,
+    ButtonGroup, Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel,
     Input,
     InputAdornment, InputLabel, MenuItem, Select, Snackbar, TextField,
     Toolbar,
     Switch
 } from "@material-ui/core";
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { Videocam, NoteAdd, Folder, Cloud } from '@material-ui/icons'
+import { createMuiTheme, makeStyles, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import './MainPage.css'
 import ActionCard from "./ActionCard";
 import PropTable from "./PropTable";
@@ -23,28 +24,31 @@ import TutorialsBoard from "./TutorialsBoard";
 const theme = createMuiTheme({
     palette: {
         primary: {
-            main: '#11698e',
+            main: '#313131',
         },
         secondary: {
-            main: '#f44336',
+            main: '#424242',
         },
         type: 'dark',
     },
 });
 
 const useStyle = makeStyles((style)=>({
+    root: {
+        height: '100vh',
+    },
     grow: {
         flexGrow: 1,
     },
     Input:{
         color:'#f44336 !important',
-        width:'200px'
+        width:'200px',
     },
     AppBarON:{
         'background-color':'green'
     },
     AppBarOFF:{
-        'background-color':'#11698e'
+        'background-color':'#313131'
     },
 
     Button:{
@@ -70,8 +74,34 @@ const useStyle = makeStyles((style)=>({
     },
     beginCard:{
         'text-align':'center',
-    }
+    },
+    toolbar: {
+        minHeight: 42
+    },
+    toolbarContainer: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    deviceContainer: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    ipInput: {
+        padding: 10
+    },
+    settingBtns: {
+        display: 'flex',
+        alignItems: 'center'
+    },
 }))
+
+const ToolbarBtn = withStyles({
+    root: {
+        background: '#424242'
+    }
+})(Button);
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -110,6 +140,9 @@ export default function MainPage(){
     let [enableAdvancedMode,setEnableAdvancedMode] = useState(false)//开启高级模式
     const [advancedModeDisable,setAdvancedModeDisable] = useState(true)//高级模式是否可更改
     const [enableHierarchy,setEnableHierarchy] = useState(true)//Hierarchy是否能用
+    const [isRecording,setIsRecording] = React.useState(false) //是否正在录制
+    const [needSave,setNeedSave] = React.useState(false)
+    const [isRunning,setIsRunning] = React.useState(false)
     let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
@@ -117,27 +150,6 @@ export default function MainPage(){
         setIP(e.target.value);
     }
 
-
-    //教学弹窗关闭事件
-    let handleCloseTutorials = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setTutorialsWindowOpen(false);
-    };
-    //底部消息弹窗关闭事件
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOkOpen(false);
-    };
-    //底部消息弹窗
-    let showMsg = (msg,type = true)=>{
-        setMessage(msg)
-        setLogType(type?'success':'error')
-        setOkOpen(true)
-    }
     //连接设备
     let connect = function (d,e = '',name = ''){
         setLoading(true)
@@ -174,6 +186,27 @@ export default function MainPage(){
             setIP('')
         })
     }
+    //教学弹窗关闭事件
+    let handleCloseTutorials = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setTutorialsWindowOpen(false);
+    };
+    //底部消息弹窗关闭事件
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOkOpen(false);
+    };
+    //底部消息弹窗
+    let showMsg = (msg,type = true)=>{
+        setMessage(msg)
+        setLogType(type?'success':'error')
+        setOkOpen(true)
+    }
+    
     const test = function (e){
         // setTutorialsMode(true)
         // setTutorialsWindowOpen(true)
@@ -191,6 +224,26 @@ export default function MainPage(){
                 setIsConnected(status['isConnected'])
             }
         })
+    }
+
+    // 按钮
+    const record = () => {
+        setIsRecording(true)
+        showMsg('开始录制，长按屏幕5秒结束录制')
+        window.pywebview.api.record({'caseName': caseName}).then((res)=>{
+            showMsg(res['msg'])
+            setIsRecording(false)
+            setNeedSave(false)
+        })
+    }
+    const handleChangeRecording = e => {
+        setIsRecording(e)
+    }
+    const handleChangeNeedSave = e => {
+        setNeedSave(e)
+    }
+    const handleChangeRunning = e => {
+        setIsRunning(e)
     }
 
     useInterval(()=>{
@@ -253,8 +306,8 @@ export default function MainPage(){
     }
 
     //切换高级模式
-    const switchMode = (e) =>{
-        setEnableAdvancedMode(e.target.checked)
+    const switchMode = () =>{
+        setEnableAdvancedMode(!enableAdvancedMode)
     }
     //选择需要连接的手机
     const handleChange = (e) =>{
@@ -313,16 +366,20 @@ export default function MainPage(){
     let getCurID = (e) =>{
         setCurObjID(e)
     }
-
+    
+    const pl = [
+        {name: 'MI-8'},
+        {name: 'MI_9'}
+    ]
         return (
             // <div className={classes.root}>
             <ThemeProvider theme={theme}>
                 <div className={'container'}>
                     <AppBar position={"static"} className={isConnected?classes.AppBarON:classes.AppBarOFF}>
-                        <Toolbar>
-                            <FormControl variant="filled" className={classes.Input}>
-                                <InputLabel id="demo-simple-select-filled-label">手机设备</InputLabel>
-                                <Select
+                        <Toolbar className={classes.toolbar}>
+                            {/* <FormControl className={classes.Input} variant="filled">
+                                {phoneList.length > 0 ? (
+                                    <Select
                                     labelId="demo-simple-select-filled-label"
                                     id="demo-simple-select-filled"
                                     value={phone}
@@ -335,24 +392,60 @@ export default function MainPage(){
                                     })}
                                     {phoneList.length === 0 && <MenuItem><em>None</em></MenuItem>}
                                 </Select>
+                                ) : (<Button variant="filled" color="primary" disableElevation>No Devices</Button>)}
                             </FormControl>
                             <TextField
                                 id="filled-helperText"
                                 label="IP地址"
-                                variant="filled"
                                 className={classes.Input}
                                 value={ip}
                                 onChange={changeIPValue}
-                            />
-                            <div className={classes.wrapper}>
+                            /> */}
+
+                            {/* new UI: ToolBar */}
+                            <div className={classes.toolbarContainer}>
+                                <div className={classes.deviceContainer}>
+                                    <div>
+                                        {phoneList.length > 0 ? (
+                                            <Select
+                                                style={{width: '200px'}}
+                                                value={phone}
+                                                onChange={handleChange}
+                                                onOpen={getCurDevice}
+                                                disabled={isConnected || loading}
+                                            >
+                                                {phoneList.map((v)=>{
+                                                    return <MenuItem value={v.name}>{v.name}</MenuItem>
+                                                })}
+                                            </Select>
+                                        ) : (<ToolbarBtn size="small" style={{ width: '200px', height: '30px' }}>No Devices</ToolbarBtn>)}
+                                        <Input placeholder="IP地址" value={ip} onChange={changeIPValue} className={classes.ipInput} style={{ height: '30px' }}/>
+                                    </div>
+                                    <div className={classes.wrapper}>
+                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
+                                        {isConnected && <Button variant="contained" color="secondary" size="small" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
+                                        {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+                                    </div>
+                                </div>
+                                <ToolbarBtn size="small" onClick={record} disabled={isRecording || isRunning || !isConnected}><Videocam />开始录制</ToolbarBtn>
+                                <div className={classes.settingBtns}>
+                                    <ButtonGroup style={{ marginRight: '15px' }}>
+                                        <ToolbarBtn size="small"><NoteAdd fontSize="small" /></ToolbarBtn>
+                                        <ToolbarBtn size="small"><Folder fontSize="small" /></ToolbarBtn>
+                                        <ToolbarBtn size="small"><Cloud fontSize="small" /></ToolbarBtn>
+                                    </ButtonGroup>
+                                    <ToolbarBtn size="small" style={{ marginRight: '15px' }} disableElevation onClick={beginTutorial} disabled={tutorialsMode || isConnected}>新手指引</ToolbarBtn>
+                                    <ToolbarBtn size="small" disabled={!advancedModeDisable} onClick={switchMode}>启用高级模式</ToolbarBtn>
+                                </div>
+                            </div>
+                            
+                            {/* <div className={classes.wrapper}>
                                 {!isConnected && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
                                 {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
                                 {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-                            </div>
-                            {/*<Button variant="contained" color="primary" size="medium" disableElevation onClick={test}>Test</Button>*/}
-                            <div className={classes.grow} />
-                            <div>
-                                <Button variant="contained" color="primary" size="small" disableElevation onClick={()=>{setIsFirst(true)}} disabled={tutorialsMode || isConnected}>新手指导</Button>
+                            </div> */}
+                            {/* <div>
+                                <Button variant="contained" color="primary" size="small" disableElevation onClick={()=>{setIsFirst(true)}} disabled={tutorialsMode || isConnected}>新手指引</Button>
                                 <FormControlLabel
                                     control={
                                         <Switch
@@ -365,19 +458,21 @@ export default function MainPage(){
                                     }
                                     label="启用高级模式"
                                 />
-                            </div>
+                                <Button variant="contained" color="primary" size="small" disableElevation disabled={tutorialsMode || isConnected}>启用高级模式</Button>
+                            </div> */}
                         </Toolbar>
                     </AppBar>
-                    <Dialog open={isFirst} className={classes.beginCard}>
+                    {/* <Dialog open={isFirst} className={classes.beginCard}>
                         <DialogTitle id="simple-dialog-title">新用户？</DialogTitle>
                         <DialogContent>
                             <Button variant="contained" color="primary" size="medium" disableElevation onClick={beginTutorial}>进行教学</Button>
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             <Button variant="contained" color="secondary" size="medium" disableElevation onClick={finishNewUser}>跳过</Button>
                         </DialogContent>
-                    </Dialog>
+                    </Dialog> */}
                     <TutorialsBoard
                         open={tutorialsWindowOpen}
+                        // open={true}
                         onClose={handleCloseTutorials}
                         isConnected={isConnected}
                         loading={loading}
@@ -417,7 +512,25 @@ export default function MainPage(){
                         {/*        </div>*/}
                         {/*</div>*/}
                         <div className={'middle'}>
-                            <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>
+                            <div className={'mBlock1'} style={enableAdvancedMode ? setWidth(3) : {height: '100%'}}>
+                            <EditorCard 
+                                ShowMsg={showMsg} 
+                                isConnected={isConnected} 
+                                tutorials={tutorialsMode} 
+                                setTutorialsMode={setTutorialsMode} 
+                                isRecording={isRecording}
+                                onChangeRecording={e => handleChangeRecording(e)}
+                                needSave={needSave}
+                                onChangeNeedSave={e => handleChangeNeedSave(e)}
+                                isRunning={isRunning}
+                                onChangeRunning={e => handleChangeRunning(e)}
+                                changeADV={(e)=>{setAdvancedModeDisable(e)}}
+                            />
+                            </div>
+                            {enableAdvancedMode && <div className={'hScroller'} id={'scroller3'} draggable={"true"} onDragEnd={handleMouseMove}></div>}
+                            {enableAdvancedMode && <div className={'mBlock'}  style={setWidth(4)}>
+                                <ConsoleCard/>
+                            </div>}
                         </div>
                         {/*<div className={'mBlock'}>*/}
                         {/*    <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
@@ -431,15 +544,13 @@ export default function MainPage(){
                         )}
                         <div className={'right'} style={setWidth(2)}>
                             {enableAdvancedMode && (
-                                <div className={'mBlock1'}  style={setWidth(3)}>
+                                <div className={'mBlock1'}>
                                     <PropTable curID={curObjID}/>
                                 </div>
                             )}
-                            {enableAdvancedMode && <div className={'hScroller'} id={'scroller3'} draggable={"true"} onDragEnd={handleMouseMove}></div>}
-                            <div className={'mBlock'}  style={setWidth(4)}>
+                            {!enableAdvancedMode && <div className={'mBlock'}>
                                 <ConsoleCard/>
-                            </div>
-
+                            </div>}
                         </div>
 
                     </div>

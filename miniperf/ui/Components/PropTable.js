@@ -73,7 +73,17 @@ const components = [{
 const useStyle = makeStyles((style)=>({
     root:{
         // background:'lightgrey'
-    }
+    },
+    cardHeader: {
+        height: 22,
+        padding: 5,
+        background: '#424242',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontSize: 14,
+        color: '#fff'
+    },
 }))
 const useRowStyles = makeStyles({
     root: {
@@ -175,7 +185,8 @@ export default function PropTable(props) {
                 <TableHead>
                     <TableRow>
                         {/*<TableCell align={"left"}></TableCell>*/}
-                        <CardHeader title={'Components'}/>
+                        {/* <CardHeader title={'Components'}/> */}
+                        <div className={classes.cardHeader}>Components</div>
                         {/*<TableCell align="right">Value</TableCell>*/}
                     </TableRow>
                 </TableHead>

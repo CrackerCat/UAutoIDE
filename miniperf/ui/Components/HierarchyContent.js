@@ -1,20 +1,48 @@
 import {TreeItem, TreeView} from "@material-ui/lab";
 import React, {useEffect} from "react";
 import {ChevronRight, ExpandMore, RotateLeft} from "@material-ui/icons";
-import {Card, CardContent, CardHeader, IconButton, makeStyles} from "@material-ui/core";
+import {Card, CardContent, CardHeader, IconButton, Button, makeStyles, withStyles} from "@material-ui/core";
 
 
 const useStyles = makeStyles((theme) => ({
     root:{
         height: '100%',
-        'overflow-y':'auto'
+        'overflow-y':'auto',
+        color: '#fff'
     },
     content:{
         height: '100%',
         'overflow-y':'auto'
     },
+    cardHeader: {
+        maxHeight: 21,
+        padding: 5,
+        background: '#424242',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        boxShadow: '0px 1px 1px rgb(0 0 0 / 50%)'
+    },
+    cardHeaderTitle: {
+        fontSize: 14,
+        color: '#fff'
+    },
+    cardHeaderAction: {
+        margin: 0
+    },
+    cardContent: {
+        padding: 0,
+        '&:last-child': {
+            paddingBottom: 0,
+        }
+    }
 }));
 
+const HierarchyBtn = withStyles({
+    root: {
+        padding: '0 5px',
+    }
+})(Button);
 
 export default function HierarchyContent(props){
     const {isConnected,getCurID,enable} = props
@@ -43,13 +71,21 @@ export default function HierarchyContent(props){
     },[isConnected])
 
     return(
-        <Card className={classes.root}>
-            <CardHeader title={'Hierarchy'} action={[
+        <div className={classes.root}>
+            {/* <CardHeader title={'Hierarchy'} action={[
                 <IconButton aria-label="settings" title={'刷新'} disabled={!enable || !isConnected} onClick={getData}>
                     <RotateLeft/>
                 </IconButton>
-            ]}/>
-            <CardContent>
+            ]}/> */}
+            <div className={classes.cardHeader}>
+                <div className={classes.cardHeaderTitle}>Hierarchy</div>
+                <div className={classes.cardHeaderAction}>
+                    <HierarchyBtn aria-label="settings" title={'刷新'} disabled={!enable || !isConnected} onClick={getData}>
+                        <RotateLeft fontSize="small"/>
+                    </HierarchyBtn>
+                </div>
+            </div>
+            <div>
                 <TreeView
                     defaultCollapseIcon={<ExpandMore />}
                     defaultExpandIcon={<ChevronRight />}
@@ -58,8 +94,8 @@ export default function HierarchyContent(props){
                 >
                     {renderTree(hierarchyData)}
                 </TreeView>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     )
 
 

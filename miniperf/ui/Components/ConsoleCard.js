@@ -4,7 +4,9 @@ import {
     CardContent,
     CardHeader,
     IconButton,
+    Button,
     makeStyles,
+    withStyles,
 } from "@material-ui/core";
 import {DeleteForever} from "@material-ui/icons";
 import {useInterval, useUpdate} from "../Util/Util";
@@ -31,7 +33,10 @@ const useStyles = makeStyles((theme) => ({
         height: 'calc(100% - 72px)',
         padding:0,
         display:'flex',
-        'flex-direction':'column'
+        'flex-direction':'column',
+        '&:last-child': {
+            paddingBottom: 0,
+        }
     },
     textArea:{
         width : '100%',
@@ -41,8 +46,35 @@ const useStyles = makeStyles((theme) => ({
         border:0,
         color:'white',
         resize: 'none'
+    },
+    cardHeader: {
+        maxHeight: 22,
+        padding: 5,
+        background: '#424242',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    cardHeaderTitle: {
+        fontSize: 14,
+        color: '#fff'
+    },
+    cardHeaderAction: {
+        margin: 0
+    },
+    cardContent: {
+        padding: 0,
+        '&:last-child': {
+            paddingBottom: 0,
+        }
     }
 }));
+
+const ConsoleBtn = withStyles({
+    root: {
+        padding: '0 5px',
+    }
+})(Button);
 
 
 const ConsoleContent = React.forwardRef((props,ref)=>{
@@ -98,18 +130,28 @@ export default function ConsoleCard (props) {
     }
 
     return (
-        <Card variant={'outlined'} className={classes.root}>
-            <CardHeader
-                title={'Console'}
+        <div className={classes.root}>
+            {/* <CardHeader
+                className={classes.cardHeader}
+                classes={{title: classes.cardHeaderTitle, action: classes.cardHeaderAction}} 
+                title={'Log Window'}
                 action={[
-                    <IconButton aria-label="settings" title={'清空'} onClick={()=>{clearInfo.current.clear()}}>
-                        <DeleteForever/>
-                    </IconButton>
+                    <ConsoleBtn aria-label="settings" title={'清空'} onClick={()=>{clearInfo.current.clear()}}>
+                        <DeleteForever fontSize="small" />
+                    </ConsoleBtn>
                 ]}
-            />
-            <CardContent className={classes.content}>
+            /> */}
+            <div className={classes.cardHeader}>
+                <div className={classes.cardHeaderTitle}>Log Window</div>
+                <div className={classes.cardHeaderAction}>
+                    <ConsoleBtn aria-label="settings" title={'清空'} onClick={()=>{clearInfo.current.clear()}}>
+                        <DeleteForever fontSize="small" />
+                    </ConsoleBtn>
+                </div>
+            </div>
+            <div className={classes.content}>
                 <ConsoleContent ref={clearInfo}/>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     )
 }
