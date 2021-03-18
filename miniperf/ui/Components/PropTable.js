@@ -76,7 +76,7 @@ const useStyle = makeStyles((style)=>({
     },
     cardHeader: {
         height: 22,
-        padding: 5,
+        padding: '5px 5px 5px 24px',
         background: '#424242',
         display: 'flex',
         justifyContent: 'space-between',

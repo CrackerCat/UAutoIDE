@@ -15,8 +15,8 @@ const useStyles = makeStyles((theme) => ({
         'overflow-y':'auto'
     },
     cardHeader: {
-        maxHeight: 21,
-        padding: 5,
+        maxHeight: 22,
+        padding: '5px 5px 5px 24px',
         background: '#424242',
         display: 'flex',
         justifyContent: 'space-between',

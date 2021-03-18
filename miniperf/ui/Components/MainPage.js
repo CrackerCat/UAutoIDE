@@ -57,6 +57,7 @@ const useStyle = makeStyles((style)=>({
         'background-color':'red',
         color: '#fff',
         fontSize: '12px',
+        borderRadius: 5,
         height: 22
     },
     ButtonConnect:{
@@ -91,6 +92,7 @@ const useStyle = makeStyles((style)=>({
         justifyContent: 'space-between',
     },
     deviceContainer: {
+        padding: '3px 0',
         display: 'flex',
         alignItems: 'center'
     },
@@ -522,13 +524,12 @@ export default function MainPage(){
                                 </div>
                                 <ToolbarBtn size="small" style={{padding: '0 15px'}} className={classes.mainBtn} onClick={record} disabled={isRecording || isRunning || !isConnected}><Videocam />开始录制</ToolbarBtn>
                                 <div className={classes.settingBtns}>
-                                    <ButtonGroup style={{ marginRight: '15px' }}>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}><NoteAdd fontSize="small" /></ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn}><Folder fontSize="small" /></ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}><Cloud fontSize="small" /></ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}><Settings fontSize="small" /></ToolbarBtn>
+                                    <ButtonGroup style={{ marginRight: '40px' }}>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}><NoteAdd fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}><Folder fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}><Cloud fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                     </ButtonGroup>
-                                    <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '15px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={tutorialsMode || isConnected}>新手指引</ToolbarBtn>
+                                    <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '40px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={tutorialsMode || isConnected}>新手指引</ToolbarBtn>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{padding: '0 15px'}} disabled={!advancedModeDisable} onClick={switchMode}>启用{enableAdvancedMode ? '简易' : '高级'}模式</ToolbarBtn>
                                 </div>
                             </div>
