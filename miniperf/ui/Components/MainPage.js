@@ -8,7 +8,7 @@ import {
     Toolbar,
     Switch
 } from "@material-ui/core";
-import { Videocam, NoteAdd, Folder, Cloud } from '@material-ui/icons'
+import { Videocam, NoteAdd, Folder, Cloud, Settings } from '@material-ui/icons'
 import { createMuiTheme, makeStyles, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import './MainPage.css'
 import ActionCard from "./ActionCard";
@@ -20,6 +20,7 @@ import HierarchyContent from "./HierarchyContent";
 import {useInterval} from "../Util/Util"
 import * as PropTypes from "prop-types";
 import TutorialsBoard from "./TutorialsBoard";
+import CaseList from "./CasesList";
 
 const theme = createMuiTheme({
     palette: {
@@ -52,10 +53,15 @@ const useStyle = makeStyles((style)=>({
     },
 
     Button:{
-        'border-radius': 0
+        'border-radius': 0,
+        'background-color':'red',
+        color: '#fff',
+        fontSize: '12px',
+        height: 22
     },
     ButtonConnect:{
-        'background-color':'green'
+        'background-color':'green',
+        color: '#fff'
     },
     ButtonDisConnect:{
 
@@ -95,6 +101,10 @@ const useStyle = makeStyles((style)=>({
         display: 'flex',
         alignItems: 'center'
     },
+    mainBtn: {
+        fontSize: '12px',
+        height: 26
+    }
 }))
 
 const ToolbarBtn = withStyles({
@@ -143,6 +153,16 @@ export default function MainPage(){
     const [isRecording,setIsRecording] = React.useState(false) //是否正在录制
     const [needSave,setNeedSave] = React.useState(false)
     const [isRunning,setIsRunning] = React.useState(false)
+    const [createWindowOpen,setCreateWindowOpen] = useState(false)//创建案例文件弹窗
+    const [createCaseName,setCreateCaseName] = useState('')//创建案例文件案例名
+    const [createCaseFileName,setCreateCaseFileName] = useState('')//创建案例文件文件名
+    const [caseName,setCaseName] = useState('')//当前案例名称
+    const [scriptsData,setScriptsData] = React.useState('')
+    const [settingWindowOpen,setSettingWindowOpen] = useState(false)//设置弹窗
+    const [workSpacePath,setWorkSpacePath] = useState('')//设置案例工作区路径
+    const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
+    const [isPausing,setIsPausing] = React.useState(false)
+
     let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
@@ -206,6 +226,31 @@ export default function MainPage(){
         setLogType(type?'success':'error')
         setOkOpen(true)
     }
+    //设置弹窗关闭事件
+    let handleCloseSetting = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setWorkSpacePath('')
+        setSettingWindowOpen(false);
+    };
+    //案例文件弹窗关闭事件
+    let handleCloseCases = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setCasesWindowOpen(false);
+    };
+
+    let upload = function (v){
+        window.pywebview.api.loadCase({'caseName':v}).then((res)=>{
+            setCaseName(v)
+            showMsg(v,res['ok'])
+            setIsPausing(false)
+            setScriptsData(res['msg'])
+            handleCloseCases('','')
+        })
+    }
     
     const test = function (e){
         // setTutorialsMode(true)
@@ -245,6 +290,23 @@ export default function MainPage(){
     const handleChangeRunning = e => {
         setIsRunning(e)
     }
+    const handleChangeCaseName = s => {
+        setCaseName(s)
+    }
+    const handleChangeScriptsData = s => {
+        setScriptsData(s)
+    }
+    const handleChangeIsPausing = e => {
+        setIsPausing(e)
+    }
+
+    //创建案例文件弹窗关闭事件
+    let handleCloseCreate = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setCreateWindowOpen(false);
+    };
 
     useInterval(()=>{
         checkConnection()
@@ -252,6 +314,41 @@ export default function MainPage(){
             getCurDevice()
         }
     },1000)
+
+    let createFile = (v) => {
+        if(createCaseFileName === '' || createCaseName === '')
+            return
+        window.pywebview.api.createCase({'name':createCaseFileName,'caseName':createCaseName}).then((res)=>{
+            if(res['ok']){
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                handleCloseCreate('','')
+                setCaseName(res['msg'])
+                setScriptsData('')
+            }else{
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                handleCloseCreate('','')
+                showMsg(res['msg'],res['ok'])
+            }
+        })
+    }
+
+    let setWorkSpace = (v) => {
+        if(workSpacePath === '')
+            return
+        window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
+            if(res['ok']){
+                setWorkSpacePath('')
+                handleCloseSetting('','')
+                setCaseName('')
+                setScriptsData('')
+                showMsg(res['msg'],res['ok'])
+            }else{
+                showMsg(res['msg'],res['ok'])
+            }
+        })
+    }
 
     //检测是否为新用户
     const isNewUser = () =>{
@@ -367,10 +464,6 @@ export default function MainPage(){
         setCurObjID(e)
     }
     
-    const pl = [
-        {name: 'MI-8'},
-        {name: 'MI_9'}
-    ]
         return (
             // <div className={classes.root}>
             <ThemeProvider theme={theme}>
@@ -408,7 +501,7 @@ export default function MainPage(){
                                     <div>
                                         {phoneList.length > 0 ? (
                                             <Select
-                                                style={{width: '200px'}}
+                                                style={{width: '200px', height: '22px', fontSize: '12px'}}
                                                 value={phone}
                                                 onChange={handleChange}
                                                 onOpen={getCurDevice}
@@ -418,24 +511,25 @@ export default function MainPage(){
                                                     return <MenuItem value={v.name}>{v.name}</MenuItem>
                                                 })}
                                             </Select>
-                                        ) : (<ToolbarBtn size="small" style={{ width: '200px', height: '30px' }}>No Devices</ToolbarBtn>)}
-                                        <Input placeholder="IP地址" value={ip} onChange={changeIPValue} className={classes.ipInput} style={{ height: '30px' }}/>
+                                        ) : (<ToolbarBtn size="small" style={{ width: '200px', height: '22px', fontSize: '12px', lineHeight: '12px' }}>No Devices</ToolbarBtn>)}
+                                        <Input placeholder="IP地址" value={ip} onChange={changeIPValue} className={classes.ipInput} style={{ height: '22px', fontSize: '12px' }}/>
                                     </div>
                                     <div className={classes.wrapper}>
-                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
-                                        {isConnected && <Button variant="contained" color="secondary" size="small" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
+                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
+                                        {isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
                                         {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                                     </div>
                                 </div>
-                                <ToolbarBtn size="small" onClick={record} disabled={isRecording || isRunning || !isConnected}><Videocam />开始录制</ToolbarBtn>
+                                <ToolbarBtn size="small" style={{padding: '0 15px'}} className={classes.mainBtn} onClick={record} disabled={isRecording || isRunning || !isConnected}><Videocam />开始录制</ToolbarBtn>
                                 <div className={classes.settingBtns}>
                                     <ButtonGroup style={{ marginRight: '15px' }}>
-                                        <ToolbarBtn size="small"><NoteAdd fontSize="small" /></ToolbarBtn>
-                                        <ToolbarBtn size="small"><Folder fontSize="small" /></ToolbarBtn>
-                                        <ToolbarBtn size="small"><Cloud fontSize="small" /></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}><NoteAdd fontSize="small" /></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn}><Folder fontSize="small" /></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}><Cloud fontSize="small" /></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}><Settings fontSize="small" /></ToolbarBtn>
                                     </ButtonGroup>
-                                    <ToolbarBtn size="small" style={{ marginRight: '15px' }} disableElevation onClick={beginTutorial} disabled={tutorialsMode || isConnected}>新手指引</ToolbarBtn>
-                                    <ToolbarBtn size="small" disabled={!advancedModeDisable} onClick={switchMode}>启用高级模式</ToolbarBtn>
+                                    <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '15px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={tutorialsMode || isConnected}>新手指引</ToolbarBtn>
+                                    <ToolbarBtn size="small" className={classes.mainBtn} style={{padding: '0 15px'}} disabled={!advancedModeDisable} onClick={switchMode}>启用{enableAdvancedMode ? '简易' : '高级'}模式</ToolbarBtn>
                                 </div>
                             </div>
                             
@@ -525,6 +619,12 @@ export default function MainPage(){
                                 isRunning={isRunning}
                                 onChangeRunning={e => handleChangeRunning(e)}
                                 changeADV={(e)=>{setAdvancedModeDisable(e)}}
+                                caseName={caseName}
+                                onChangeCaseName={s => handleChangeCaseName(s)}
+                                scriptsData={scriptsData}
+                                onChangeScriptsData={s => handleChangeScriptsData(s)}
+                                isPausing={isPausing}
+                                onChangeIsPausing={e => handleChangeIsPausing(e)}
                             />
                             </div>
                             {enableAdvancedMode && <div className={'hScroller'} id={'scroller3'} draggable={"true"} onDragEnd={handleMouseMove}></div>}
@@ -560,6 +660,52 @@ export default function MainPage(){
                         {message}
                     </Alert>
                 </Snackbar>
+                <Dialog open={createWindowOpen}>
+                    <DialogTitle>新建案例</DialogTitle>
+                    <DialogContent>
+                            <TextField id="outlined-basic" label="案例名称" variant="outlined" value={createCaseName}
+                                    onChange={(e)=>{setCreateCaseName(e.target.value)}}
+                            />
+                            <TextField id="outlined-basic" label="案例文件名" variant="outlined" value={createCaseFileName}
+                                    onChange={(e)=>{setCreateCaseFileName(e.target.value)}}
+                            />
+                            <br/>
+                            <Button variant="contained" color="primary"
+                                    onClick={(e)=>{
+                                        createFile(e)
+                                }}
+                            >
+                                创建
+                            </Button>
+                            <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseCreate('','')}}>
+                                取消
+                            </Button>
+                    </DialogContent>
+                </Dialog>
+                <Dialog open={settingWindowOpen} onClose={handleCloseSetting}>
+                    <DialogTitle>设置</DialogTitle>
+                    <DialogContent>
+                        <TextField id="outlined-basic" label="工作区路径" variant="outlined" value={workSpacePath}
+                                onChange={(e)=>{setWorkSpacePath(e.target.value)}}
+                        />
+                        <br/>
+                        <Button variant="contained" color="primary"
+                                onClick={(e)=>{
+                                    setWorkSpace(e)
+                                }}
+                        >
+                            设置或创建
+                        </Button>
+                        <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseSetting('','')}}>
+                            取消
+                        </Button>
+                    </DialogContent>
+                </Dialog>
+                <CaseList
+                    open={casesWindowOpen}
+                    onClose={handleCloseCases}
+                    load={upload}
+                />
             </ThemeProvider>
             // </div>
         )

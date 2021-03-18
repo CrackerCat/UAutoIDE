@@ -18,7 +18,7 @@ import {
     MissedVideoCall, OpenInBrowser,
     PauseCircleFilled, PlayCircleFilled,
     RotateLeft,
-    Save,
+    SaveAlt,
     SendOutlined, Settings,
     Stop,
     PlayArrow, Pause, Code
@@ -122,22 +122,17 @@ export default function EditorCard (props) {
         isRecording,
         needSave,
         isRunning,
+        caseName,
+        scriptsData,
+        isPausing,
         onChangeRecording,
         onChangeNeedSave,
         onChangeRunning,
+        onChangeCaseName,
+        onChangeScriptsData,
+        onChangeIsPausing,
     } = props
-    const [scriptsData,setScriptsData] = React.useState('')
-    const [isPausing,setIsPausing] = React.useState(false)
-    const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
-    const [caseName,setCaseName] = useState('')//当前案例名称
-    const [createWindowOpen,setCreateWindowOpen] = useState(false)//创建案例文件弹窗
-
-    const [createCaseName,setCreateCaseName] = useState('')//创建案例文件案例名
-    const [createCaseFileName,setCreateCaseFileName] = useState('')//创建案例文件文件名
-
-    const [settingWindowOpen,setSettingWindowOpen] = useState(false)//设置弹窗
-    const [workSpacePath,setWorkSpacePath] = useState('')//设置案例工作区路径
-
+    const [runned, setRunned] = React.useState(false)
     const classes = useStyles()
 
     useInterval(()=>{
@@ -145,7 +140,7 @@ export default function EditorCard (props) {
         if(isRecording)
         {
             window.pywebview.api.updateScripts({'caseName':caseName}).then((res)=>{
-                setScriptsData(res['msg'])
+                onChangeScriptsData(res['msg'])
             })
         }
     },1000)
@@ -157,12 +152,12 @@ export default function EditorCard (props) {
         else{
             if(tutorials){
                 window.pywebview.api.getDemoScripts().then((res)=>{
-                    setScriptsData(res['msg'])
+                    onChangeScriptsData(res['msg'])
                 })
             }
             else{
                 window.pywebview.api.updateScripts({'caseName':caseName}).then((res)=>{
-                    setScriptsData(res['msg'])
+                    onChangeScriptsData(res['msg'])
                 })
             }
         }
@@ -174,65 +169,66 @@ export default function EditorCard (props) {
         // setIsRecording(false)
         onChangeRecording(false)
         onChangeRunning(false)
-        setCaseName('')
+        onChangeCaseName('')
+        setRunned(false)
     }
     //案例文件弹窗关闭事件
-    let handleCloseCases = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setCasesWindowOpen(false);
-    };
+    // let handleCloseCases = (event, reason) => {
+    //     if (reason === 'clickaway') {
+    //         return;
+    //     }
+    //     setCasesWindowOpen(false);
+    // };
     //创建案例文件弹窗关闭事件
-    let handleCloseCreate = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setCreateWindowOpen(false);
-    };
+    // let handleCloseCreate = (event, reason) => {
+    //     if (reason === 'clickaway') {
+    //         return;
+    //     }
+    //     setCreateWindowOpen(false);
+    // };
     //设置弹窗关闭事件
-    let handleCloseSetting = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setWorkSpacePath('')
-        setSettingWindowOpen(false);
-    };
+    // let handleCloseSetting = (event, reason) => {
+    //     if (reason === 'clickaway') {
+    //         return;
+    //     }
+    //     setWorkSpacePath('')
+    //     setSettingWindowOpen(false);
+    // };
 
-    let setWorkSpace = (v) => {
-        if(workSpacePath === '')
-            return
-        window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
-            if(res['ok']){
-                setWorkSpacePath('')
-                handleCloseSetting('','')
-                setCaseName('')
-                setScriptsData('')
-                ShowMsg(res['msg'],res['ok'])
-            }else{
-                ShowMsg(res['msg'],res['ok'])
-            }
-        })
-    }
+    // let setWorkSpace = (v) => {
+    //     if(workSpacePath === '')
+    //         return
+    //     window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
+    //         if(res['ok']){
+    //             setWorkSpacePath('')
+    //             handleCloseSetting('','')
+    //             onChangeCaseName('')
+    //             onChangeScriptsData('')
+    //             ShowMsg(res['msg'],res['ok'])
+    //         }else{
+    //             ShowMsg(res['msg'],res['ok'])
+    //         }
+    //     })
+    // }
 
-    let createFile = (v) => {
-        if(createCaseFileName === '' || createCaseName === '')
-            return
-        window.pywebview.api.createCase({'name':createCaseFileName,'caseName':createCaseName}).then((res)=>{
-            if(res['ok']){
-                setCreateCaseName('')
-                setCreateCaseFileName('')
-                handleCloseCreate('','')
-                setCaseName(res['msg'])
-                setScriptsData('')
-            }else{
-                setCreateCaseName('')
-                setCreateCaseFileName('')
-                handleCloseCreate('','')
-                ShowMsg(res['msg'],res['ok'])
-            }
-        })
-    }
+    // let createFile = (v) => {
+    //     if(createCaseFileName === '' || createCaseName === '')
+    //         return
+    //     window.pywebview.api.createCase({'name':createCaseFileName,'caseName':createCaseName}).then((res)=>{
+    //         if(res['ok']){
+    //             setCreateCaseName('')
+    //             setCreateCaseFileName('')
+    //             handleCloseCreate('','')
+    //             setCaseName(res['msg'])
+    //             setScriptsData('')
+    //         }else{
+    //             setCreateCaseName('')
+    //             setCreateCaseFileName('')
+    //             handleCloseCreate('','')
+    //             ShowMsg(res['msg'],res['ok'])
+    //         }
+    //     })
+    // }
 
 
     // function record(){
@@ -247,6 +243,7 @@ export default function EditorCard (props) {
 
     function runCase(){
         onChangeRunning(true)
+        setRunned(true)
         ShowMsg('开始运行')
         window.pywebview.api.runCase({'fileInfo':scriptsData,'caseName':caseName}).then((res)=>{
             ShowMsg(res['msg'],res['ok'])
@@ -255,8 +252,9 @@ export default function EditorCard (props) {
             if(tutorials){
                 setTutorialsMode(false)
             }
-
+            setRunned(false)
         })
+        // .then(() => {alert(`record: ${isRecording}  !connect:${!isConnected}  !run:${!isRunning}  !pause:${!isPausing}`)})
     }
     function saveAs() {
 
@@ -284,14 +282,14 @@ export default function EditorCard (props) {
     const pause = () =>{
         window.pywebview.api.pause().then((res)=>{
             ShowMsg(res['msg'])
-            setIsPausing(true)
+            onChangeIsPausing(true)
         })
     }
     //继续脚本运行
     const continuePlay = ()=>{
         window.pywebview.api.continuePlay().then((res)=>{
             ShowMsg(res['msg'])
-            setIsPausing(false)
+            onChangeIsPausing(false)
         })
     }
     //通过vs code打开
@@ -302,18 +300,18 @@ export default function EditorCard (props) {
     }
 
     const changeHandle = (e) =>{
-        setScriptsData(e)
+        onChangeScriptsData(e)
         onChangeNeedSave(true)
     }
-    let upload = function (v){
-        window.pywebview.api.loadCase({'caseName':v}).then((res)=>{
-            setCaseName(v)
-            ShowMsg(v,res['ok'])
-            setIsPausing(false)
-            setScriptsData(res['msg'])
-            handleCloseCases('','')
-        })
-    }
+    // let upload = function (v){
+    //     window.pywebview.api.loadCase({'caseName':v}).then((res)=>{
+    //         onChangeCaseName(v)
+    //         ShowMsg(v,res['ok'])
+    //         setIsPausing(false)
+    //         onChangeScriptsData(res['msg'])
+    //         handleCloseCases('','')
+    //     })
+    // }
     return (
         // <Card variant={'outlined'} className={classes.root}>
         //     <CardHeader title={'Coding'} action={[
@@ -423,7 +421,7 @@ export default function EditorCard (props) {
                 <div className={classes.cardHeader}>
                     <div className={classes.cardHeaderTitle}>Script Window</div>
                     <div className={classes.cardHeaderAction}>
-                        <EditorBtn aria-label="settings" title={'开始'} onClick={continuePlay} disabled={isRecording || !isConnected || !isRunning || !isPausing}>
+                        <EditorBtn aria-label="settings" title={runned ? '继续' : '开始'} onClick={runned ? continuePlay : runCase} disabled={runned ? (isRecording || !isConnected || !isRunning || !isPausing) : (isRecording || isRunning || !isConnected)}>
                             <PlayArrow fontSize="small" />
                         </EditorBtn>
                         <EditorBtn aria-label="settings" title={'暂停'} onClick={pause} disabled={isRecording || !isConnected || !isRunning || isPausing}>
@@ -431,6 +429,9 @@ export default function EditorCard (props) {
                         </EditorBtn>
                         <EditorBtn aria-label="settings" title={'通过VS CODE打开工作区'} onClick={()=>{openInVS()}} disabled={isRecording || isRunning}>
                             <Code fontSize="small" />
+                        </EditorBtn>
+                        <EditorBtn aria-label="settings" title={'导出脚本'} onClick={saveAs} disabled={isRecording || isRunning}>
+                            <SaveAlt fontSize="small" />
                         </EditorBtn>
                     </div>
                 </div>
@@ -451,11 +452,11 @@ export default function EditorCard (props) {
                     </div>
                     }
                 </div>
-                <CaseList
+                {/* <CaseList
                     open={casesWindowOpen}
                     onClose={handleCloseCases}
                     load={upload}
-                />
+                /> */}
             </div>
     )
 }
