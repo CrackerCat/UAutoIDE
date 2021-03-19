@@ -94,8 +94,12 @@ class Api:
 
     def runCase(self,data):
         return extension.runCase(data)
+
     def getCurDevice(self):
-        return extension.getCurDevice()
+        return extension.get_connected_devices()
+
+    def isDevicesChange(self):
+        return extension.isDevicesChange()
 
     # 获取对应ID的GameObject详情
     def get_inspector(self,data):

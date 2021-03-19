@@ -6,6 +6,9 @@ import time
 import traceback
 import sys
 import configparser
+
+from miniperf import helper, adb_helper
+# from miniperf.adb import Device
 from miniperf.adb import Device
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -20,11 +23,12 @@ config.read(configPath, encoding='UTF-8')
 
 g_webview = None
 phone = Device(ROOT_DIR)
-
+isNotChanged = True
 workSpacePath = config.get('Setting', 'cases_path')
 if workSpacePath == r'\\':
-    workSpacePath = os.path.join(ROOT_DIR,'asset','WorkSpace')
+    workSpacePath = os.path.join(ROOT_DIR, 'asset', 'WorkSpace')
 sys.path.append(os.path.join(workSpacePath))
+
 
 class Header(object):
     def __init__(self, _comment, _filed, _type, _subtype):
@@ -42,7 +46,12 @@ def test():
     module.AutoRun(phone.device)
     return {"ok": True, "msg": '运行完成'}
 
-
+def isDevicesChange():
+    global isNotChanged
+    while isNotChanged:
+        time.sleep(0.2)
+    isNotChanged = True
+    return {"ok": True}
 # 加载本地脚本列表
 def loadCasesList():
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
@@ -70,7 +79,7 @@ def setWorkSpace(data):
             createWorkSpace(data['path'])
     else:
         workSpacePath = data['path']
-    setConfig('Setting','cases_path',workSpacePath)
+    setConfig('Setting', 'cases_path', workSpacePath)
     sys.path.append(os.path.join(workSpacePath))
     return {"ok": True, "msg": '设置成功'}
 
@@ -85,10 +94,12 @@ def initWorkSpace():
         # print()
         LoadModuleByPath(script.split('\\')[-1].split('.')[0], script)
 
-def create(path,name,type,default=''):
-    with open(os.path.join(path, name+'.'+type), 'w') as f:
+
+def create(path, name, type, default=''):
+    with open(os.path.join(path, name + '.' + type), 'w') as f:
         f.write(default)
         f.close()
+
 
 # 新建工作区
 def createWorkSpace(path: str):
@@ -197,10 +208,10 @@ def getTempFile():
         return {"ok": False, "msg": e}
 
 
-
 def connect(data):
     global phone
     try:
+        print('sn',data['sn'])
         res = phone.connect(data['sn'], data['ip'])
         return {"ok": True, "msg": res}
     except Exception as e:
@@ -208,6 +219,7 @@ def connect(data):
 
 
 def disConnect():
+    # pass
     global phone
     if phone.isConnected:
         phone.disConnect()
@@ -215,6 +227,7 @@ def disConnect():
 
 
 def record(data):
+    # pass
     global phone
     if phone.isConnected:
         case = data['caseName'] or 'temp_test'
@@ -223,13 +236,30 @@ def record(data):
         phone.record(CasePath(case + '.py'))
         return {"ok": True, "msg": '录制完成'}
 
+def get_ip_address(serial):
+    try:
+        ip_str_arr = adb_helper.shell(serial, "ip route show").split("\n")
+        for item1 in ip_str_arr:
+            if "wlan" in item1 and "src" in item1:
+                for index, item2 in enumerate(item1.split()):
+                    if item2 == "src":
+                        return item1.split()[index + 1]
+    except:
+        traceback.print_exc()
+    return '0.0.0.0'
 
-def getCurDevice():
-    res = phone.GetDevices()
-    first_key = ''
-    # if len(res) > 0:
-    #     first_key = list(res.keys())[0]
-    return {"ok": True, "msg": res}
+
+def get_connected_devices():
+    print('-------------------------------------------')
+    devices = helper.android_device_manager.get_connected_devices()
+    logging.info(devices)
+    dat = []
+    for e in devices:
+        # ip = '127.0.0.1'
+        ip = get_ip_address(e.serial)
+        dat.append({'name': e.device_name, 'sn': e.serial, 'ip': ip})
+        logging.info(f'{e}, {ip}')
+    return {"ok": True, "msg": dat}
 
 
 # 当前连接状态
@@ -239,14 +269,15 @@ def checkConnection():
 
 # 保存temp脚本
 def saveTempFile(s):
-    with open(os.path.join(workSpacePath,'pages','temp_test.py'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(workSpacePath, 'pages', 'temp_test.py'), 'w', encoding='utf-8') as f:
         f.write(s)
     return {"ok": True, "msg": "保存成功"}
 
+
 # 保存脚本
-def saveFile(name,s):
+def saveFile(name, s):
     global workSpacePath
-    with open(os.path.join(workSpacePath, 'pages',name + '.py'), 'w') as f:
+    with open(os.path.join(workSpacePath, 'pages', name + '.py'), 'w') as f:
         f.write(s)
     return {"ok": True, "msg": "保存成功"}
 
@@ -267,6 +298,7 @@ def getDemoScripts():
     with open(os.path.join(ROOT_DIR, 'asset', 'demo.py'), 'r') as f:
         res = f.read()
         return {"ok": True, "msg": res}
+
 
 def LoadModuleByPath(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
@@ -291,7 +323,7 @@ def runCase(data):
             if case == '':
                 case = 'temp_test'
             saveTempFile(data['fileInfo'])
-            saveFile(data['caseName'],data['fileInfo'])
+            saveFile(data['caseName'], data['fileInfo'])
             module = LoadModuleByPath(case, CasePath(case + ".py"))
             module.AutoRun(phone.device)
             return {"ok": True, "msg": '运行完成'}
@@ -303,6 +335,7 @@ def runCase(data):
 def isNewUser():
     return {"ok": True, "msg": config.getboolean('General', 'new_user')}
 
+
 # 通过VS CODE打开工作区
 def openInVS():
     try:
@@ -311,10 +344,12 @@ def openInVS():
     except:
         return {"ok": False, "msg": '出错'}
 
+
 # 修改Config
-def setConfig(section,name,value):
+def setConfig(section, name, value):
     config.set(section, name, value)
     config.write(open(configPath, "r+", encoding='UTF-8'))
+
 
 # 完成新用户设置
 def finishNewUser():

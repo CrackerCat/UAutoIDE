@@ -195,9 +195,9 @@ export default function MainPage(){
 
     useInterval(()=>{
         checkConnection()
-        if(!isConnected && !loading){
-            getCurDevice()
-        }
+        // if(!isConnected && !loading){
+        //     getCurDevice()
+        // }
     },1000)
 
     //检测是否为新用户
@@ -221,8 +221,19 @@ export default function MainPage(){
         })
     }
 
+    const isDevicesChange = () =>{
+        window.pywebview.api.isDevicesChange().then((res)=>{
+            if(!isConnected && !loading)
+            {
+                getCurDevice()
+            }
+            isDevicesChange()
+        })
+    }
+
     useEffect(()=>{
         setTimeout(isNewUser,2000)
+        setTimeout(isDevicesChange,2000)
     },[])
 
     useEffect(()=>{
@@ -245,6 +256,13 @@ export default function MainPage(){
                 if(res['msg'].length > 0 && phone === ''){
                     setPhone(res['msg'][0]['name'])
                     setSN(res['msg'][0]['sn'])
+                    setIP(res['msg'][0]['ip'])
+                }
+                else
+                {
+                    setPhone('')
+                    setSN('')
+                    setIP('')
                 }
             }else{
                 showMsg(res['msg'],res['ok'])
@@ -264,6 +282,8 @@ export default function MainPage(){
             if(p['name'] === e.target.value){
 
                 setSN(p['sn'])
+                console.log(p['sn']);
+                setIP(p['ip'])
             }
         }
     }

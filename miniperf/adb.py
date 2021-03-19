@@ -2,7 +2,7 @@ import json
 import os
 
 from u3driver import AltrunUnityDriver, By
-
+from miniperf import device_manager
 demoPackageName = 'com.DefaultName.DefaultName'
 demoPackageActivity = 'com.unity3d.player.UnityPlayerActivity'
 
