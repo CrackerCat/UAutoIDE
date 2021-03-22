@@ -72,26 +72,28 @@ def loadCase(data):
 
 # 打开工作区
 def openUAUTOFile():
-    # window = tk.Tk()
-    # window.withdraw()
+    window = tk.Tk()
+    window.withdraw()
     FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
     # print(os.path.abspath(FilePath))
     FilePath = os.path.dirname(FilePath)
-    # window.mainloop()
     data = {'path':FilePath}
     setWorkSpace(data)
+    window.mainloop()
+    window.destroy()
     return {"ok": True, "msg": FilePath}
 
 # 选择创建工作区的目录
 def createuserWorkSpace():
-    # window = tk.Tk()
-    # window.withdraw()
+    window = tk.Tk()
+    window.withdraw()
     FilePath = filedialog.askdirectory(title = "请选择项目目录",initialdir=workSpacePath)
     # FilePath = os.path.dirname(FilePath)
     # print(FilePath)
-    # window.mainloop()
     data = {'createpath':FilePath}
     setCreateWorkSpace(data)
+    window.mainloop()
+    window.destroy()
     return {"ok":True, "msg" : FilePath}
 
 # 创建工作区
