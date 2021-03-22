@@ -155,18 +155,28 @@ export default function EditorCard (props) {
     };
 
     let setWorkSpace = (v) => {
-        if(workSpacePath === '')
-            return
-        window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
-            if(res['ok']){
-                setWorkSpacePath('')
-                handleCloseSetting('','')
-                setCaseName('')
-                setScriptsData('')
-                ShowMsg(res['msg'],res['ok'])
-            }else{
-                ShowMsg(res['msg'],res['ok'])
-            }
+        // if(workSpacePath === '')
+        //     return
+        // window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
+        //     if(res['ok']){
+        //         setWorkSpacePath('')
+        //         handleCloseSetting('','')
+        //         setCaseName('')
+        //         setScriptsData('')
+        //         ShowMsg(res['msg'],res['ok'])
+        //     }else{
+        //         ShowMsg(res['msg'],res['ok'])
+        //     }
+        // })
+        window.pywebview.api.openUAUTOFile().then((res)=>{
+            console.log(res['msg'])
+        })
+    }
+
+    let createuserWorkSpace = (v) => {
+        window.pywebview.api.createuserWorkSpace().then((res)=>{
+            console.log(res['msg'])
+            ShowMsg(res['msg'],res['ok'])
         })
     }
 
@@ -334,16 +344,23 @@ export default function EditorCard (props) {
             <Dialog open={settingWindowOpen} onClose={handleCloseSetting}>
                 <DialogTitle>设置</DialogTitle>
                 <DialogContent>
-                    <TextField id="outlined-basic" label="工作区路径" variant="outlined" value={workSpacePath}
+                    {/* <TextField id="outlined-basic" label="工作区路径" variant="outlined" value={workSpacePath}
                                onChange={(e)=>{setWorkSpacePath(e.target.value)}}
                     />
-                    <br/>
+                    <br/> */}
                     <Button variant="contained" color="primary"
                             onClick={(e)=>{
                                 setWorkSpace(e)
                             }}
                     >
-                        设置或创建
+                        打开
+                    </Button>
+                    <Button variant="contained" color="primary"
+                            onClick={(e)=>{
+                                createuserWorkSpace(e)
+                            }}
+                    >
+                        创建
                     </Button>
                     <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseSetting('','')}}>
                         取消

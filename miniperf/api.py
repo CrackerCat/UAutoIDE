@@ -149,3 +149,9 @@ class Api:
     # 设置工作区
     def setWorkSpace(self,data):
         return extension.setWorkSpace(data)
+
+    def openUAUTOFile(self):
+        return extension.openUAUTOFile()
+
+    def createuserWorkSpace(self):
+        return extension.createuserWorkSpace()

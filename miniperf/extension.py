@@ -6,6 +6,8 @@ import time
 import traceback
 import sys
 import configparser
+import tkinter as tk
+from tkinter import filedialog
 
 from miniperf import helper, adb_helper
 # from miniperf.adb import Device
@@ -68,21 +70,51 @@ def loadCase(data):
     except Exception as e:
         return {"ok": False, "msg": e}
 
+# 打开工作区
+def openUAUTOFile():
+    # window = tk.Tk()
+    # window.withdraw()
+    FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
+    # print(os.path.abspath(FilePath))
+    FilePath = os.path.dirname(FilePath)
+    # window.mainloop()
+    data = {'path':FilePath}
+    setWorkSpace(data)
+    return {"ok": True, "msg": FilePath}
+
+# 选择创建工作区的目录
+def createuserWorkSpace():
+    # window = tk.Tk()
+    # window.withdraw()
+    FilePath = filedialog.askdirectory(title = "请选择项目目录",initialdir=workSpacePath)
+    # FilePath = os.path.dirname(FilePath)
+    # print(FilePath)
+    # window.mainloop()
+    data = {'createpath':FilePath}
+    setCreateWorkSpace(data)
+    return {"ok":True, "msg" : FilePath}
+
+# 创建工作区
+def setCreateWorkSpace(data):
+    global workSpacePath
+    if not os.path.exists(os.path.join(data['createpath'], '*.UAUTO')):
+        if os.listdir(data['createpath']):
+            return {"ok": False, "msg": '选择的创建路径不为空'}
+        else:
+            createWorkSpace(data['createpath'])
+    else:
+        workSpacePath = data['createpath']
+    setConfig('Setting', 'cases_path', workSpacePath)
+    sys.path.append(os.path.join(workSpacePath))
+    return {"ok": True, "msg": '创建成功'}
 
 # 加载工作区
 def setWorkSpace(data):
     global workSpacePath
-    if not os.path.exists(os.path.join(data['path'], 'setting.UAUTO')):
-        if os.listdir(data['path']):
-            return {"ok": False, "msg": '该路径不是项目路径且不为空'}
-        else:
-            createWorkSpace(data['path'])
-    else:
-        workSpacePath = data['path']
+    workSpacePath = data['path']
     setConfig('Setting', 'cases_path', workSpacePath)
     sys.path.append(os.path.join(workSpacePath))
     return {"ok": True, "msg": '设置成功'}
-
 
 def initWorkSpace():
     # path = os.path.join(workSpacePath, 'pages')
@@ -99,7 +131,6 @@ def create(path, name, type, default=''):
     with open(os.path.join(path, name + '.' + type), 'w') as f:
         f.write(default)
         f.close()
-
 
 # 新建工作区
 def createWorkSpace(path: str):
@@ -348,13 +379,13 @@ def openInVS():
 # 修改Config
 def setConfig(section, name, value):
     config.set(section, name, value)
-    config.write(open(configPath, "r+", encoding='UTF-8'))
+    config.write(open(configPath, "w", encoding='UTF-8'))
 
 
 # 完成新用户设置
 def finishNewUser():
     config.set('General', 'new_user', 'False')
-    config.write(open(configPath, "r+", encoding='UTF-8'))
+    config.write(open(configPath, "w", encoding='UTF-8'))
     return {"ok": True, "msg": '设置完成'}
 
 

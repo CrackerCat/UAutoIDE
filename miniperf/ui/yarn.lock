@@ -5934,8 +5934,8 @@ watchpack@^1.7.4:
 
 webpack-cli@^4.5.0:
   version "4.5.0"
-  resolved "https://registry.npm.taobao.org/webpack-cli/download/webpack-cli-4.5.0.tgz?cache=0&sync_timestamp=1612285816128&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fwebpack-cli%2Fdownload%2Fwebpack-cli-4.5.0.tgz#b5213b84adf6e1f5de6391334c9fa53a48850466"
-  integrity sha1-tSE7hK324fXeY5EzTJ+lOkiFBGY=
+  resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-4.5.0.tgz#b5213b84adf6e1f5de6391334c9fa53a48850466"
+  integrity sha512-wXg/ef6Ibstl2f50mnkcHblRPN/P9J4Nlod5Hg9HGFgSeF8rsqDGHJeVe4aR26q9l62TUJi6vmvC2Qz96YJw1Q==
   dependencies:
     "@discoveryjs/json-ext" "^0.5.0"
     "@webpack-cli/configtest" "^1.0.1"
