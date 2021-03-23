@@ -117,16 +117,17 @@ export default function MainPage(){
         setIP(e.target.value);
     }
 
-
     //教学弹窗关闭事件
     let handleCloseTutorials = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
         setTutorialsWindowOpen(false);
+        setTutorialsMode(false);
         if(isConnected){
             disConnect();
-        }
+        }     
+        showMsg('新手指引已关闭');
     };
     //底部消息弹窗关闭事件
     const handleClose = (event, reason) => {

@@ -13,6 +13,9 @@ const useStyle = makeStyles((theme)=>({
     },
     Finish:{
         color:'green'
+    },
+    close: {
+        left:200
     }
 }))
 
@@ -65,7 +68,7 @@ export default function TutorialsBoard(props){
         <Dialog open={open} className={classes.root}>
             <DialogTitle id="simple-dialog-title">
                 演示案例
-                <IconButton aria-label="settings" onClick={onClose('','')}>
+                <IconButton className={classes.close} onClick={()=>{onClose('','')}}>
                     <HighlightOffIcon/>
                 </IconButton>
             </DialogTitle>
