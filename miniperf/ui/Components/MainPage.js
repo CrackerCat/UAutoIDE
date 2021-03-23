@@ -124,6 +124,9 @@ export default function MainPage(){
             return;
         }
         setTutorialsWindowOpen(false);
+        if(isConnected){
+            disConnect();
+        }
     };
     //底部消息弹窗关闭事件
     const handleClose = (event, reason) => {

@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {CircularProgress, Dialog, DialogContent, DialogTitle, LinearProgress} from "@material-ui/core";
+import {CircularProgress, Dialog, DialogContent, DialogTitle, LinearProgress,IconButton} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import {useInterval} from "../Util/Util";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const useStyle = makeStyles((theme)=>({
     root: {
@@ -41,7 +42,6 @@ export default function TutorialsBoard(props){
             }
         }
 
-
     },5000)
 
     useEffect(()=>{
@@ -63,7 +63,12 @@ export default function TutorialsBoard(props){
 
     return(
         <Dialog open={open} className={classes.root}>
-            <DialogTitle id="simple-dialog-title">演示案例</DialogTitle>
+            <DialogTitle id="simple-dialog-title">
+                演示案例
+                <IconButton aria-label="settings" onClick={onClose('','')}>
+                    <HighlightOffIcon/>
+                </IconButton>
+            </DialogTitle>
             <DialogContent>
                 <p className={isOpenDemo?classes.Finish:''}>1.正在打开演示Demo，如未安装将自动安装（请确保有且仅有1台设备连接于电脑）</p>
                 {!isOpenDemo && <p>检测中<CircularProgress size={24}/></p>}
