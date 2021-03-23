@@ -68,6 +68,8 @@ def loadCase(data):
         with open(path, 'r', encoding='UTF-8') as f:
             return {"ok": True, "msg": f.read()}
     except Exception as e:
+        print(f'[ERROR]{e}')
+        logging.error(e)
         return {"ok": False, "msg": e}
 
 # 打开工作区
@@ -171,6 +173,8 @@ def createFile(data):
 
         return {"ok": True, "msg": data['name']}
     except Exception as e:
+        print(f'[ERROR]{e}')
+        logging.error(e)
         return {"ok": False, "msg": e}
 
 
@@ -238,16 +242,22 @@ def getTempFile():
         with open(os.path.join(workSpacePath, 'pages', 'temp_test.py'), 'r', encoding='utf-8') as f:
             return {"ok": True, "msg": f.read()}
     except Exception as e:
+        print(f'[ERROR]{e}')
+        logging.error(e)
         return {"ok": False, "msg": e}
 
 
 def connect(data):
     global phone
     try:
-        print('sn',data['sn'])
         res = phone.connect(data['sn'], data['ip'])
         return {"ok": True, "msg": res}
+    except IndexError as ie:
+        print(f'[ERROR]未找到设备号或IP')
+        return {"ok": False, "msg": f"连接失败：请确认是否输入正确的设备号与IP"}
     except Exception as e:
+        logging.error(e)
+        print(f'[ERROR]{e}')
         return {"ok": False, "msg": f"连接失败：{e}"}
 
 
@@ -361,6 +371,8 @@ def runCase(data):
             module.AutoRun(phone.device)
             return {"ok": True, "msg": '运行完成'}
         except Exception as e:
+            print(f'[ERROR]{e}')
+            logging.error(e)
             return {"ok": False, "msg": f'运行失败:{e}'}
 
 

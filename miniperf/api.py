@@ -87,6 +87,11 @@ class Api:
             # temp = self.output.pop(0)
             temp = ''
             for s in self.output:
+                if s == '\n':
+                    temp += '\n'
+                    continue
+                if '[ERROR]' not in s:
+                    s = '[INFO]' + s
                 temp += s
             self.output.clear()
             return temp
