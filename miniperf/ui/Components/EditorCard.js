@@ -26,9 +26,13 @@ import {
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-pastel_on_dark";
+import 'ace-builds/src-min-noconflict/ext-language_tools'
+import 'ace-builds/src-min-noconflict/snippets/python'
+import 'ace-builds/src-min-noconflict/ext-searchbox'
+import 'ace-builds/src-min-noconflict/ext-emmet'
+import 'ace-builds/src-min-noconflict/keybinding-vscode'
 
 import {useInterval,useUpdate} from "../Util/Util"
-import CaseList from "./CasesList";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -445,6 +449,18 @@ export default function EditorCard (props) {
                         onChange={changeHandle}
                         width={'100%'}
                         height={'100%'}
+                        commands={[{
+                            name: 'saveFile', //键绑定的名称。
+                            bindKey: {win: 'Ctrl-S', mac: 'Command-S'}, //用于命令的组合键。
+                            exec: ()=> {}
+                        }]}
+                        setOptions={{
+                            enableBasicAutocompletion: true,   //启用基本自动完成功能
+                            enableLiveAutocompletion: true,   //启用实时自动完成功能 （比如：智能代码提示）
+                            enableSnippets: true,  //启用代码段
+                            showLineNumbers: true,
+                            wrap: true,
+                        }}
                     />
                     {isRecording &&
                     <div className={classes.recoverContent}>

@@ -2,13 +2,14 @@ import React, {useEffect, useRef, useState} from 'react'
 import MuiAlert from '@material-ui/lab/Alert';
 import {
     AppBar,
-    ButtonGroup, Button, CircularProgress, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel,
-    Input,
+    ButtonGroup, Button, IconButton, CircularProgress, Dialog, DialogContent, DialogTitle, DialogActions, FormControl, FormControlLabel,
+    Input, InputBase,
+    Typography,
     InputAdornment, InputLabel, MenuItem, Select, Snackbar, TextField,
     Toolbar,
-    Switch
+    Switch,
 } from "@material-ui/core";
-import { Videocam, NoteAdd, Folder, Cloud, Settings } from '@material-ui/icons'
+import { Videocam, NoteAdd, Folder, Cloud, Close, Settings, BorderColor } from '@material-ui/icons'
 import { createMuiTheme, makeStyles, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import './MainPage.css'
 import ActionCard from "./ActionCard";
@@ -21,6 +22,7 @@ import {useInterval} from "../Util/Util"
 import * as PropTypes from "prop-types";
 import TutorialsBoard from "./TutorialsBoard";
 import CaseList from "./CasesList";
+import { borders } from '@material-ui/system'
 
 const theme = createMuiTheme({
     palette: {
@@ -32,6 +34,20 @@ const theme = createMuiTheme({
         },
         type: 'dark',
     },
+    overrides: {
+        MuiInputLabel: {
+            root: {
+                '&$focused': {
+                    color: '#fff'
+                }
+            },
+        },
+        MuiInputBase: {
+            input: {
+                padding: 0
+            }
+        }
+    }
 });
 
 const useStyle = makeStyles((style)=>({
@@ -58,11 +74,16 @@ const useStyle = makeStyles((style)=>({
         color: '#fff',
         fontSize: '12px',
         borderRadius: 5,
-        height: 22
+        '&:hover': {
+            backgroundColor: '#cf1322'
+        },
     },
     ButtonConnect:{
         'background-color':'green',
-        color: '#fff'
+        color: '#fff',
+        '&:hover': {
+            backgroundColor: '#389e0d'
+        }
     },
     ButtonDisConnect:{
 
@@ -97,7 +118,11 @@ const useStyle = makeStyles((style)=>({
         alignItems: 'center'
     },
     ipInput: {
-        padding: 10
+        padding: 10,
+        background: '#424242',
+        color: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.23)',
+        borderRadius: 4
     },
     settingBtns: {
         display: 'flex',
@@ -106,8 +131,81 @@ const useStyle = makeStyles((style)=>({
     mainBtn: {
         fontSize: '12px',
         height: 26
-    }
+    },
+    dialogBtn: {
+        backgroundColor: '#1890ff',
+        color: '#fff',
+        '&:hover': {
+            backgroundColor: '#096dd9',
+        },
+        '&:nth-child(2n + 1)': {
+            marginRight: '20px'
+        }
+    },
+    dialogActions: {
+        padding: 24
+    },
+    dialogContent: {
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    notchedOutline: {},
+    focused: {
+        "& $notchedOutline": {
+            borderColor: "#fff !important"
+        }
+    },
+    recordingDialog: {
+        overflow: 'hidden',
+        display: 'flex',
+        flexFlow: 'column',
+        justifyContent: 'ceter',
+        alignItems: 'center'
+    },
+    recordingDialogHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        '& > h2': {
+            margin: '0 20px',
+        }
+    },
+    recordingDialogContent: {
+        margin: '20px',
+        fontSize: '20px'
+    },
+    recordingDialogBtn: {
+        margin: '20px',
+        width: '40%',
+        backgroundColor: '#666'
+    },
+    muiDialogTitle: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        padding: 5,
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+    },
 }))
+
+const MuiDialogTitle = withStyles(useStyle)((props) => {
+    const { children, classes, onClose, ...other } = props;
+    console.log(props)
+    return (
+        <DialogTitle disableTypography style={{display: 'flex', justifyContent: 'flex-end', padding: 5}} {...other}>
+        {onClose ? (
+            <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+            <Close />
+            </IconButton>
+        ) : null}
+        </DialogTitle>
+    );
+});
 
 const ToolbarBtn = withStyles({
     root: {
@@ -501,20 +599,23 @@ export default function MainPage(){
                             <div className={classes.toolbarContainer}>
                                 <div className={classes.deviceContainer}>
                                     <div>
-                                        {phoneList.length > 0 ? (
-                                            <Select
-                                                style={{width: '200px', height: '22px', fontSize: '12px'}}
-                                                value={phone}
-                                                onChange={handleChange}
-                                                onOpen={getCurDevice}
-                                                disabled={isConnected || loading}
-                                            >
-                                                {phoneList.map((v)=>{
-                                                    return <MenuItem value={v.name}>{v.name}</MenuItem>
-                                                })}
-                                            </Select>
-                                        ) : (<ToolbarBtn size="small" style={{ width: '200px', height: '22px', fontSize: '12px', lineHeight: '12px' }}>No Devices</ToolbarBtn>)}
-                                        <Input placeholder="IP地址" value={ip} onChange={changeIPValue} className={classes.ipInput} style={{ height: '22px', fontSize: '12px' }}/>
+                                        <ButtonGroup>
+                                            {phoneList.length > 0 ? (
+                                                <Select
+                                                    style={{width: '200px', height: '26px', fontSize: '12px'}}
+                                                    value={phone}
+                                                    onChange={handleChange}
+                                                    onOpen={getCurDevice}
+                                                    disabled={isConnected || loading}
+                                                >
+                                                    {phoneList.map((v)=>{
+                                                        return <MenuItem value={v.name}>{v.name}</MenuItem>
+                                                    })}
+                                                </Select>
+                                            ) : (<ToolbarBtn onClick={() => showMsg('请保证电脑连接到手机', false)} size="small" style={{ width: '200px', height: '26px', fontSize: '12px', lineHeight: '12px' }}>No Devices</ToolbarBtn>)}
+                                                <InputBase placeholder="IP地址" value={ip} onChange={changeIPValue} className={classes.ipInput} style={{height: '26px', fontSize: '12px' }}/>
+                                            
+                                        </ButtonGroup>
                                     </div>
                                     <div className={classes.wrapper}>
                                         {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
@@ -529,7 +630,7 @@ export default function MainPage(){
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}><Folder fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}><Cloud fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                     </ButtonGroup>
-                                    <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '40px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={tutorialsMode || isConnected}>新手指引</ToolbarBtn>
+                                    <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '40px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={isConnected}>新手指引</ToolbarBtn>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{padding: '0 15px'}} disabled={!advancedModeDisable} onClick={switchMode}>启用{enableAdvancedMode ? '简易' : '高级'}模式</ToolbarBtn>
                                 </div>
                             </div>
@@ -656,50 +757,88 @@ export default function MainPage(){
 
                     </div>
                 </div>
-                <Snackbar open={okOpen} autoHideDuration={3000} onClose={handleClose}>
+                <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={okOpen} autoHideDuration={3000} onClose={handleClose}>
                     <Alert severity={logType} onClose={handleClose}>
                         {message}
                     </Alert>
                 </Snackbar>
-                <Dialog open={createWindowOpen}>
+                <Dialog open={createWindowOpen} fullWidth={true} maxWidth="sm">
                     <DialogTitle>新建案例</DialogTitle>
-                    <DialogContent>
-                            <TextField id="outlined-basic" label="案例名称" variant="outlined" value={createCaseName}
-                                    onChange={(e)=>{setCreateCaseName(e.target.value)}}
-                            />
-                            <TextField id="outlined-basic" label="案例文件名" variant="outlined" value={createCaseFileName}
-                                    onChange={(e)=>{setCreateCaseFileName(e.target.value)}}
-                            />
-                            <br/>
-                            <Button variant="contained" color="primary"
-                                    onClick={(e)=>{
-                                        createFile(e)
+                    <DialogContent className={classes.dialogContent}>
+                            <TextField 
+                                style={{width: '50%'}} 
+                                id="outlined-basic" 
+                                label="案例名称" 
+                                variant="outlined" 
+                                value={createCaseName}
+                                InputProps={{
+                                    classes: {
+                                        notchedOutline: classes.notchedOutline,
+                                        focused: classes.focused
+                                    }
                                 }}
-                            >
-                                创建
-                            </Button>
-                            <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseCreate('','')}}>
-                                取消
-                            </Button>
+                                onChange={(e)=>{setCreateCaseName(e.target.value)}}
+                            />
+                            <TextField 
+                                style={{width: '50%'}} 
+                                id="outlined-basic" 
+                                label="案例文件名" 
+                                variant="outlined" 
+                                value={createCaseFileName}
+                                InputProps={{
+                                    classes: {
+                                        notchedOutline: classes.notchedOutline,
+                                        focused: classes.focused
+                                    }
+                                }}
+                                onChange={(e)=>{setCreateCaseFileName(e.target.value)}}
+                            />
                     </DialogContent>
+                    <DialogActions classes={{root: classes.dialogActions}}>
+                    <Button variant="contained" classes={{root: classes.dialogBtn}} onClick={(e)=>{createFile(e)}}>
+                        创建
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={(e)=>{handleCloseCreate('','')}}>
+                        取消
+                    </Button>
+                    </DialogActions>
                 </Dialog>
-                <Dialog open={settingWindowOpen} onClose={handleCloseSetting}>
+                <Dialog open={settingWindowOpen} onClose={handleCloseSetting} fullWidth={true} maxWidth="sm">
                     <DialogTitle>设置</DialogTitle>
-                    <DialogContent>
-                        <TextField id="outlined-basic" label="工作区路径" variant="outlined" value={workSpacePath}
-                                onChange={(e)=>{setWorkSpacePath(e.target.value)}}
+                    <DialogContent className={classes.dialogContent}>
+                        <TextField 
+                            style={{width: '100%'}} 
+                            id="outlined-basic" 
+                            label="工作区路径" 
+                            variant="outlined" 
+                            value={workSpacePath}
+                            InputProps={{
+                                classes: {
+                                    notchedOutline: classes.notchedOutline,
+                                    focused: classes.focused
+                                }
+                            }}
+                            onChange={(e)=>{setWorkSpacePath(e.target.value)}}
                         />
-                        <br/>
-                        <Button variant="contained" color="primary"
-                                onClick={(e)=>{
-                                    setWorkSpace(e)
-                                }}
-                        >
-                            设置或创建
+                        
+                    </DialogContent>
+                    <DialogActions classes={{root: classes.dialogActions}}>
+                        <Button variant="contained" classes={{root: classes.dialogBtn}} onClick={(e)=>{setWorkSpace(e)}}>
+                            设置
                         </Button>
-                        <Button variant="contained" color="secondary" onClick={(e)=>{handleCloseSetting('','')}}>
+                        <Button variant="contained" color="primary" onClick={(e)=>{handleCloseSetting('','')}}>
                             取消
                         </Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog open={isRecording} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
+                    <MuiDialogTitle id="simple-dialog-title" onClose={() => onClose('', '')}></MuiDialogTitle>
+                    <DialogContent className={classes.recordingDialog}>
+                        <div className={classes.recordingDialogHeader}>
+                            <h2>录制中</h2><CircularProgress style={{color: '#fff'}}/>
+                        </div>
+                        <div className={classes.recordingDialogContent}>可长按手机屏幕5秒结束录制</div>
+                        <Button className={classes.recordingDialogBtn}>暂停录制</Button>
                     </DialogContent>
                 </Dialog>
                 <CaseList

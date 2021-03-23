@@ -2,8 +2,10 @@ import React, {useEffect, useState} from "react";
 import {
     Box, CardHeader,
     Collapse,
+    createMuiTheme,
     IconButton,
     makeStyles,
+    ThemeProvider,
     Paper,
     Table,
     TableBody,
@@ -71,6 +73,11 @@ const components = [{
     }]
 }]
 const useStyle = makeStyles((style)=>({
+    '@global': {
+        '.MuiTableCell-root': {
+            border: '1px solid rgba(81, 81, 81, 1)'
+        }
+    },
     root:{
         // background:'lightgrey'
     },
@@ -82,7 +89,8 @@ const useStyle = makeStyles((style)=>({
         justifyContent: 'space-between',
         alignItems: 'center',
         fontSize: 14,
-        color: '#fff'
+        color: '#fff',
+        boxShadow: '0px 1px 1px rgb(0 0 0 / 50%)'
     },
 }))
 const useRowStyles = makeStyles({
@@ -116,9 +124,9 @@ function Row(props) {
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box margin={1}>
-                            <Typography variant="h6" gutterBottom component="div">
+                            {/* <Typography variant="h6" gutterBottom component="div">
                                 Properties
-                            </Typography>
+                            </Typography> */}
                             <Table size="small" aria-label="purchases">
                                 <TableHead>
                                     <TableRow>
@@ -180,7 +188,7 @@ export default function PropTable(props) {
     },[curID])
 
     return (
-        <TableContainer component={Paper} className={classes.root}>
+        <TableContainer className={classes.root}>
             <Table>
                 <TableHead>
                     <TableRow>

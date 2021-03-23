@@ -1,7 +1,7 @@
 import {TreeItem, TreeView} from "@material-ui/lab";
 import React, {useEffect} from "react";
 import {ChevronRight, ExpandMore, RotateLeft} from "@material-ui/icons";
-import {Card, CardContent, CardHeader, IconButton, Button, makeStyles, withStyles} from "@material-ui/core";
+import {Card, CardContent, CardHeader, IconButton, Typography, Button, makeStyles, withStyles} from "@material-ui/core";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -79,6 +79,7 @@ export default function HierarchyContent(props){
             ]}/> */}
             <div className={classes.cardHeader}>
                 <div className={classes.cardHeaderTitle}>Hierarchy</div>
+                {/* <Typography variant="h6" gutterBottom component="div">Hierarchy</Typography> */}
                 <div className={classes.cardHeaderAction}>
                     <HierarchyBtn aria-label="settings" title={'刷新'} disabled={!enable || !isConnected} onClick={getData}>
                         <RotateLeft fontSize="small"/>
