@@ -1,4 +1,7 @@
 const path = require('path');
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
   mode: 'development',
@@ -8,6 +11,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'
   },
+  devServer: {
+    host:'127.0.0.1',    
+    hot: true,
+    port: 3002,
+  }, 
   resolve: {
     modules: [ path.resolve(__dirname, 'node_modules')],
     extensions: ['.js', '.jsx']
@@ -55,5 +63,13 @@ module.exports = {
           ]
         }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, 'index.html')
+    }),
+    new CleanWebpackPlugin(),
+    
+    new webpack.HotModuleReplacementPlugin(),
+  ]
 };
