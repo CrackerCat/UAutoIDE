@@ -270,6 +270,31 @@ export default function MainPage(){
         setIP(e.target.value);
     }
 
+    //教学弹窗关闭事件
+    let handleCloseTutorials = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setTutorialsWindowOpen(false);
+        setTutorialsMode(false);
+        if(isConnected){
+            disConnect();
+        }     
+        showMsg('新手指引已关闭');
+    };
+    //底部消息弹窗关闭事件
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOkOpen(false);
+    };
+    //底部消息弹窗
+    let showMsg = (msg,type = true)=>{
+        setMessage(msg)
+        setLogType(type?'success':'error')
+        setOkOpen(true)
+    }
     //连接设备
     let connect = function (d,e = '',name = ''){
         setLoading(true)
@@ -305,26 +330,6 @@ export default function MainPage(){
             setPhone('')
             setIP('')
         })
-    }
-    //教学弹窗关闭事件
-    let handleCloseTutorials = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setTutorialsWindowOpen(false);
-    };
-    //底部消息弹窗关闭事件
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOkOpen(false);
-    };
-    //底部消息弹窗
-    let showMsg = (msg,type = true)=>{
-        setMessage(msg)
-        setLogType(type?'success':'error')
-        setOkOpen(true)
     }
     //设置弹窗关闭事件
     let handleCloseSetting = (event, reason) => {
@@ -410,9 +415,9 @@ export default function MainPage(){
 
     useInterval(()=>{
         checkConnection()
-        if(!isConnected && !loading){
-            getCurDevice()
-        }
+        // if(!isConnected && !loading){
+        //     getCurDevice()
+        // }
     },1000)
 
     let createFile = (v) => {
@@ -471,8 +476,19 @@ export default function MainPage(){
         })
     }
 
+    const isDevicesChange = () =>{
+        window.pywebview.api.isDevicesChange().then((res)=>{
+            if(!isConnected && !loading)
+            {
+                getCurDevice()
+            }
+            isDevicesChange()
+        })
+    }
+
     useEffect(()=>{
         setTimeout(isNewUser,2000)
+        setTimeout(isDevicesChange,2000)
     },[])
 
     useEffect(()=>{
@@ -495,6 +511,13 @@ export default function MainPage(){
                 if(res['msg'].length > 0 && phone === ''){
                     setPhone(res['msg'][0]['name'])
                     setSN(res['msg'][0]['sn'])
+                    setIP(res['msg'][0]['ip'])
+                }
+                else
+                {
+                    setPhone('')
+                    setSN('')
+                    setIP('')
                 }
             }else{
                 showMsg(res['msg'],res['ok'])
@@ -514,6 +537,8 @@ export default function MainPage(){
             if(p['name'] === e.target.value){
 
                 setSN(p['sn'])
+                console.log(p['sn']);
+                setIP(p['ip'])
             }
         }
     }

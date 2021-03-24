@@ -199,21 +199,31 @@ export default function EditorCard (props) {
     //     setSettingWindowOpen(false);
     // };
 
-    // let setWorkSpace = (v) => {
-    //     if(workSpacePath === '')
-    //         return
-    //     window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
-    //         if(res['ok']){
-    //             setWorkSpacePath('')
-    //             handleCloseSetting('','')
-    //             onChangeCaseName('')
-    //             onChangeScriptsData('')
-    //             ShowMsg(res['msg'],res['ok'])
-    //         }else{
-    //             ShowMsg(res['msg'],res['ok'])
-    //         }
-    //     })
-    // }
+    let setWorkSpace = (v) => {
+        // if(workSpacePath === '')
+        //     return
+        // window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
+        //     if(res['ok']){
+        //         setWorkSpacePath('')
+        //         handleCloseSetting('','')
+        //         setCaseName('')
+        //         setScriptsData('')
+        //         ShowMsg(res['msg'],res['ok'])
+        //     }else{
+        //         ShowMsg(res['msg'],res['ok'])
+        //     }
+        // })
+        window.pywebview.api.openUAUTOFile().then((res)=>{
+            console.log(res['msg'])
+        })
+    }
+
+    let createuserWorkSpace = (v) => {
+        window.pywebview.api.createuserWorkSpace().then((res)=>{
+            console.log(res['msg'])
+            ShowMsg(res['msg'],res['ok'])
+        })
+    }
 
     // let createFile = (v) => {
     //     if(createCaseFileName === '' || createCaseName === '')

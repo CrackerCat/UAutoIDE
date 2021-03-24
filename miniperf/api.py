@@ -87,6 +87,11 @@ class Api:
             # temp = self.output.pop(0)
             temp = ''
             for s in self.output:
+                if s == '\n':
+                    temp += '\n'
+                    continue
+                if '[ERROR]' not in s:
+                    s = '[INFO]' + s
                 temp += s
             self.output.clear()
             return temp
@@ -94,8 +99,12 @@ class Api:
 
     def runCase(self,data):
         return extension.runCase(data)
+
     def getCurDevice(self):
-        return extension.getCurDevice()
+        return extension.get_connected_devices()
+
+    def isDevicesChange(self):
+        return extension.isDevicesChange()
 
     # 获取对应ID的GameObject详情
     def get_inspector(self,data):
@@ -145,3 +154,9 @@ class Api:
     # 设置工作区
     def setWorkSpace(self,data):
         return extension.setWorkSpace(data)
+
+    def openUAUTOFile(self):
+        return extension.openUAUTOFile()
+
+    def createuserWorkSpace(self):
+        return extension.createuserWorkSpace()
