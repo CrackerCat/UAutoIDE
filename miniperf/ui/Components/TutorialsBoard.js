@@ -21,7 +21,7 @@ const useStyle = makeStyles((theme)=>({
 
 export default function TutorialsBoard(props){
     const classes = useStyle()
-    const { onClose, open ,isConnected,loading,connect,phoneList,showMsg} = props;
+    const { onClose, open ,isConnected,loading,connect,phoneList,showMsg,userOnClose} = props;
     const [isOpenDemo,setIsOpenDemo] = useState(false)
     const [opening,setOpening] = useState(false)
     const [progress,setProgress] = useState(0)
@@ -68,7 +68,7 @@ export default function TutorialsBoard(props){
         <Dialog open={open} className={classes.root}>
             <DialogTitle id="simple-dialog-title">
                 演示案例
-                <IconButton className={classes.close} onClick={()=>{onClose('','')}}>
+                <IconButton className={classes.close} onClick={()=>{userOnClose('','')}}>
                     <HighlightOffIcon/>
                 </IconButton>
             </DialogTitle>

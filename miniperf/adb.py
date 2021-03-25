@@ -3,6 +3,7 @@ import os
 
 from u3driver import AltrunUnityDriver, By
 from miniperf import device_manager
+from miniperf import extension
 demoPackageName = 'com.DefaultName.DefaultName'
 demoPackageActivity = 'com.unity3d.player.UnityPlayerActivity'
 
@@ -28,7 +29,7 @@ class Device:
     def connect(self, serial_num, ip):
         self.serial_num = serial_num
         if ip == '':
-            ip = self.getIP()
+            ip = extension.get_ip_address(serial_num)
         self.device = AltrunUnityDriver(serial_num, '', ip)
         # self.isConnected = True
         return {'ip':ip,'version':self.device.get_server_version()}
