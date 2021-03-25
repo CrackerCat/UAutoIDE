@@ -286,11 +286,21 @@ export default function MainPage(){
         }
         setTutorialsWindowOpen(false);
         setTutorialsMode(false);
+    };
+
+    //教学弹窗关闭事件
+    let userOnClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setTutorialsWindowOpen(false);
+        setTutorialsMode(false);
         if(isConnected){
             disConnect();
         }     
         showMsg('新手指引已关闭');
     };
+
     //底部消息弹窗关闭事件
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -708,6 +718,7 @@ export default function MainPage(){
                         // open={true}
                         onClose={handleCloseTutorials}
                         isConnected={isConnected}
+                        userOnClose={userOnClose}
                         loading={loading}
                         connect={connect}
                         changeSNValue={changeSNValue}

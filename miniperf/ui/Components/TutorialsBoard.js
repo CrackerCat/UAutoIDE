@@ -55,7 +55,7 @@ const MuiDialogTitle = withStyles(styles)((props) => {
 
 export default function TutorialsBoard(props){
     const classes = useStyle()
-    const { onClose, open ,isConnected,loading,connect,phoneList,showMsg} = props;
+    const { onClose, open ,isConnected,loading,connect,phoneList,showMsg,userOnClose} = props;
     const [isOpenDemo,setIsOpenDemo] = useState(false)
     const [opening,setOpening] = useState(false)
     const [progress,setProgress] = useState(0)

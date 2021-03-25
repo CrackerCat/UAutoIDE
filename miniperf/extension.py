@@ -54,12 +54,12 @@ def isDevicesChange():
         time.sleep(0.2)
     isNotChanged = True
     return {"ok": True}
+
 # 加载本地脚本列表
 def loadCasesList():
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
         s = json.loads(f.read())
     return {"ok": True, "msg": s}
-
 
 # 加载指定名称脚本
 def loadCase(data):
@@ -68,37 +68,59 @@ def loadCase(data):
         with open(path, 'r', encoding='UTF-8') as f:
             return {"ok": True, "msg": f.read()}
     except Exception as e:
-        print(f'[ERROR]{e}')
+        # print(f'[ERROR]{e}')
         logging.error(e)
         return {"ok": False, "msg": e}
 
 # 打开工作区
 def openUAUTOFile():
-    window = tk.Tk()
-    window.withdraw()
-    FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
-    # print(os.path.abspath(FilePath))
-    FilePath = os.path.dirname(FilePath)
-    data = {'path':FilePath}
-    setWorkSpace(data)
-    window.mainloop()
-    window.destroy()
-    return {"ok": True, "msg": FilePath}
+    try:
+        window = tk.Tk()
+        window.withdraw()
+        FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
+        FilePath = os.path.dirname(FilePath)
+        if FilePath :
+            data = {'path':FilePath}
+            setWorkSpace(data)
+            window.destroy()
+            print(FilePath + "工作区打开成功")
+            return {"ok": True, "msg": FilePath + "工作区打开成功"}
+        else:
+            window.destroy()
+            print("已取消工作区打开")
+            return ""
 
-# 选择创建工作区的目录
+    except Exception as e:
+        # print(f'[ERROR]{e}')
+        window.destroy()
+        print(f'[ERROR]' + FilePath + '工作区打开失败')
+        return {"ok": False, "msg": FilePath + "工作区打开失败"}
+
+# 新建工作区
 def createuserWorkSpace():
-    window = tk.Tk()
-    window.withdraw()
-    FilePath = filedialog.askdirectory(title = "请选择项目目录",initialdir=workSpacePath)
-    # FilePath = os.path.dirname(FilePath)
-    # print(FilePath)
-    data = {'createpath':FilePath}
-    setCreateWorkSpace(data)
-    window.mainloop()
-    window.destroy()
-    return {"ok":True, "msg" : FilePath}
+    try:
+        window = tk.Tk()
+        window.withdraw()
+        FilePath = filedialog.askdirectory(title = "请选择创建工作区的目录",initialdir=workSpacePath)
+        if FilePath:
+            data = {'createpath':FilePath}
+            setCreateWorkSpace(data)
+            window.destroy()
+            print(data['createpath'] +'工作区创建成功')
+            # print("可通过新建脚本功能添加脚本")
+            return {"ok": True, "msg": data['createpath'] +'工作区创建成功'}
+        else:
+            window.destroy()
+            print("已取消工作区创建")
+            return ""
+            
+    except Exception as e:
+        # print(f'[ERROR]{e}')
+        window.destroy()
+        print(f'[ERROR]' + data['createpath'] + '工作区创建失败')
+        return {"ok": False, "msg": data['createpath'] + "工作区创建失败"}
 
-# 创建工作区
+# 新建工作区文件
 def setCreateWorkSpace(data):
     global workSpacePath
     if not os.path.exists(os.path.join(data['createpath'], '*.UAUTO')):
@@ -108,9 +130,9 @@ def setCreateWorkSpace(data):
             createWorkSpace(data['createpath'])
     else:
         workSpacePath = data['createpath']
-    setConfig('Setting', 'cases_path', workSpacePath)
-    sys.path.append(os.path.join(workSpacePath))
-    return {"ok": True, "msg": '创建成功'}
+        setConfig('Setting', 'cases_path', workSpacePath)
+        sys.path.append(os.path.join(workSpacePath))
+        # return {"ok": True, "msg": data['createpath'] +'创建工作区成功'}
 
 # 加载工作区
 def setWorkSpace(data):
@@ -139,15 +161,16 @@ def create(path, name, type, default=''):
 # 新建工作区
 def createWorkSpace(path: str):
     global workSpacePath
-    workSpacePath = path
-    if not os.path.exists(workSpacePath):
-        os.mkdir(workSpacePath)
-    os.mkdir(os.path.join(workSpacePath, 'pages'))
-    create(workSpacePath, 'setting', 'UAUTO', '[]')
-    create(os.path.join(workSpacePath, 'pages'), 'temp_test', 'py')
-
-    return {"ok": True, "msg": 'ok'}
-
+    try:
+        workSpacePath = path
+        if not os.path.exists(workSpacePath):
+            os.mkdir(workSpacePath)
+        os.mkdir(os.path.join(workSpacePath, 'pages'))
+        create(workSpacePath, 'setting', 'UAUTO', '[]')
+        create(os.path.join(workSpacePath, 'pages'), 'temp_test', 'py')
+        return {"ok": True, "msg": 'ok'}
+    except:
+        raise "创建工作区失败"
 
 # 新建脚本
 def createFile(data):
@@ -177,6 +200,29 @@ def createFile(data):
         logging.error(e)
         return {"ok": False, "msg": e}
 
+# 添加脚本
+def addFile(data):
+    window = tk.Tk()
+    window.withdraw()
+    filelist = []
+    FilePath = filedialog.askopenfilenames(title = "请选择需要添加进工作区的脚本",initialdir=workSpacePath)
+    if FilePath:
+        for item in FilePath:
+            file_type = item.split('.')[-1]
+            if file_type == "py":
+                file_name = item.split('/')[-1].split('.')[0]
+                filelist.append(file_name)   # 得到所有需要复制的所有.py文件的文件名
+
+        data = {'createpath':FilePath}
+        setCreateWorkSpace(data)
+        window.destroy()
+        print(data['createpath'] +'工作区创建成功')
+        # print("可通过新建脚本功能添加脚本")
+        return {"ok": True, "msg": data['createpath'] +'工作区创建成功'}
+    else:
+        window.destroy()
+        print("已取消工作区创建")
+        return ""
 
 # 扫描指定文件夹下特定后缀的文件
 def scan_files(directory, prefix=None, postfix=None):
@@ -195,7 +241,6 @@ def scan_files(directory, prefix=None, postfix=None):
 
     return files_list
 
-
 def showItem():
     global phone
     if phone.isConnected:
@@ -205,14 +250,12 @@ def showItem():
         return {"ok": True, "msg": data}
         # return data
 
-
 # 获取对应ID的GameObject详情
 def get_inspector(data):
     global phone
     if phone.isConnected:
         d = phone.get_inspector(data['ID'])
         return {"ok": True, "msg": d}
-
 
 # 暂停运行案例
 def pause():

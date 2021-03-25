@@ -199,7 +199,7 @@ export default function EditorCard (props) {
     //     setSettingWindowOpen(false);
     // };
 
-    let setWorkSpace = (v) => {
+    let setWorkSpace = () => {
         // if(workSpacePath === '')
         //     return
         // window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
@@ -214,14 +214,23 @@ export default function EditorCard (props) {
         //     }
         // })
         window.pywebview.api.openUAUTOFile().then((res)=>{
-            console.log(res['msg'])
+            if(res){
+                ShowMsg(res['msg'],res['ok'])
+            }else{
+                ShowMsg("已取消工作区打开")
+            }
+            handleCloseSetting('','')
         })
     }
 
-    let createuserWorkSpace = (v) => {
+    let createuserWorkSpace = (e) => {
         window.pywebview.api.createuserWorkSpace().then((res)=>{
-            console.log(res['msg'])
-            ShowMsg(res['msg'],res['ok'])
+            if(res){
+                ShowMsg(res['msg'],res['ok'])
+            }else{
+                ShowMsg("已取消工作区创建")
+            }
+            handleCloseSetting('','')
         })
     }
 
@@ -292,6 +301,7 @@ export default function EditorCard (props) {
             onChangeNeedSave(false)
         })
     }
+
     //暂停案例运行
     const pause = () =>{
         window.pywebview.api.pause().then((res)=>{
@@ -299,6 +309,7 @@ export default function EditorCard (props) {
             onChangeIsPausing(true)
         })
     }
+
     //继续脚本运行
     const continuePlay = ()=>{
         window.pywebview.api.continuePlay().then((res)=>{
@@ -310,6 +321,13 @@ export default function EditorCard (props) {
     const openInVS = () =>{
         window.pywebview.api.openInVS().then((res)=>{
             ShowMsg(res['msg'],res['ok'])
+        })
+    }
+
+    const addFile = () =>{
+        window.pywebview.api.addFile().then((res)=>{
+
+
         })
     }
 
