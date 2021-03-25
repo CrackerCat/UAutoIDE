@@ -278,10 +278,14 @@ export default function EditorCard (props) {
         })
     }
 
+    //添加脚本
     const addFile = () =>{
         window.pywebview.api.addFile().then((res)=>{
-
-
+            if(res){
+                ShowMsg(res['msg'],res['ok'])
+            }else{
+                ShowMsg("已取消添加脚本")
+            }
         })
     }
 
@@ -329,7 +333,7 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning || tutorials}>
                     <AddCircle/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'添加脚本'} onClick={()=>{addFile}} disabled={isRecording || isRunning || tutorials}>
+                <IconButton aria-label="settings" title={'添加脚本'} onClick={()=>{addFile()}} disabled={isRecording || isRunning || tutorials}>
                     <AddCircleOutline/>
                 </IconButton>,
                 <IconButton aria-label="settings" title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}>

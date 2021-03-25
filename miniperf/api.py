@@ -160,3 +160,6 @@ class Api:
 
     def createuserWorkSpace(self):
         return extension.createuserWorkSpace()
+    
+    def addFile(self):
+        return extension.addFile()
