@@ -484,6 +484,28 @@ def isInstalled():
     global phone
 
 
+# 暂停录制
+def recordPause():
+    global phone
+    phone.debug_mode_pause()
+    print('已暂停录制')
+    return {"ok": True, "msg": '已暂停录制'}
+
+# 停止录制
+def recordStop():
+    global phone
+    phone.debug_mode_stop()
+    print('已停止录制')
+    return {"ok": True, "msg": '已停止录制'}
+
+# 继续录制
+def recordResume():
+    global phone
+    phone.debug_mode_resume()
+    print('继续录制')
+    return {"ok": True, "msg": '继续录制'}
+
+
 def registered_webview(webview):
     global g_webview
     g_webview = webview
