@@ -188,22 +188,24 @@ export default function PropTable(props) {
     },[curID])
 
     return (
-        <TableContainer className={classes.root}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        {/*<TableCell align={"left"}></TableCell>*/}
-                        {/* <CardHeader title={'Components'}/> */}
-                        <div className={classes.cardHeader}>Components</div>
-                        {/*<TableCell align="right">Value</TableCell>*/}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {componentsInfo.map((row) => (
-                        <Row key={row.id} row={row} />
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <div className={classes.root}>
+            <div className={classes.cardHeader}>Components</div>
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        {/* <TableRow>
+                            <TableCell align={"left"}></TableCell>
+                            <CardHeader title={'Components'}/>
+                            <TableCell align="right">Value</TableCell>
+                        </TableRow> */}
+                    </TableHead>
+                    <TableBody>
+                        {componentsInfo.map((row) => (
+                            <Row key={row.id} row={row} />
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </div>
     )
 }

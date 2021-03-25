@@ -5,6 +5,7 @@
     flex: 1;
     background-color:#424242;
     overflow-x: hidden;
+    overflow-y: hidden;
 }
 #container {
     width: 100%;
@@ -37,12 +38,12 @@
     height: 100%;
 }
 .scroller{
-    width: 5px;
+    width: 3px;
     height: 100%;
     background: #8B8989;
 }
 .hScroller{
-    height: 5px;
+    height: 3px;
     width: 100%;
     background: #8B8989;
 }

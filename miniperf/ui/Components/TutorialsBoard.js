@@ -2,8 +2,6 @@ import React, {useEffect, useState} from "react";
 import {CircularProgress, Dialog, DialogContent, DialogTitle, LinearProgress, Typography, IconButton} from "@material-ui/core";
 import { DoneOutline, Close } from '@material-ui/icons'
 import {makeStyles, withStyles} from "@material-ui/core/styles";
-import {CircularProgress, Dialog, DialogContent, DialogTitle, LinearProgress,IconButton} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
 import {useInterval} from "../Util/Util";
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 

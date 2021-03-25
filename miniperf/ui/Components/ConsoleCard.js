@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         width : '100%',
         height: '100%',
-        'overflow-y':'hide',
+        'overflow-y':'hidden',
         // background:'lightgrey'
     },
     content:{
@@ -36,16 +36,21 @@ const useStyles = makeStyles((theme) => ({
         'flex-direction':'column',
         '&:last-child': {
             paddingBottom: 0,
-        }
+        },
+    },
+    logContainer: {
+        height: 'calc(100% - 32px)',
     },
     textArea:{
+        boxSizing: 'border-box',
         width : '100%',
         height: '100%',
-        padding:0,
+        padding:'5px 24px',
         'background-color':'#2C2828',
         border:0,
         color:'white',
-        resize: 'none'
+        // resize: 'none',
+        overflow: 'auto',
     },
     cardHeader: {
         maxHeight: 22,
@@ -67,6 +72,12 @@ const useStyles = makeStyles((theme) => ({
         '&:last-child': {
             paddingBottom: 0,
         }
+    },
+    infoLog: {
+        color: '#52C41A'
+    },
+    errorLog: {
+        color: '#FF4D4F'
     }
 }));
 
@@ -78,22 +89,33 @@ const ConsoleBtn = withStyles({
 
 
 const ConsoleContent = React.forwardRef((props,ref)=>{
+    const { consoleData, onChangeConsoleData } = props
     const classes = useStyles()
-    const [consoleData,setConsoleData] = useState('')//console的输出信息
     const inputRef = useRef();
     useImperativeHandle(ref, () => ({
         clear: () => {
-            setConsoleData('')
+            onChangeConsoleData('')
         }
     }));
 
     //获取console的输出信息
     const getNewLog =  function(){
+        const testInfo = new RegExp(/^(\[INFO\]).*/)
+        const testError = new RegExp(/^(\[ERROR\]).*/)
         window.pywebview.api.PythonOutput().then((res)=>{
             if(res !== "405null") {
+                const ret = res.split('\n')
+                const list = ret.map(r => {
+                    if(testInfo.test(r.trim())) return (`<p style="margin: 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400;">${r}</p>`)
+                    if(testError.test(r.trim())) return (`<p style="margin: 0; padding: 0; color: #FF4D4F;  font-size: 12px; font-weight: 400;">${r}</p>`)
+                    return r
+                })
                 let l = consoleData
-                l+=(res + '\n')
-                setConsoleData(l)
+                // l+=(res + '\n')
+                for(let item of list) {
+                    l += item
+                }
+                onChangeConsoleData(l)
             }
         })
     }
@@ -113,15 +135,31 @@ const ConsoleContent = React.forwardRef((props,ref)=>{
         const textarea = document.getElementById('consoleArea');
         textarea.scrollTop = textarea.scrollHeight;
     }
+    const noop = e => {
+        e.preventDefault()
+        return false
+    }
     return(
-            <div  className={classes.textArea}>
-                <textarea value={consoleData}  className={classes.textArea} onChange={setHeight} id={'consoleArea'}/>
+        <div className={classes.logContainer}>
+            <div
+                className={classes.textArea} 
+                id={'consoleArea'} 
+                contentEditable={true}
+                onCut={noop}
+                onCopy={noop}
+                onPaste={noop}
+                onKeyDown={noop}
+                dangerouslySetInnerHTML={{__html: consoleData}}>
             </div>
-
+        </div>
+        // <div  className={classes.textArea}>
+        //     <textarea value={consoleData}  className={classes.textArea} onChange={setHeight} id={'consoleArea'}/>
+        // </div>
     )
 })
 
 export default function ConsoleCard (props) {
+    const { consoleData, onChangeConsoleData } = props
     const classes = useStyles()
     const [page,setPage] = React.useState(0)
     const clearInfo = useRef()
@@ -129,6 +167,9 @@ export default function ConsoleCard (props) {
         setPage(v)
     }
 
+    const handleChangeConsoleData = e => {
+        onChangeConsoleData(e)
+    }
     return (
         <div className={classes.root}>
             {/* <CardHeader
@@ -149,9 +190,9 @@ export default function ConsoleCard (props) {
                     </ConsoleBtn>
                 </div>
             </div>
-            <div className={classes.content}>
-                <ConsoleContent ref={clearInfo}/>
-            </div>
+            {/* <div className={classes.content}> */}
+                <ConsoleContent ref={clearInfo} style={{overflowY: 'scroll'}} consoleData={consoleData} onChangeConsoleData={e => handleChangeConsoleData(e)}/>
+            {/* </div> */}
         </div>
     )
 }
