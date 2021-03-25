@@ -152,9 +152,23 @@ const useStyle = makeStyles((style)=>({
     dialogActions: {
         padding: 24
     },
+    workspaceBtn: {
+        backgroundColor: '#1890ff',
+        color: '#fff',
+        '&:hover': {
+            backgroundColor: '#096dd9',
+        },
+    },
+    workspaceActions: {
+        padding: 24,
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignContent: 'center'
+    },
     dialogContent: {
         overflow: 'hidden',
         display: 'flex',
+        flexFlow: 'column',
         justifyContent: 'space-between',
         alignItems: 'center'
     },
@@ -461,22 +475,43 @@ export default function MainPage(){
         })
     }
 
-    let setWorkSpace = (v) => {
-        if(workSpacePath === '')
-            return
-        window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
-            if(res['ok']){
-                setWorkSpacePath('')
-                handleCloseSetting('','')
-                setCaseName('')
-                setScriptsData('')
+    // let setWorkSpace = (v) => {
+    //     if(workSpacePath === '')
+    //         return
+    //     window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
+    //         if(res['ok']){
+    //             setWorkSpacePath('')
+    //             handleCloseSetting('','')
+    //             setCaseName('')
+    //             setScriptsData('')
+    //             showMsg(res['msg'],res['ok'])
+    //         }else{
+    //             showMsg(res['msg'],res['ok'])
+    //         }
+    //     })
+    // }
+
+    let setWorkSpace = () => {
+        window.pywebview.api.openUAUTOFile().then((res)=>{
+            if(res){
                 showMsg(res['msg'],res['ok'])
             }else{
-                showMsg(res['msg'],res['ok'])
+                showMsg("已取消工作区打开")
             }
+            handleCloseSetting('','')
         })
     }
 
+    let createuserWorkSpace = (e) => {
+        window.pywebview.api.createuserWorkSpace().then((res)=>{
+            if(res){
+                showMsg(res['msg'],res['ok'])
+            }else{
+                showMsg("已取消工作区创建")
+            }
+            handleCloseSetting('','')
+        })
+    }
     //检测是否为新用户
     const isNewUser = () =>{
         window.pywebview.api.isNewUser().then((res)=>{
@@ -615,7 +650,7 @@ export default function MainPage(){
             // <div className={classes.root}>
             <ThemeProvider theme={theme}>
                 <div className={'container'}>
-                    <AppBar position={"static"} className={isConnected?classes.AppBarON:classes.AppBarOFF}>
+                    <AppBar position={"static"}>
                         <Toolbar className={classes.toolbar}>
                             {/* <FormControl className={classes.Input} variant="filled">
                                 {phoneList.length > 0 ? (
@@ -814,7 +849,7 @@ export default function MainPage(){
                     <DialogTitle>新建案例</DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                             <TextField 
-                                style={{width: '50%'}} 
+                                style={{width: '80%', marginBottom: '20px'}} 
                                 id="outlined-basic" 
                                 label="案例名称" 
                                 variant="outlined" 
@@ -828,7 +863,7 @@ export default function MainPage(){
                                 onChange={(e)=>{setCreateCaseName(e.target.value)}}
                             />
                             <TextField 
-                                style={{width: '50%'}} 
+                                style={{width: '80%'}}
                                 id="outlined-basic" 
                                 label="案例文件名" 
                                 variant="outlined" 
@@ -857,7 +892,7 @@ export default function MainPage(){
                         <TextField 
                             style={{width: '100%'}} 
                             id="outlined-basic" 
-                            label="工作区路径" 
+                            label="设置工作区" 
                             variant="outlined" 
                             value={workSpacePath}
                             InputProps={{
@@ -870,8 +905,11 @@ export default function MainPage(){
                         />
                         
                     </DialogContent>
-                    <DialogActions classes={{root: classes.dialogActions}}>
-                        <Button variant="contained" classes={{root: classes.dialogBtn}} onClick={(e)=>{setWorkSpace(e)}}>
+                    <DialogActions classes={{root: classes.workspaceActions}}>
+                        <Button variant="contained" classes={{root: classes.workspaceBtn}} onClick={(e)=>{createuserWorkSpace(e)}}>
+                            创建
+                        </Button>
+                        <Button variant="contained" classes={{root: classes.workspaceBtn}} onClick={(e)=>{setWorkSpace(e)}}>
                             设置
                         </Button>
                         <Button variant="contained" color="primary" onClick={(e)=>{handleCloseSetting('','')}}>

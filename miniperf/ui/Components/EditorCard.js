@@ -107,6 +107,9 @@ const useStyles = makeStyles((theme) => ({
         '&:last-child': {
             paddingBottom: 0,
         }
+    },
+    '.ace_content': {
+        overflow: 'auto'
     }
 }));
 
@@ -199,40 +202,27 @@ export default function EditorCard (props) {
     //     setSettingWindowOpen(false);
     // };
 
-    let setWorkSpace = () => {
-        // if(workSpacePath === '')
-        //     return
-        // window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
-        //     if(res['ok']){
-        //         setWorkSpacePath('')
-        //         handleCloseSetting('','')
-        //         setCaseName('')
-        //         setScriptsData('')
-        //         ShowMsg(res['msg'],res['ok'])
-        //     }else{
-        //         ShowMsg(res['msg'],res['ok'])
-        //     }
-        // })
-        window.pywebview.api.openUAUTOFile().then((res)=>{
-            if(res){
-                ShowMsg(res['msg'],res['ok'])
-            }else{
-                ShowMsg("已取消工作区打开")
-            }
-            handleCloseSetting('','')
-        })
-    }
+    // let setWorkSpace = () => {
+    //     window.pywebview.api.openUAUTOFile().then((res)=>{
+    //         if(res){
+    //             ShowMsg(res['msg'],res['ok'])
+    //         }else{
+    //             ShowMsg("已取消工作区打开")
+    //         }
+    //         handleCloseSetting('','')
+    //     })
+    // }
 
-    let createuserWorkSpace = (e) => {
-        window.pywebview.api.createuserWorkSpace().then((res)=>{
-            if(res){
-                ShowMsg(res['msg'],res['ok'])
-            }else{
-                ShowMsg("已取消工作区创建")
-            }
-            handleCloseSetting('','')
-        })
-    }
+    // let createuserWorkSpace = (e) => {
+    //     window.pywebview.api.createuserWorkSpace().then((res)=>{
+    //         if(res){
+    //             ShowMsg(res['msg'],res['ok'])
+    //         }else{
+    //             ShowMsg("已取消工作区创建")
+    //         }
+    //         handleCloseSetting('','')
+    //     })
+    // }
 
     // let createFile = (v) => {
     //     if(createCaseFileName === '' || createCaseName === '')
@@ -469,6 +459,7 @@ export default function EditorCard (props) {
                 </div>
                 <div className={classes.content}>
                     <AceEditor
+                        className={classes.editor}
                         mode="python"
                         theme="pastel_on_dark"
                         name="UNIQUE_ID_OF_DIV"
@@ -488,6 +479,13 @@ export default function EditorCard (props) {
                             enableSnippets: true,  //启用代码段
                             showLineNumbers: true,
                             wrap: true,
+                        }}
+                        onLoad={editorInstance => {
+                            editorInstance.container.style.resize = "both";
+                            // mouseup = css resize end
+                            document.addEventListener("mouseup", e => (
+                            editorInstance.resize()
+                            ));
                         }}
                     />
                     {isRecording &&
