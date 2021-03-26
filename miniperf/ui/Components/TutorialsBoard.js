@@ -102,7 +102,7 @@ export default function TutorialsBoard(props){
         <Dialog open={open} className={classes.root}>
             <MuiDialogTitle id="simple-dialog-title" onClose={() => onClose('', '')}>演示案例</MuiDialogTitle>
             <DialogContent className={classes.dialogContent}>
-                <p className={isOpenDemo?classes.Finish:''}>正在打开演示Demo，如未安装将自动安装（请确保有且仅有1台设备连接于电脑）</p>
+                <p style={{fontSize: 14}} className={isOpenDemo?classes.Finish:''}>正在打开演示Demo，如未安装将自动安装（请确保有且仅有1台设备连接于电脑）</p>
 
                 <div className={classes.tutorialInfo}>
                     <p>1.检测设备</p>

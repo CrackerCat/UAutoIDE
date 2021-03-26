@@ -9,7 +9,7 @@ import {
     Toolbar,
     Switch,
 } from "@material-ui/core";
-import { Videocam, NoteAdd, Folder, Cloud, Close, Settings, BorderColor, Opacity } from '@material-ui/icons'
+import { Videocam, NoteAdd, Folder, Cloud, Close, InsertDriveFile, Settings, BorderColor, Opacity } from '@material-ui/icons'
 import { createMuiTheme, makeStyles, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import './MainPage.css'
 import ActionCard from "./ActionCard";
@@ -456,6 +456,52 @@ export default function MainPage(){
         // }
     },1000)
 
+    // 添加脚本
+    const addFile = () =>{
+        window.pywebview.api.addFile().then((res)=>{
+            if(res){
+                showMsg(res['msg'],res['ok'])
+            }else{
+                showMsg("已取消添加脚本")
+            }
+        })
+    }
+
+    // 暂停录制
+    const recordPause = () => {
+        window.pywebview.api.recordPause().then(res => {
+            if (res) {
+                showMsg(res['msg'], res['ok'])
+                setIsPausing(true)
+            } else {
+                showMsg('已取消暂停录制')
+            }
+        })
+    }
+    // 停止录制
+    const recordStop = () => {
+        window.pywebview.api.recordStop().then(res => {
+            if (res) {
+                showMsg(res['msg'], res['ok'])
+                setIsRecording(false)
+                setIsPausing(true)
+            } else {
+                showMsg('已取消停止录制')
+            }
+        })
+    }
+    // 继续录制
+    const recordResume = () => {
+        window.pywebview.api.recordResume().then(res => {
+            if (res) {
+                showMsg(res['msg'], res['ok'])
+                setIsPausing(false)
+            } else {
+                showMsg('已取消继续录制')
+            }
+        })
+    }
+
     let createFile = (v) => {
         if(createCaseFileName === '' || createCaseName === '')
             return
@@ -709,6 +755,7 @@ export default function MainPage(){
                                 <div className={classes.settingBtns}>
                                     <ButtonGroup style={{ marginRight: '40px' }}>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}><NoteAdd fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'添加脚本'} onClick={addFile} disabled={isRecording || isRunning}><InsertDriveFile fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}><Folder fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}><Cloud fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                     </ButtonGroup>
@@ -918,13 +965,14 @@ export default function MainPage(){
                     </DialogActions>
                 </Dialog>
                 <Dialog open={isRecording} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
-                    <MuiDialogTitle id="simple-dialog-title" onClose={() => onClose('', '')}></MuiDialogTitle>
+                    <MuiDialogTitle id="simple-dialog-title" onClose={recordStop}></MuiDialogTitle>
                     <DialogContent className={classes.recordingDialog}>
                         <div className={classes.recordingDialogHeader}>
                             <h2>录制中</h2><CircularProgress style={{color: '#fff'}}/>
                         </div>
                         <div className={classes.recordingDialogContent}>可长按手机屏幕5秒结束录制</div>
-                        <Button className={classes.recordingDialogBtn}>暂停录制</Button>
+                        {!isPausing && <Button className={classes.recordingDialogBtn}>暂停录制</Button>}
+                        {isPausing && <Button className={classes.recordingDialogBtn} onClick={recordResume}>继续录制</Button>}
                     </DialogContent>
                 </Dialog>
                 <CaseList
