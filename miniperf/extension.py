@@ -346,7 +346,7 @@ def record(data):
         if case == '':
             case = 'temp_test'
         phone.record(CasePath(case + '.py'))
-        return {"ok": True, "msg": '录制完成'}
+        return {"ok": True, "msg": '开始录制'}
 
 def get_ip_address(serial):
     try:
