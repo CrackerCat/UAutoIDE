@@ -139,6 +139,7 @@ export default function EditorCard (props) {
         onChangeScriptsData,
         onChangeIsPausing,
     } = props
+    const [runned, setRunned] = React.useState(false)
 
     const classes = useStyles()
 
@@ -243,16 +244,6 @@ export default function EditorCard (props) {
     //     })
     // }
 
-    function record(){
-        setIsRecording(true)
-        ShowMsg('开始录制，长按屏幕5秒结束录制')
-        window.pywebview.api.record({'caseName': caseName}).then((res)=>{
-            setRecordWindowOpen(true);
-            ShowMsg(res['msg'])
-            setIsRecording(true)
-            setNeedSave(false)
-        })
-    }
 
     function runCase(){
         onChangeRunning(true)
