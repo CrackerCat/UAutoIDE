@@ -53,6 +53,18 @@ class Device:
     def pause(self):
         self.device.Pause(True)
 
+    # 暂停录制
+    def recordPause(self):
+        self.device.debug_mode_pause()
+
+    # 停止录制
+    def recordStop(self):
+        self.device.debug_mode_stop()
+
+    # 继续录制
+    def recordResume(self):
+        self.device.debug_mode_resume()
+
     # 继续运行案例
     def continuePlay(self):
         self.device.Pause(False)

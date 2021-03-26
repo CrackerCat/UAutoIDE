@@ -314,10 +314,14 @@ export default function EditorCard (props) {
         })
     }
 
+    //添加脚本
     const addFile = () =>{
         window.pywebview.api.addFile().then((res)=>{
-
-
+            if(res){
+                ShowMsg(res['msg'],res['ok'])
+            }else{
+                ShowMsg("已取消添加脚本")
+            }
         })
     }
 
