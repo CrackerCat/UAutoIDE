@@ -487,21 +487,21 @@ def isInstalled():
 # 暂停录制
 def recordPause():
     global phone
-    phone.debug_mode_pause()
+    phone.recordPause()
     print('已暂停录制')
     return {"ok": True, "msg": '已暂停录制'}
 
 # 停止录制
 def recordStop():
     global phone
-    phone.debug_mode_stop()
+    phone.recordStop()
     print('已停止录制')
     return {"ok": True, "msg": '已停止录制'}
 
 # 继续录制
 def recordResume():
     global phone
-    phone.debug_mode_resume()
+    phone.recordResume()
     print('继续录制')
     return {"ok": True, "msg": '继续录制'}
 

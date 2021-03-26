@@ -19,7 +19,8 @@ import {
     Save,
     SendOutlined, Settings,
     Stop,
-    AddCircleOutline
+    AddCircleOutline,
+    HighlightOff
 } from "@material-ui/icons";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
@@ -95,6 +96,8 @@ export default function EditorCard (props) {
     const [settingWindowOpen,setSettingWindowOpen] = useState(false)//设置弹窗
     const [workSpacePath,setWorkSpacePath] = useState('')//设置案例工作区路径
 
+    const [recordWindowOpen,setRecordWindowOpen] = useState(false)//设置录制弹窗
+
     const classes = useStyles()
 
     useInterval(()=>{
@@ -153,6 +156,7 @@ export default function EditorCard (props) {
         }
         setWorkSpacePath('')
         setSettingWindowOpen(false);
+        
     };
 
     let setWorkSpace = () => {
@@ -209,13 +213,13 @@ export default function EditorCard (props) {
         })
     }
 
-
     function record(){
         setIsRecording(true)
         ShowMsg('开始录制，长按屏幕5秒结束录制')
         window.pywebview.api.record({'caseName': caseName}).then((res)=>{
+            setRecordWindowOpen(true);
             ShowMsg(res['msg'])
-            setIsRecording(false)
+            setIsRecording(true)
             setNeedSave(false)
         })
     }
@@ -302,6 +306,31 @@ export default function EditorCard (props) {
             handleCloseCases('','')
         })
     }
+
+    //暂停录制
+    const recordPause = () =>{
+        window.pywebview.api.recordPause().then((res)=>{
+            ShowMsg(res['msg'])
+            setIsRecording(false)
+        })
+    }
+    //继续录制
+    const recordResume = () =>{
+        window.pywebview.api.recordResume().then((res)=>{   
+            ShowMsg(res['msg'])
+            setIsRecording(true)
+        })
+    }
+    //停止录制
+    const recordStop = () =>{
+        window.pywebview.api.recordStop().then((res)=>{
+            ShowMsg(res['msg'])
+            setRecordWindowOpen(false)
+            setIsRecording(false)
+            setNeedSave(false)
+        })
+    }
+
     return (
         <Card variant={'outlined'} className={classes.root}>
             <CardHeader title={'Coding'} action={[
@@ -336,7 +365,7 @@ export default function EditorCard (props) {
                 <IconButton aria-label="settings" title={'添加脚本'} onClick={()=>{addFile()}} disabled={isRecording || isRunning || tutorials}>
                     <AddCircleOutline/>
                 </IconButton>,
-                <IconButton aria-label="settings" title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}>
+                <IconButton aria-label="settings" title={'设置'} onClick={()=>{setSettingWindowOpen(true)}}>
                     <Settings/>
                 </IconButton>
                 //disabled={isRecording || !isConnected || tutorials}
@@ -344,6 +373,23 @@ export default function EditorCard (props) {
                 //     <RotateLeft/>
                 // </IconButton>
             ]}/>
+
+            {/*创建录制窗口*/}
+            <Dialog open={recordWindowOpen}>
+                <DialogTitle id="simple-dialog-title">录制中
+                <IconButton className={classes.close} onClick={()=>{recordStop()}}>
+                    <HighlightOff/>
+                </IconButton>
+                </DialogTitle>
+                <DialogContent>
+                    <span>可长按手机屏幕5秒结束录制</span>
+                    <div className={classes.wrapper}>
+                        {isRecording && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button]} onClick={()=>{recordPause()}}>暂停录制</Button>}
+                        {!isRecording && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={()=>{recordResume()}}>继续录制</Button>}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             {/*创建新案例窗口*/}
             <Dialog open={createWindowOpen}>
                 <DialogTitle>新建案例</DialogTitle>
