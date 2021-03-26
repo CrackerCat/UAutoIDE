@@ -166,12 +166,12 @@ class Api:
     
     # 暂停录制
     def recordPause(self):
-        return extension.debug_mode_pause()
+        return extension.recordPause()
 
     # 停止录制
     def recordStop(self):
-        return extension.debug_mode_stop()
+        return extension.recordStop()
 
     # 继续录制
     def recordResume(self):
-        return extension.debug_mode_resume()
+        return extension.recordResume()

@@ -284,6 +284,7 @@ export default function MainPage(){
     const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
     const [isPausing,setIsPausing] = React.useState(false)
     const [consoleData,setConsoleData] = useState('')//console的输出信息
+    const [recordWindowOpen,setRecordWindowOpen] = useState(false)//设置录制弹窗
 
 
     let changeSNValue = (e) =>{
