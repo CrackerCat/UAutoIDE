@@ -216,7 +216,6 @@ const useStyle = makeStyles((style)=>({
 
 const MuiDialogTitle = withStyles(useStyle)((props) => {
     const { children, classes, onClose, ...other } = props;
-    console.log(props)
     return (
         <DialogTitle disableTypography style={{display: 'flex', justifyContent: 'flex-end', padding: 5}} {...other}>
         {onClose ? (
@@ -411,12 +410,13 @@ export default function MainPage(){
     }
 
     // 按钮
-    const record = () => {
+    function record(){
         setIsRecording(true)
         showMsg('开始录制，长按屏幕5秒结束录制')
         window.pywebview.api.record({'caseName': caseName}).then((res)=>{
+            setRecordWindowOpen(true);
             showMsg(res['msg'])
-            setIsRecording(false)
+            setIsRecording(true)
             setNeedSave(false)
         })
     }
@@ -471,35 +471,24 @@ export default function MainPage(){
     // 暂停录制
     const recordPause = () => {
         window.pywebview.api.recordPause().then(res => {
-            if (res) {
-                showMsg(res['msg'], res['ok'])
-                setIsPausing(true)
-            } else {
-                showMsg('已取消暂停录制')
-            }
+            showMsg(res['msg'])
+            setIsRecording(false)
         })
     }
     // 停止录制
     const recordStop = () => {
         window.pywebview.api.recordStop().then(res => {
-            if (res) {
-                showMsg(res['msg'], res['ok'])
-                setIsRecording(false)
-                setIsPausing(true)
-            } else {
-                showMsg('已取消停止录制')
-            }
+            showMsg(res['msg'])
+            setRecordWindowOpen(false)
+            setIsRecording(false)
+            setNeedSave(false)
         })
     }
     // 继续录制
     const recordResume = () => {
         window.pywebview.api.recordResume().then(res => {
-            if (res) {
-                showMsg(res['msg'], res['ok'])
-                setIsPausing(false)
-            } else {
-                showMsg('已取消继续录制')
-            }
+            showMsg(res['msg'])
+            setIsRecording(true)
         })
     }
 
@@ -738,7 +727,7 @@ export default function MainPage(){
                                                     disabled={isConnected || loading}
                                                 >
                                                     {phoneList.map((v)=>{
-                                                        return <MenuItem value={v.name}>{v.name}</MenuItem>
+                                                        return <MenuItem value={v.name} key={v.name}>{v.name}</MenuItem>
                                                     })}
                                                 </Select>
                                             ) : (<ToolbarBtn onClick={() => showMsg('请保证电脑连接到手机', false)} className={classes.mainBtn} size="small" style={{ width: '200px', height: '26px', fontSize: '12px', lineHeight: '12px' }}>No Devices</ToolbarBtn>)}
@@ -757,7 +746,7 @@ export default function MainPage(){
                                     <ButtonGroup style={{ marginRight: '40px' }}>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}><NoteAdd fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'添加脚本'} onClick={addFile} disabled={isRecording || isRunning}><InsertDriveFile fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}} disabled={isConnected}><Folder fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}}><Folder fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}><Cloud fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                     </ButtonGroup>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '40px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={isConnected}>新手指引</ToolbarBtn>
@@ -935,8 +924,8 @@ export default function MainPage(){
                     </DialogActions>
                 </Dialog>
                 <Dialog open={settingWindowOpen} onClose={handleCloseSetting} fullWidth={true} maxWidth="sm">
-                    <DialogTitle>设置</DialogTitle>
-                    <DialogContent className={classes.dialogContent}>
+                    <DialogTitle>设置工作区</DialogTitle>
+                    {/* <DialogContent className={classes.dialogContent}>
                         <TextField 
                             style={{width: '100%'}} 
                             id="outlined-basic" 
@@ -952,7 +941,7 @@ export default function MainPage(){
                             onChange={(e)=>{setWorkSpacePath(e.target.value)}}
                         />
                         
-                    </DialogContent>
+                    </DialogContent> */}
                     <DialogActions classes={{root: classes.workspaceActions}}>
                         <Button variant="contained" classes={{root: classes.workspaceBtn}} onClick={(e)=>{createuserWorkSpace(e)}}>
                             创建
@@ -965,15 +954,19 @@ export default function MainPage(){
                         </Button>
                     </DialogActions>
                 </Dialog>
-                <Dialog open={isRecording} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
-                    <MuiDialogTitle id="simple-dialog-title" onClose={recordStop}></MuiDialogTitle>
+                <Dialog open={recordWindowOpen} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
+                    <DialogTitle id="simple-dialog-title">
+                    <IconButton aria-label="close" className={classes.closeButton} onClick={() => recordStop()}>
+                        <Close />
+                    </IconButton>
+                    </DialogTitle>
                     <DialogContent className={classes.recordingDialog}>
                         <div className={classes.recordingDialogHeader}>
                             <h2>录制中</h2><CircularProgress style={{color: '#fff'}}/>
                         </div>
                         <div className={classes.recordingDialogContent}>可长按手机屏幕5秒结束录制</div>
-                        {!isPausing && <Button className={classes.recordingDialogBtn}>暂停录制</Button>}
-                        {isPausing && <Button className={classes.recordingDialogBtn} onClick={recordResume}>继续录制</Button>}
+                        {isRecording && <Button className={classes.recordingDialogBtn} onClick={() => recordPause()}>暂停录制</Button>}
+                        {!isRecording && <Button className={classes.recordingDialogBtn} onClick={() => recordResume()}>继续录制</Button>}
                     </DialogContent>
                 </Dialog>
                 <CaseList
