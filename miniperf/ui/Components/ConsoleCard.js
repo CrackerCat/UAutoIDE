@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
         boxSizing: 'border-box',
         width : '100%',
         height: '100%',
-        padding:'5px 24px',
+        padding:'5px 12px',
         'background-color':'#2C2828',
         border:0,
         color:'white',
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     },
     cardHeader: {
         maxHeight: 22,
-        padding: '5px 5px 5px 24px',
+        padding: '5px 5px 5px 12px',
         background: '#424242',
         display: 'flex',
         justifyContent: 'space-between',

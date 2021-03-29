@@ -75,8 +75,13 @@ const components = [{
 const useStyle = makeStyles((style)=>({
     '@global': {
         '.MuiTableCell-root': {
-            border: '1px solid rgba(81, 81, 81, 1)'
-        }
+            border: '1px solid rgba(81, 81, 81, 1)',
+            padding: '5px 16px'
+        },
+        '.MuiTableContainer-root': {
+            maxHeight: 'calc(100% - 32px - 54px)',
+            overflow: 'auto'
+        },
     },
     root:{
         // background:'lightgrey'

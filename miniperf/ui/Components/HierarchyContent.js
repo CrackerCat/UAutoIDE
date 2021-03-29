@@ -68,6 +68,9 @@ export default function HierarchyContent(props){
             setHierarchyData({})
             getCurID(0)
         }
+        if(isConnected) {
+            getData()
+        }
     },[isConnected])
 
     return(

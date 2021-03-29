@@ -46,6 +46,11 @@ const theme = createMuiTheme({
             input: {
                 padding: 0
             }
+        },
+        MuiOutlinedInput:{
+            input: {
+                padding: '5px 14px'
+            }
         }
     }
 });
@@ -113,7 +118,7 @@ const useStyle = makeStyles((style)=>({
         'text-align':'center',
     },
     toolbar: {
-        minHeight: 42
+        minHeight: 54,
     },
     toolbarContainer: {
         width: '100%',
@@ -130,7 +135,7 @@ const useStyle = makeStyles((style)=>({
         background: '#424242',
         width: '200px', 
         height: '26px', 
-        fontSize: '12px'
+        fontSize: '12px',
     },
     ipInput: {
         padding: 10,
@@ -198,7 +203,7 @@ const useStyle = makeStyles((style)=>({
     },
     recordingDialogBtn: {
         margin: '20px',
-        width: '40%',
+        width: '20%',
         backgroundColor: '#666'
     },
     muiDialogTitle: {
@@ -213,19 +218,6 @@ const useStyle = makeStyles((style)=>({
         color: theme.palette.grey[500],
     },
 }))
-
-const MuiDialogTitle = withStyles(useStyle)((props) => {
-    const { children, classes, onClose, ...other } = props;
-    return (
-        <DialogTitle disableTypography style={{display: 'flex', justifyContent: 'flex-end', padding: 5}} {...other}>
-        {onClose ? (
-            <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-            <Close />
-            </IconButton>
-        ) : null}
-        </DialogTitle>
-    );
-});
 
 const ToolbarBtn = withStyles({
     root: {
@@ -741,15 +733,15 @@ export default function MainPage(){
                                         {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                                     </div>
                                 </div>
-                                <ToolbarBtn size="small" style={{padding: '0 15px'}} className={classes.mainBtn} onClick={record} disabled={isRecording || isRunning || !isConnected}><Videocam />开始录制</ToolbarBtn>
+                                <ToolbarBtn size="small" style={{padding: '0 30px'}} className={classes.mainBtn} onClick={record} disabled={isRecording || isRunning || !isConnected}><Videocam style={{marginRight: 10}} />开始录制</ToolbarBtn>
                                 <div className={classes.settingBtns}>
-                                    <ButtonGroup style={{ marginRight: '40px' }}>
+                                    <ButtonGroup style={{ marginRight: '20px' }}>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}><NoteAdd fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'添加脚本'} onClick={addFile} disabled={isRecording || isRunning}><InsertDriveFile fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}}><Folder fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}><Cloud fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
                                     </ButtonGroup>
-                                    <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '40px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={isConnected}>新手指引</ToolbarBtn>
+                                    <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '20px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={isConnected}>新手指引</ToolbarBtn>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{padding: '0 15px'}} disabled={!advancedModeDisable} onClick={switchMode}>启用{enableAdvancedMode ? '简易' : '高级'}模式</ToolbarBtn>
                                 </div>
                             </div>
