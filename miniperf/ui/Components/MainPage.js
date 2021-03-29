@@ -51,6 +51,11 @@ const theme = createMuiTheme({
             input: {
                 padding: '5px 14px'
             }
+        },
+        MuiButton: {
+            root: {
+                lineHeight: 1,
+            }
         }
     }
 });
@@ -736,10 +741,22 @@ export default function MainPage(){
                                 <ToolbarBtn size="small" style={{padding: '0 30px'}} className={classes.mainBtn} onClick={record} disabled={isRecording || isRunning || !isConnected}><Videocam style={{marginRight: 10}} />开始录制</ToolbarBtn>
                                 <div className={classes.settingBtns}>
                                     <ButtonGroup style={{ marginRight: '20px' }}>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}><NoteAdd fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'添加脚本'} onClick={addFile} disabled={isRecording || isRunning}><InsertDriveFile fontSize="small" style={{fontSize: '16px'}} /></ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}}><Folder fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}><Cloud fontSize="small" style={{fontSize: '16px'}}/></ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}>
+                                            {/* <NoteAdd fontSize="small" style={{fontSize: '16px'}} /> */}
+                                            <i className="iconfont">&#xe61d;</i>
+                                        </ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'添加脚本'} onClick={addFile} disabled={isRecording || isRunning}>
+                                            {/* <InsertDriveFile fontSize="small" style={{fontSize: '16px'}} /> */}
+                                            <i className="iconfont">&#xe662;</i>
+                                        </ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}}>
+                                            {/* <Folder fontSize="small" style={{fontSize: '16px'}}/> */}
+                                            <i className="iconfont">&#xe726;</i>
+                                        </ToolbarBtn>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}>
+                                            {/* <Cloud fontSize="small" style={{fontSize: '16px'}}/> */}
+                                            <i className="iconfont">&#xe8dc;</i>
+                                        </ToolbarBtn>
                                     </ButtonGroup>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '20px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={isConnected}>新手指引</ToolbarBtn>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{padding: '0 15px'}} disabled={!advancedModeDisable} onClick={switchMode}>启用{enableAdvancedMode ? '简易' : '高级'}模式</ToolbarBtn>

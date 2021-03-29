@@ -35,6 +35,11 @@ import 'ace-builds/src-min-noconflict/keybinding-vscode'
 import {useInterval,useUpdate} from "../Util/Util"
 
 const useStyles = makeStyles((theme) => ({
+    '@global': {
+        '.MuiButton-label': {
+            height: 20
+        }
+    },
     root: {
         width : '100%',
         height: '100%',
@@ -435,7 +440,8 @@ export default function EditorCard (props) {
                             <Pause fontSize="small" />
                         </EditorBtn>
                         <EditorBtn aria-label="settings" title={'通过VS CODE打开工作区'} onClick={()=>{openInVS()}} disabled={isRecording || isRunning}>
-                            <Code fontSize="small" />
+                            {/* <Code fontSize="small" /> */}
+                            <i className="iconfont">&#xe66c;</i>
                         </EditorBtn>
                         <EditorBtn aria-label="settings" title={'导出脚本'} onClick={saveAs} disabled={isRecording || isRunning}>
                             <SaveAlt fontSize="small" />

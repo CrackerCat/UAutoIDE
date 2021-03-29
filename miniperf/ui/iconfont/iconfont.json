@@ -1,0 +1,51 @@
+{
+  "id": "2451986",
+  "name": "UautoIDE",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "15535825",
+      "name": "file-",
+      "font_class": "file-",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "129298",
+      "name": "cloud",
+      "font_class": "cloud",
+      "unicode": "e8dc",
+      "unicode_decimal": 59612
+    },
+    {
+      "icon_id": "6900953",
+      "name": "add-file",
+      "font_class": "add-file",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "12600955",
+      "name": "vscodeignore",
+      "font_class": "vscodeignore",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
+    },
+    {
+      "icon_id": "18901974",
+      "name": "folder",
+      "font_class": "folder",
+      "unicode": "e726",
+      "unicode_decimal": 59174
+    },
+    {
+      "icon_id": "20113055",
+      "name": "bx-webcam",
+      "font_class": "bx-webcam",
+      "unicode": "e68d",
+      "unicode_decimal": 59021
+    }
+  ]
+}
