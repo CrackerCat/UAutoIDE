@@ -14,8 +14,8 @@ import {
     TableHead,
     TableRow, Typography
 } from "@material-ui/core";
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import * as PropTypes from "prop-types";
 
 const components = [{
@@ -85,6 +85,7 @@ const useStyle = makeStyles((style)=>({
     },
     root:{
         // background:'lightgrey'
+        width: '100%',
     },
     cardHeader: {
         height: 22,
@@ -103,7 +104,15 @@ const useRowStyles = makeStyles({
         '& > *': {
             borderBottom: 'unset',
         },
+        width: '100%',
     },
+    cellContainer: {
+        display: 'block',
+        width: '100%',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    }
 });
 
 function Row(props) {
@@ -115,18 +124,20 @@ function Row(props) {
         <React.Fragment>
             <TableRow className={classes.root}>
                 <TableCell>
-                    <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                    {row.type}
+                    <div className={classes.cellContainer}>
+                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+                            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowRightIcon />}
+                        </IconButton>
+                        {row.type}
+                    </div>
                 </TableCell>
                 {/*<TableCell component="th" scope="row" align={'left'}>*/}
                 {/*    {row.type}*/}
                 {/*</TableCell>*/}
                 {/*<TableCell align="right">{row.calories}</TableCell>*/}
             </TableRow>
-            <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+            <TableRow className={classes.root}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box margin={1}>
                             {/* <Typography variant="h6" gutterBottom component="div">

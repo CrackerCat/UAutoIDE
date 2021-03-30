@@ -60,6 +60,20 @@ const theme = createMuiTheme({
 });
 
 const useStyle = makeStyles((style)=>({
+    '@global': {
+        '.MuiTypography-h6': {
+            fontSize: 18,
+        },
+        '.MuiOutlinedInput-input': {
+            fontSize: 14
+        },
+        '.MuiFormLabel-root': {
+            fontSize: 14
+        },
+        '.MuiInputLabel-outlined.MuiInputLabel-shrink': {
+            transform: 'translate(14px, -6px) scale(0.85)'
+        }
+    },
     root: {
         height: '100vh',
     },

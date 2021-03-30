@@ -5,6 +5,16 @@ import {Card, CardContent, CardHeader, IconButton, Typography, Button, makeStyle
 
 
 const useStyles = makeStyles((theme) => ({
+    '@global': {
+        '.MuiTreeItem-group': {
+            marginLeft: 7,
+            paddingLeft: 8,
+            borderLeft: '1px dashed rgba(255, 255, 255, 0.5)',
+        },
+        '.MuiTypography-body1': {
+            fontSize: '0.9rem'
+        }
+    },
     root:{
         height: '100%',
         'overflow-y':'auto',
