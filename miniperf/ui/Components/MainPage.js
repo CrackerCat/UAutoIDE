@@ -399,7 +399,7 @@ export default function MainPage(){
     // 按钮
     function record(){
         setIsRecording(true)
-        showMsg('开始录制，长按屏幕5秒结束录制')
+        // showMsg('开始录制，长按屏幕5秒结束录制')
         window.pywebview.api.record({'caseName': caseName}).then((res)=>{
             setRecordWindowOpen(true);
             showMsg(res['msg'])
@@ -439,9 +439,17 @@ export default function MainPage(){
 
     useInterval(()=>{
         checkConnection()
-        // if(!isConnected && !loading){
-        //     getCurDevice()
-        // }
+        if(isRecording) {
+            window.pywebview.api.is_debug_mode_record().then((res)=>{
+                console.log(res)
+                if(!res['ok']){
+                    showMsg('已停止录制')
+                    setRecordWindowOpen(false)
+                    setIsRecording(false)
+                    setNeedSave(false)
+                }
+            })
+        }
     },1000)
 
     // 添加脚本
