@@ -186,7 +186,7 @@ export default function ConsoleCard (props) {
                 <div className={classes.cardHeaderTitle}>Log Window</div>
                 <div className={classes.cardHeaderAction}>
                     <ConsoleBtn aria-label="settings" title={'清空'} onClick={()=>{clearInfo.current.clear()}}>
-                        <DeleteForever fontSize="small" />
+                        <i className="iconfont">&#xe610;</i>
                     </ConsoleBtn>
                 </div>
             </div>

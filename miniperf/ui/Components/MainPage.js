@@ -738,7 +738,7 @@ export default function MainPage(){
                                         {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                                     </div>
                                 </div>
-                                <ToolbarBtn size="small" style={{padding: '0 30px'}} className={classes.mainBtn} onClick={record} disabled={isRecording || isRunning || !isConnected}><Videocam style={{marginRight: 10}} />开始录制</ToolbarBtn>
+                                <ToolbarBtn size="small" style={{padding: '0 30px'}} className={classes.mainBtn} onClick={record} disabled={isRecording || isRunning || !isConnected}><i className="iconfont" style={{marginRight: 10}}>&#xe68d;</i>开始录制</ToolbarBtn>
                                 <div className={classes.settingBtns}>
                                     <ButtonGroup style={{ marginRight: '20px' }}>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}>
