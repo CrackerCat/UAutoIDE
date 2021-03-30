@@ -69,6 +69,9 @@ class Device:
     def continuePlay(self):
         self.device.Pause(False)
 
+    def is_debug_mode_record(self): 
+        return self.device.is_debug_mode_record()
+
     # 是否安装了指定包名的应用
     def isInstalled(self):
         res = os.popen(f"{self.adbPath} shell pm path {demoPackageName}").read()

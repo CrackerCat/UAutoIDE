@@ -505,113 +505,116 @@ def recordResume():
     print('继续录制')
     return {"ok": True, "msg": '继续录制'}
 
-
-def registered_webview(webview):
-    global g_webview
-    g_webview = webview
-
-
-def mkdir_if_not_exists(path, *paths):
-    dirname = os.path.join(path, *paths)
-    if not os.path.exists(dirname):
-        os.mkdir(dirname)
-    return dirname
-
-
-def external_data_dir():
-    return mkdir_if_not_exists(ROOT_DIR, ".data")
-
-
-def post_message_to_js(msg, type):
-    global g_webview
-    if g_webview:
-        g_webview.send_message_to_js(
-            {"type": "on_message", "data": {"type": type, "msg": msg}})
-
-
-def select_app(window):
-    files = window.show_file_dialog_for_file("选择要监控的应用", "应用程序(*.exe)")
-    if files and len(files) > 0:
-        try:
-            file = files[0]
-            logging.info("import file %s", file)
-            return {"ok": True, "msg": file}
-        except Exception as err:
-            print('Exception', err)
-            traceback.print_exc()
-            return {"ok": False, "msg": "无法选择应用"}
-    return {"ok": False, "msg": "未选择文件"}
-
-
-def get_scrcpy():
+def is_debug_mode_record():
     global phone
-    if phone == None:
-        return
-    res = phone.screenshot()
-    print('img:', res)
-    return res.convert("RGB")
+    return {"ok": phone.is_debug_mode_record(), "msg": ''}
+
+# def registered_webview(webview):
+#     global g_webview
+#     g_webview = webview
 
 
-def loadTree():
-    with open(r"D:\frontProject\pywebview\miniperf\asset\data.json", 'r') as f:
-        loadData = json.load(f)
-        print(loadData)
-        return {"ok": True, "msg": loadData}
+# def mkdir_if_not_exists(path, *paths):
+#     dirname = os.path.join(path, *paths)
+#     if not os.path.exists(dirname):
+#         os.mkdir(dirname)
+#     return dirname
 
 
-def get_cstemplate_file():
-    return os.path.join(ROOT_DIR, "asset", "template", "CSTemplate.cs")
+# def external_data_dir():
+#     return mkdir_if_not_exists(ROOT_DIR, ".data")
 
 
-def get_tpsvn():
-    return os.path.join(ROOT_DIR, "asset", "tpsvn", "svn.exe")
+# def post_message_to_js(msg, type):
+#     global g_webview
+#     if g_webview:
+#         g_webview.send_message_to_js(
+#             {"type": "on_message", "data": {"type": type, "msg": msg}})
 
 
-def rpc_open_folder(dir):
-    if '.cs' in dir:
-        dir = os.path.dirname(dir)
-    open_dir(dir)
-    return {"ok": True, "dat": f"{dir}"}
+# def select_app(window):
+#     files = window.show_file_dialog_for_file("选择要监控的应用", "应用程序(*.exe)")
+#     if files and len(files) > 0:
+#         try:
+#             file = files[0]
+#             logging.info("import file %s", file)
+#             return {"ok": True, "msg": file}
+#         except Exception as err:
+#             print('Exception', err)
+#             traceback.print_exc()
+#             return {"ok": False, "msg": "无法选择应用"}
+#     return {"ok": False, "msg": "未选择文件"}
 
 
-def rpc_get_default_setting(app):
-    xlsx_path = app.get_config("Settting/XLSX_PATH", os.path.join(".", "configs.ini"))
-    cscode_path = app.get_config("Settting/CSCODE_PATH", os.path.join(".", "configs.ini"))
-    csmgr_path = app.get_config("Settting/MGR_PATH", os.path.join(".", "configs.ini"))
-    tab_path = app.get_config("Settting/TAB_PATH", os.path.join(".", "configs.ini"))
-    dat = {
-        "XLSX_PATH": xlsx_path,
-        "CSCODE_PATH": cscode_path,
-        "TAB_PATH": tab_path,
-        "MGR_PATH": csmgr_path
-    }
-    return {"ok": True, "dat": dat}
+# def get_scrcpy():
+#     global phone
+#     if phone == None:
+#         return
+#     res = phone.screenshot()
+#     print('img:', res)
+#     return res.convert("RGB")
 
 
-def return_log():
-    pass
+# def loadTree():
+#     with open(r"D:\frontProject\pywebview\miniperf\asset\data.json", 'r') as f:
+#         loadData = json.load(f)
+#         print(loadData)
+#         return {"ok": True, "msg": loadData}
 
 
-def readOut(process):
-    logging.info("readOut")
-    for readOut_line in process.stdout:
-        if len(readOut_line) < 1:
-            break
-        readOut_line = readOut_line.decode("utf-8")
-        logging.info("readOut: %s", readOut_line)
-        post_message_to_js(readOut_line, "out")
+# def get_cstemplate_file():
+#     return os.path.join(ROOT_DIR, "asset", "template", "CSTemplate.cs")
 
 
-def readErr(process):
-    logging.info("readErr")
-    for readErr_line in process.stderr:
-        if len(readErr_line) < 1:
-            break
-        readErr_line = readErr_line.decode("utf-8")
-        logging.info("readErr: %s", readErr_line)
-        post_message_to_js(readErr_line, "out")
+# def get_tpsvn():
+#     return os.path.join(ROOT_DIR, "asset", "tpsvn", "svn.exe")
 
 
-def open_dir(report_dir):
-    logging.info("open_dir")
-    os.startfile(report_dir)
+# def rpc_open_folder(dir):
+#     if '.cs' in dir:
+#         dir = os.path.dirname(dir)
+#     open_dir(dir)
+#     return {"ok": True, "dat": f"{dir}"}
+
+
+# def rpc_get_default_setting(app):
+#     xlsx_path = app.get_config("Settting/XLSX_PATH", os.path.join(".", "configs.ini"))
+#     cscode_path = app.get_config("Settting/CSCODE_PATH", os.path.join(".", "configs.ini"))
+#     csmgr_path = app.get_config("Settting/MGR_PATH", os.path.join(".", "configs.ini"))
+#     tab_path = app.get_config("Settting/TAB_PATH", os.path.join(".", "configs.ini"))
+#     dat = {
+#         "XLSX_PATH": xlsx_path,
+#         "CSCODE_PATH": cscode_path,
+#         "TAB_PATH": tab_path,
+#         "MGR_PATH": csmgr_path
+#     }
+#     return {"ok": True, "dat": dat}
+
+
+# def return_log():
+#     pass
+
+
+# def readOut(process):
+#     logging.info("readOut")
+#     for readOut_line in process.stdout:
+#         if len(readOut_line) < 1:
+#             break
+#         readOut_line = readOut_line.decode("utf-8")
+#         logging.info("readOut: %s", readOut_line)
+#         post_message_to_js(readOut_line, "out")
+
+
+# def readErr(process):
+#     logging.info("readErr")
+#     for readErr_line in process.stderr:
+#         if len(readErr_line) < 1:
+#             break
+#         readErr_line = readErr_line.decode("utf-8")
+#         logging.info("readErr: %s", readErr_line)
+#         post_message_to_js(readErr_line, "out")
+
+
+# def open_dir(report_dir):
+#     logging.info("open_dir")
+#     os.startfile(report_dir)

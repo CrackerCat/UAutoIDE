@@ -175,3 +175,6 @@ class Api:
     # 继续录制
     def recordResume(self):
         return extension.recordResume()
+
+    def is_debug_mode_record(self):
+        return extension.is_debug_mode_record()

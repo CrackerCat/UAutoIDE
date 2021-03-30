@@ -107,6 +107,14 @@ export default function EditorCard (props) {
             window.pywebview.api.updateScripts({'caseName':caseName}).then((res)=>{
                 setScriptsData(res['msg'])
             })
+            window.pywebview.api.is_debug_mode_record().then((res)=>{
+                if(!res['ok']){
+                    ShowMsg('已停止录制')
+                    setRecordWindowOpen(false)
+                    setIsRecording(false)
+                    setNeedSave(false)
+                }
+            })
         }
     },1000)
 
