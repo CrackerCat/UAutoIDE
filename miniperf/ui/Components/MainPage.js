@@ -751,10 +751,6 @@ export default function MainPage(){
                                             {/* <Folder fontSize="small" style={{fontSize: '16px'}}/> */}
                                             <i className="iconfont">&#xe726;</i>
                                         </ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'脚本列表'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}>
-                                            {/* <Cloud fontSize="small" style={{fontSize: '16px'}}/> */}
-                                            <i className="iconfont">&#xe600;</i>
-                                        </ToolbarBtn>
                                     </ButtonGroup>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '20px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={isConnected}>新手指引</ToolbarBtn>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{padding: '0 15px'}} disabled={!advancedModeDisable} onClick={switchMode}>启用{enableAdvancedMode ? '简易' : '高级'}模式</ToolbarBtn>
