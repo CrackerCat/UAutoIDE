@@ -21,7 +21,6 @@ import HierarchyContent from "./HierarchyContent";
 import {useInterval} from "../Util/Util"
 import * as PropTypes from "prop-types";
 import TutorialsBoard from "./TutorialsBoard";
-import CaseList from "./CasesList";
 import { borders } from '@material-ui/system'
 
 const theme = createMuiTheme({
@@ -48,9 +47,9 @@ const theme = createMuiTheme({
             }
         },
         MuiOutlinedInput:{
-            input: {
-                padding: '5px 14px'
-            }
+            // input: {
+            //     padding: '5px 14px'
+            // }
         },
         MuiButton: {
             root: {
@@ -222,6 +221,14 @@ const useStyle = makeStyles((style)=>({
         top: theme.spacing(1),
         color: theme.palette.grey[500],
     },
+    settingText: {
+        fontSize: 14,
+        fontWeight: 400
+    },
+    settingContent: {
+        alignItems: 'flex-start',
+        padding: '0 80px'
+    }
 }))
 
 const ToolbarBtn = withStyles({
@@ -277,7 +284,6 @@ export default function MainPage(){
     const [scriptsData,setScriptsData] = React.useState('')
     const [settingWindowOpen,setSettingWindowOpen] = useState(false)//设置弹窗
     const [workSpacePath,setWorkSpacePath] = useState('')//设置案例工作区路径
-    const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
     const [isPausing,setIsPausing] = React.useState(false)
     const [consoleData,setConsoleData] = useState('')//console的输出信息
     const [recordWindowOpen,setRecordWindowOpen] = useState(false)//设置录制弹窗
@@ -369,23 +375,7 @@ export default function MainPage(){
         setWorkSpacePath('')
         setSettingWindowOpen(false);
     };
-    //案例文件弹窗关闭事件
-    let handleCloseCases = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setCasesWindowOpen(false);
-    };
 
-    let upload = function (v){
-        window.pywebview.api.loadCase({'caseName':v}).then((res)=>{
-            setCaseName(v)
-            showMsg(v,res['ok'])
-            setIsPausing(false)
-            setScriptsData(res['msg'])
-            handleCloseCases('','')
-        })
-    }
     
     const test = function (e){
         // setTutorialsMode(true)
@@ -460,7 +450,7 @@ export default function MainPage(){
             if(res){
                 showMsg(res['msg'],res['ok'])
             }else{
-                showMsg("已取消添加脚本")
+                // showMsg("已取消添加脚本")
             }
         })
     }
@@ -529,7 +519,7 @@ export default function MainPage(){
             if(res){
                 showMsg(res['msg'],res['ok'])
             }else{
-                showMsg("已取消工作区打开")
+                // showMsg("已取消工作区打开")
             }
             handleCloseSetting('','')
         })
@@ -540,7 +530,7 @@ export default function MainPage(){
             if(res){
                 showMsg(res['msg'],res['ok'])
             }else{
-                showMsg("已取消工作区创建")
+                // showMsg("已取消工作区创建")
             }
             handleCloseSetting('','')
         })
@@ -753,9 +743,9 @@ export default function MainPage(){
                                             {/* <Folder fontSize="small" style={{fontSize: '16px'}}/> */}
                                             <i className="iconfont">&#xe726;</i>
                                         </ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'选择脚本'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'脚本列表'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}>
                                             {/* <Cloud fontSize="small" style={{fontSize: '16px'}}/> */}
-                                            <i className="iconfont">&#xe8dc;</i>
+                                            <i className="iconfont">&#xe600;</i>
                                         </ToolbarBtn>
                                     </ButtonGroup>
                                     <ToolbarBtn size="small" className={classes.mainBtn} style={{ marginRight: '20px', padding: '0 15px' }} disableElevation onClick={beginTutorial} disabled={isConnected}>新手指引</ToolbarBtn>
@@ -934,8 +924,8 @@ export default function MainPage(){
                 </Dialog>
                 <Dialog open={settingWindowOpen} onClose={handleCloseSetting} fullWidth={true} maxWidth="sm">
                     <DialogTitle>设置工作区</DialogTitle>
-                    {/* <DialogContent className={classes.dialogContent}>
-                        <TextField 
+                    <DialogContent className={[classes.dialogContent, classes.settingContent]}>
+                        {/* <TextField 
                             style={{width: '100%'}} 
                             id="outlined-basic" 
                             label="设置工作区" 
@@ -948,9 +938,11 @@ export default function MainPage(){
                                 }
                             }}
                             onChange={(e)=>{setWorkSpacePath(e.target.value)}}
-                        />
+                        /> */}
+                        <p className={classes.settingText}>创建：请选择一个空文件夹</p>
+                        <p className={classes.settingText}>设置：请选择已创建工作区的setting.UAUTO</p>
                         
-                    </DialogContent> */}
+                    </DialogContent>
                     <DialogActions classes={{root: classes.workspaceActions}}>
                         <Button variant="contained" classes={{root: classes.workspaceBtn}} onClick={(e)=>{createuserWorkSpace(e)}}>
                             创建
@@ -978,11 +970,6 @@ export default function MainPage(){
                         {!isRecording && <Button className={classes.recordingDialogBtn} onClick={() => recordResume()}>继续录制</Button>}
                     </DialogContent>
                 </Dialog>
-                <CaseList
-                    open={casesWindowOpen}
-                    onClose={handleCloseCases}
-                    load={upload}
-                />
             </ThemeProvider>
             // </div>
         )

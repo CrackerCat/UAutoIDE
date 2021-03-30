@@ -46,11 +46,14 @@ const useStyles = makeStyles((theme) => ({
         width : '100%',
         height: '100%',
         padding:'5px 12px',
-        'background-color':'#2C2828',
+        backgroundColor:'#2C2828',
         border:0,
         color:'white',
         // resize: 'none',
         overflow: 'auto',
+        '&:focus': {
+            outline: '0px solid transparent',
+        }
     },
     cardHeader: {
         maxHeight: 22,

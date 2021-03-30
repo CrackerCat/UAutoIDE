@@ -23,6 +23,7 @@ import {
     Stop,
     PlayArrow, Pause, Code
 } from "@material-ui/icons";
+import CaseList from "./CasesList";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-pastel_on_dark";
@@ -144,6 +145,7 @@ export default function EditorCard (props) {
         onChangeScriptsData,
         onChangeIsPausing,
     } = props
+    const [casesWindowOpen,setCasesWindowOpen] = useState(false)//案例文件弹窗
     const [runned, setRunned] = React.useState(false)
 
     const classes = useStyles()
@@ -186,12 +188,12 @@ export default function EditorCard (props) {
         setRunned(false)
     }
     //案例文件弹窗关闭事件
-    // let handleCloseCases = (event, reason) => {
-    //     if (reason === 'clickaway') {
-    //         return;
-    //     }
-    //     setCasesWindowOpen(false);
-    // };
+    let handleCloseCases = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setCasesWindowOpen(false);
+    };
     //创建案例文件弹窗关闭事件
     // let handleCloseCreate = (event, reason) => {
     //     if (reason === 'clickaway') {
@@ -315,15 +317,15 @@ export default function EditorCard (props) {
         onChangeScriptsData(e)
         onChangeNeedSave(true)
     }
-    // let upload = function (v){
-    //     window.pywebview.api.loadCase({'caseName':v}).then((res)=>{
-    //         onChangeCaseName(v)
-    //         ShowMsg(v,res['ok'])
-    //         setIsPausing(false)
-    //         onChangeScriptsData(res['msg'])
-    //         handleCloseCases('','')
-    //     })
-    // }
+    let upload = function (v){
+        window.pywebview.api.loadCase({'caseName':v}).then((res)=>{
+            onChangeCaseName(v)
+            ShowMsg(v,res['ok'])
+            onChangeIsPausing(false)
+            onChangeScriptsData(res['msg'])
+            handleCloseCases('','')
+        })
+    }
     return (
         // <Card variant={'outlined'} className={classes.root}>
         //     <CardHeader title={'Coding'} action={[
@@ -433,6 +435,9 @@ export default function EditorCard (props) {
                 <div className={classes.cardHeader}>
                     <div className={classes.cardHeaderTitle}>Script Window</div>
                     <div className={classes.cardHeaderAction}>
+                        <EditorBtn aria-label="settings" title={'脚本列表'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}>
+                            <i className="iconfont">&#xe600;</i>
+                        </EditorBtn>
                         <EditorBtn aria-label="settings" title={runned ? '继续' : '开始'} onClick={runned ? continuePlay : runCase} disabled={runned ? (isRecording || !isConnected || !isRunning || !isPausing) : (isRecording || isRunning || !isConnected)}>
                             <PlayArrow fontSize="small" />
                         </EditorBtn>
@@ -485,11 +490,11 @@ export default function EditorCard (props) {
                     </div>
                     }
                 </div>
-                {/* <CaseList
+                <CaseList
                     open={casesWindowOpen}
                     onClose={handleCloseCases}
                     load={upload}
-                /> */}
+                />
             </div>
     )
 }
