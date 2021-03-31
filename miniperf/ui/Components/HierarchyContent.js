@@ -9,7 +9,8 @@ const useStyles = makeStyles((theme) => ({
         '.MuiTreeItem-group': {
             marginLeft: 7,
             paddingLeft: 8,
-            borderLeft: '1px dashed rgba(255, 255, 255, 0.5)',
+            paddingTop: 5,
+            // borderLeft: '1px dashed rgba(255, 255, 255, 0.5)',
         },
         '.MuiTypography-body1': {
             fontSize: '0.9rem'

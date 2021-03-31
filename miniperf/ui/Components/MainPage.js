@@ -193,7 +193,7 @@ const useStyle = makeStyles((style)=>({
         display: 'flex',
         flexFlow: 'column',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        // alignItems: 'center'
     },
     notchedOutline: {},
     focused: {
@@ -241,7 +241,7 @@ const useStyle = makeStyles((style)=>({
     },
     settingContent: {
         alignItems: 'flex-start',
-        padding: '0 80px'
+        padding: '0 24px'
     }
 }))
 
@@ -903,7 +903,7 @@ export default function MainPage(){
                     <DialogTitle>新建案例</DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                             <TextField 
-                                style={{width: '80%', marginBottom: '20px'}} 
+                                style={{width: '100%', marginBottom: '20px'}} 
                                 id="outlined-basic" 
                                 label="案例名称" 
                                 variant="outlined" 
@@ -917,7 +917,7 @@ export default function MainPage(){
                                 onChange={(e)=>{setCreateCaseName(e.target.value)}}
                             />
                             <TextField 
-                                style={{width: '80%'}}
+                                style={{width: '100%'}}
                                 id="outlined-basic" 
                                 label="案例文件名" 
                                 variant="outlined" 
