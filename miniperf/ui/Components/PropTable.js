@@ -75,17 +75,27 @@ const components = [{
 const useStyle = makeStyles((style)=>({
     '@global': {
         '.MuiTableCell-root': {
-            border: '1px solid rgba(81, 81, 81, 1)',
             padding: '5px 16px'
+        },
+        '.MuiCollapse-container .MuiTableCell-root': {
+            border: '1px solid rgba(81, 81, 81, 1)',
+        },
+        '.MuiCollapse-container td, .MuiCollapse-container th': {
+            wordBreak: 'break-all'
         },
         '.MuiTableContainer-root': {
             maxHeight: 'calc(100% - 32px - 54px)',
+            minWidth: '100%',
+            maxWidth: '100%',
             overflow: 'auto'
         },
     },
     root:{
         // background:'lightgrey'
         width: '100%',
+        '& > .MuiTableCell-root': {
+            borderBottom: '1px solid rgba(81, 81, 81, 1)',
+        }
     },
     cardHeader: {
         height: 22,
@@ -101,9 +111,9 @@ const useStyle = makeStyles((style)=>({
 }))
 const useRowStyles = makeStyles({
     root: {
-        '& > *': {
-            borderBottom: 'unset',
-        },
+        // '& > *': {
+        //     borderBottom: 'unset',
+        // },
         width: '100%',
     },
     cellContainer: {
@@ -123,11 +133,16 @@ function Row(props) {
     return (
         <React.Fragment>
             <TableRow className={classes.root}>
-                <TableCell>
-                    <div className={classes.cellContainer}>
+                <TableCell style={{maxWidth: '30px', width: '10%', padding: '5px', textAlign: 'center'}}>
+                    <div>
                         <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowRightIcon />}
                         </IconButton>
+                        {/* {row.type} */}
+                    </div>
+                </TableCell>
+                <TableCell style={{width: '90%', padding: '5px'}}>
+                    <div className={classes.cellContainer}>
                         {row.type}
                     </div>
                 </TableCell>
@@ -136,14 +151,14 @@ function Row(props) {
                 {/*</TableCell>*/}
                 {/*<TableCell align="right">{row.calories}</TableCell>*/}
             </TableRow>
-            <TableRow className={classes.root}>
+            <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box margin={1}>
                             {/* <Typography variant="h6" gutterBottom component="div">
                                 Properties
                             </Typography> */}
-                            <Table size="small" aria-label="purchases">
+                            <Table size="small" style={{tableLayout: 'fixed'}} aria-label="purchases">
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>name</TableCell>
@@ -207,14 +222,14 @@ export default function PropTable(props) {
         <div className={classes.root}>
             <div className={classes.cardHeader}>Components</div>
             <TableContainer>
-                <Table>
-                    <TableHead>
-                        {/* <TableRow>
-                            <TableCell align={"left"}></TableCell>
-                            <CardHeader title={'Components'}/>
-                            <TableCell align="right">Value</TableCell>
-                        </TableRow> */}
-                    </TableHead>
+                <Table size="small" style={{tableLayout: 'fixed'}}>
+                    {/* <TableHead> */}
+                        {/* <TableRow> */}
+                            {/* <TableCell align={"left"}></TableCell> */}
+                            {/* <div className={classes.cardHeader}>Components</div> */}
+                            {/* <TableCell align="right">Value</TableCell> */}
+                        {/* </TableRow> */}
+                    {/* </TableHead> */}
                     <TableBody>
                         {componentsInfo.map((row) => (
                             <Row key={row.id} row={row} />
