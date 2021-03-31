@@ -6,10 +6,12 @@ import {Card, CardContent, CardHeader, IconButton, Typography, Button, makeStyle
 
 const useStyles = makeStyles((theme) => ({
     '@global': {
+        '.MuiTreeView-root': {
+            margin: '5px 0'
+        },
         '.MuiTreeItem-group': {
             marginLeft: 7,
             paddingLeft: 8,
-            paddingTop: 5,
             // borderLeft: '1px dashed rgba(255, 255, 255, 0.5)',
         },
         '.MuiTypography-body1': {
