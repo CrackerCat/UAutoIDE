@@ -142,7 +142,7 @@ function Row(props) {
                     </div>
                 </TableCell>
                 <TableCell style={{width: '90%', padding: '5px'}}>
-                    <div className={classes.cellContainer}>
+                    <div className={classes.cellContainer} title={row.type}>
                         {row.type}
                     </div>
                 </TableCell>

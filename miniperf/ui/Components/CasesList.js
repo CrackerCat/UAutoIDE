@@ -16,8 +16,9 @@ const useStyle = makeStyles((theme)=>({
     root: {
         width: '100%',
     },
-    content:{
-        width:'360px'
+    listContent:{
+        width:'360px',
+        maxHeight: 480,
     }
 }))
 
@@ -43,7 +44,7 @@ export default function CaseList(props){
     return(
         <Dialog open={open} onClose={onClose} className={classes.root}>
             <DialogTitle id="simple-dialog-title">案例列表</DialogTitle>
-            <DialogContent className={classes.content}>
+            <DialogContent className={classes.listContent}>
                 <List component="nav" aria-label="secondary mailbox folders">
 
                     {casesList.map((v,i)=>(
