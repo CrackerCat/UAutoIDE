@@ -494,6 +494,9 @@ export default function EditorCard (props) {
                     open={casesWindowOpen}
                     onClose={handleCloseCases}
                     load={upload}
+                    isRunning={isRunning}
+                    isRecording={isRecording}
+                    ShowMsg={ShowMsg}
                 />
             </div>
     )

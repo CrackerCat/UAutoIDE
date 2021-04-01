@@ -466,16 +466,6 @@ export default function MainPage(){
         }
     },1000)
 
-    // 添加脚本
-    const addFile = () =>{
-        window.pywebview.api.addFile().then((res)=>{
-            if(res){
-                showMsg(res['msg'],res['ok'])
-            }else{
-                // showMsg("已取消添加脚本")
-            }
-        })
-    }
 
     // 暂停录制
     const recordPause = () => {
@@ -756,10 +746,6 @@ export default function MainPage(){
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}>
                                             {/* <NoteAdd fontSize="small" style={{fontSize: '16px'}} /> */}
                                             <i className="iconfont">&#xe61d;</i>
-                                        </ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'添加脚本'} onClick={addFile} disabled={isRecording || isRunning}>
-                                            {/* <InsertDriveFile fontSize="small" style={{fontSize: '16px'}} /> */}
-                                            <i className="iconfont">&#xe662;</i>
                                         </ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}}>
                                             {/* <Folder fontSize="small" style={{fontSize: '16px'}}/> */}
