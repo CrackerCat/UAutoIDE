@@ -121,6 +121,11 @@ export default function CaseList(props){
                 handleCloseCreate('','')
                 onChangeCaseName(res['msg'])
                 onChangeScriptsData('')
+                ShowMsg('脚本' + res['msg'] +'.py' + '创建成功')
+            }else if(res['exist']) {
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                ShowMsg(res['msg'],res['ok'])
             }else{
                 setCreateCaseName('')
                 setCreateCaseFileName('')
