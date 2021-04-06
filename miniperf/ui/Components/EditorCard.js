@@ -212,6 +212,11 @@ export default function EditorCard (props) {
                 handleCloseCreate('','')
                 setCaseName(res['msg'])
                 setScriptsData('')
+                ShowMsg('脚本' + res['msg'] +'.py' + '创建成功')
+            }else if(res['exist']){
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                ShowMsg(res['msg'],res['ok'])
             }else{
                 setCreateCaseName('')
                 setCreateCaseFileName('')

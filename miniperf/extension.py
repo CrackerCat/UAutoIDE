@@ -55,11 +55,77 @@ def isDevicesChange():
     isNotChanged = True
     return {"ok": True}
 
-# 加载本地脚本列表
-def loadCasesList():
+# 刷新json文件
+def refreshCasesJSON():
+    file_list = []
+    casesList = []
+
+    dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))  
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
         s = json.loads(f.read())
-    return {"ok": True, "msg": s}
+    
+    for i in dir_list:
+        i = i.split('.')[0]
+        if i != '__init__' and i != 'temp_test':
+            file_list.append(i)
+    
+    for file in file_list:
+        for value in s:
+            if file == value['run_case']:
+                # if file not in casesList['run_case']:
+                newData = {
+                        "test_name": value['test_name'],
+                        "tag": value['tag'],
+                        "run_case": value['run_case'],
+                }
+                casesList.append(newData)
+                file_list.remove(file)
+
+    for file in file_list:
+        newData = {
+                "test_name": file,
+                "tag": file,
+                "run_case": file,
+        }
+        casesList.append(newData)       
+
+    with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='UTF-8') as f:
+        json.dump(casesList, f, ensure_ascii=False)   
+            
+# 加载本地脚本列表
+def loadCasesList():
+    refreshCasesJSON()
+    case_list = []
+    file_list = []
+    casesList = []
+
+    dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))  
+    with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
+        s = json.loads(f.read())
+    for key in s:
+        for dir1 in dir_list:
+            dir1 = dir1.split('.')[0]
+            if dir1 == key['run_case']:
+                case_list.append(dir1 + ".py")
+    sort_list = sorted(case_list,key = lambda x: os.path.getmtime(os.path.join(workSpacePath,'pages',x))) # 按文件最后修改时间排序
+    sort_list = sort_list[::-1]
+
+    for i in sort_list:
+        i = i.split('.')[0]
+        file_list.append(i)
+
+    for file in file_list:
+        for value in s:
+            if file == value['run_case']:
+                # if file not in casesList['run_case']:
+                newData = {
+                        "test_name": value['test_name'],
+                        "tag": value['tag'],
+                        "run_case": value['run_case'],
+                    }
+                casesList.append(newData)
+
+    return {"ok": True, "msg": casesList}
 
 # 加载指定名称脚本
 def loadCase(data):
@@ -177,6 +243,7 @@ def createWorkSpace(path: str):
         os.mkdir(os.path.join(workSpacePath, 'pages'))
         create(workSpacePath, 'setting', 'UAUTO', '[]')
         create(os.path.join(workSpacePath, 'pages'), 'temp_test', 'py')
+        create(os.path.join(workSpacePath, 'pages'), '__init__', 'py')
         return {"ok": True, "msg": 'ok'}
     except:
         raise "创建工作区失败"
@@ -186,6 +253,9 @@ def createFile(data):
     global workSpacePath
     try:
         path = os.path.join(workSpacePath, 'pages', data['name'] + '.py')
+        if os.path.isfile(path):
+            print(f'[ERROR]' + "脚本" + data['name'] + ".py" + "已存在")
+            return {'ok':False,'exist':True,'msg':'文件名已存在'}
         file = open(path, 'w')
         file.close()
 
@@ -202,7 +272,7 @@ def createFile(data):
         casesList.append(newData)
         with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='utf-8') as f:
             json.dump(casesList, f, ensure_ascii=False)
-
+        print("脚本" + data['name'] + ".py"+ "创建成功")
         return {"ok": True, "msg": data['name']}
     except Exception as e:
         print(f'[ERROR]{e}')
