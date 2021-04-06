@@ -433,7 +433,7 @@ export default function EditorCard (props) {
         // </Card> 
             <div className={classes.root}>
                 <div className={classes.cardHeader}>
-                    <div className={classes.cardHeaderTitle}>Script Window</div>
+                    <div className={classes.cardHeaderTitle}>Script Window{caseName && `   ：${caseName}`}</div>
                     <div className={classes.cardHeaderAction}>
                         <EditorBtn aria-label="settings" title={'脚本列表'} onClick={()=>{setCasesWindowOpen(true)}} disabled={isRecording || isRunning}>
                             <i className="iconfont">&#xe600;</i>
@@ -497,6 +497,10 @@ export default function EditorCard (props) {
                     isRunning={isRunning}
                     isRecording={isRecording}
                     ShowMsg={ShowMsg}
+                    caseName={caseName}
+                    onChangeCaseName={(s) => onChangeCaseName(s)}
+                    scriptsData={scriptsData}
+                    onChangeScriptsData={(s) => onChangeScriptsData(s)}
                 />
             </div>
     )

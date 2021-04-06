@@ -100,7 +100,7 @@ export default function TutorialsBoard(props){
 
     return(
         <Dialog open={open} className={classes.root}>
-            <MuiDialogTitle id="simple-dialog-title" onClose={() => onClose('', '')}>演示案例</MuiDialogTitle>
+            <MuiDialogTitle id="simple-dialog-title" onClose={() => onClose('', '')}>演示脚本</MuiDialogTitle>
             <DialogContent className={classes.dialogContent}>
                 <p style={{fontSize: 14}} className={isOpenDemo?classes.Finish:''}>正在打开演示Demo，如未安装将自动安装（请确保有且仅有1台设备连接于电脑）</p>
 
@@ -115,7 +115,7 @@ export default function TutorialsBoard(props){
                     {isConnected && <DoneOutline size={24} style={{color: '#4F7038'}} />}
                 </div>
                 <div className={classes.tutorialInfo}>
-                    <p>3.运行案例</p>
+                    <p>3.运行脚本</p>
                     {!isConnected && <CircularProgress size={24} style={{color: '#fff'}} />}
                     {isConnected && isOpenDemo && <DoneOutline size={24} style={{color: '#4F7038'}} />}
                 </div>

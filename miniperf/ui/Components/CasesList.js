@@ -4,11 +4,13 @@ import {
     Dialog,
     DialogContent,
     DialogTitle as MuiDialogTitle, 
+    DialogActions,
     IconButton,
     Button,
     Typography,
     LinearProgress,
     List, ListItem, ListItemSecondaryAction,
+    TextField,
     ListItemText
 } from "@material-ui/core";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
@@ -19,13 +21,17 @@ const useStyle = makeStyles((theme)=>({
     '@global': {
         '.MuiButton-startIcon.MuiButton-iconSizeSmall': {
             marginRight: 3,
-        }
+        },
+        '.MuiListItemText-root .MuiTypography-root': {
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+        },
     },
     root: {
         width: '100%',
     },
     listContent:{
-        width:'360px',
         maxHeight: 480,
     },
     dialogTitle: {
@@ -38,13 +44,53 @@ const useStyle = makeStyles((theme)=>({
         '&: hover': {
             background: '#424242'
         }
-    }
+    },
+    dialogContent: {
+        overflow: 'hidden',
+        display: 'flex',
+        flexFlow: 'column',
+        justifyContent: 'space-between',
+        // alignItems: 'center'
+    },
+    notchedOutline: {},
+    focused: {
+        "& $notchedOutline": {
+            borderColor: "#fff !important"
+        }
+    },
+    dialogBtn: {
+        backgroundColor: '#1890ff',
+        color: '#fff',
+        '&:hover': {
+            backgroundColor: '#096dd9',
+        },
+        '&:nth-child(2n + 1)': {
+            marginRight: '20px'
+        }
+    },
+    dialogActions: {
+        padding: 24
+    },
 }))
 
 export default function CaseList(props){
     const classes = useStyle()
-    const { onClose, open, load, isRunning, isRecording, ShowMsg} = props;
+    const { 
+        onClose, 
+        open, 
+        load, 
+        isRunning, 
+        isRecording, 
+        ShowMsg,
+        caseName,
+        onChangeCaseName,
+        scriptsData,
+        onChangeScriptsData,
+    } = props;
     const [casesList,setCasesList] = useState([])
+    const [createWindowOpen,setCreateWindowOpen] = useState(false)//创建案例文件弹窗
+    const [createCaseName,setCreateCaseName] = useState('')//创建案例文件案例名
+    const [createCaseFileName,setCreateCaseFileName] = useState('')//创建案例文件文件名
 
     const getCases = () =>{
         window.pywebview.api.loadCasesList().then((res)=>{
@@ -65,6 +111,32 @@ export default function CaseList(props){
         })
     }
 
+    let createFile = (v) => {
+        if(createCaseFileName === '' || createCaseName === '')
+            return
+        window.pywebview.api.createCase({'name':createCaseFileName,'caseName':createCaseName}).then((res)=>{
+            if(res['ok']){
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                handleCloseCreate('','')
+                onChangeCaseName(res['msg'])
+                onChangeScriptsData('')
+            }else{
+                setCreateCaseName('')
+                setCreateCaseFileName('')
+                handleCloseCreate('','')
+                ShowMsg(res['msg'],res['ok'])
+            }
+        })
+    }
+    //创建案例文件弹窗关闭事件
+    let handleCloseCreate = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setCreateWindowOpen(false);
+    };
+
     useEffect(()=>{
         if(open){
             getCases()
@@ -76,45 +148,94 @@ export default function CaseList(props){
         return (
             <MuiDialogTitle disableTypography {...other}>
             <Typography variant="h6">{children}</Typography>
-                <Button size="small" style={{backgroundColor: '#424242'}} startIcon={<i className="iconfont">&#xe60d;</i>} title={'添加案例'} onClick={addFile} disabled={isRecording || isRunning}>
-                    添加案例
-                </Button>
+                <div>
+                    <Button size="small" style={{backgroundColor: '#424242', marginRight: 10}} startIcon={<i className="iconfont">&#xe61d;</i>} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}>
+                        新建脚本
+                    </Button>
+                    <Button size="small" style={{backgroundColor: '#424242'}} startIcon={<i className="iconfont">&#xe65d;</i>} title={'导入脚本'} onClick={addFile} disabled={isRecording || isRunning}>
+                        导入脚本
+                    </Button>
+                </div>
+                
             </MuiDialogTitle>
         );
     });
 
     return(
-        <Dialog open={open} onClose={onClose} className={classes.root}>
-            <DialogTitle id="simple-dialog-title" className={classes.dialogTitle}>
-                案例列表
-            </DialogTitle>
-            <DialogContent className={classes.listContent}>
-                <List component="nav" aria-label="secondary mailbox folders">
+        <React.Fragment>
+            <Dialog open={open} fullWidth={true} maxWidth="xs" onClose={onClose} className={classes.root}>
+                <DialogTitle id="simple-dialog-title" className={classes.dialogTitle}>
+                    脚本列表
+                </DialogTitle>
+                <DialogContent className={classes.listContent}>
+                    <List component="nav" aria-label="secondary mailbox folders">
 
-                    {casesList.map((v,i)=>(
+                        {casesList.map((v,i)=>(
 
-                    <ListItem button>
-                        <ListItemText primary={v.tag + '(' + v.run_case + '.py)'} />
-                        <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="Publish" title={'加载'} onClick={(e)=>{load(v.run_case)}} id={v.run_case}>
-                                <Publish/>
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
+                        <ListItem button>
+                            <ListItemText primary={v.tag + '(' + v.run_case + '.py)'}/>
+                            <ListItemSecondaryAction>
+                                <IconButton edge="end" aria-label="Publish" title={'加载'} onClick={(e)=>{load(v.run_case)}} id={v.run_case}>
+                                    <Publish/>
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
 
-                    ))}
+                        ))}
 
-                    {/*<ListItem button>*/}
-                    {/*    <ListItemText primary="Trash" />*/}
-                    {/*    <ListItemSecondaryAction>*/}
-                    {/*        <IconButton edge="end" aria-label="delete">*/}
-                    {/*            <PlayCircleFilled/>*/}
-                    {/*        </IconButton>*/}
-                    {/*    </ListItemSecondaryAction>*/}
-                    {/*</ListItem>*/}
+                        {/*<ListItem button>*/}
+                        {/*    <ListItemText primary="Trash" />*/}
+                        {/*    <ListItemSecondaryAction>*/}
+                        {/*        <IconButton edge="end" aria-label="delete">*/}
+                        {/*            <PlayCircleFilled/>*/}
+                        {/*        </IconButton>*/}
+                        {/*    </ListItemSecondaryAction>*/}
+                        {/*</ListItem>*/}
 
-                </List>
-            </DialogContent>
-        </Dialog>
+                    </List>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={createWindowOpen} fullWidth={true} maxWidth="sm">
+                <MuiDialogTitle>新建脚本</MuiDialogTitle>
+                <DialogContent className={classes.dialogContent}>
+                        <TextField 
+                            style={{width: '100%', marginBottom: '20px'}} 
+                            id="outlined-basic" 
+                            label="脚本名称" 
+                            variant="outlined" 
+                            value={createCaseName}
+                            InputProps={{
+                                classes: {
+                                    notchedOutline: classes.notchedOutline,
+                                    focused: classes.focused
+                                }
+                            }}
+                            onChange={(e)=>{setCreateCaseName(e.target.value)}}
+                        />
+                        <TextField 
+                            style={{width: '100%'}}
+                            id="outlined-basic" 
+                            label="脚本文件名" 
+                            variant="outlined" 
+                            value={createCaseFileName}
+                            InputProps={{
+                                classes: {
+                                    notchedOutline: classes.notchedOutline,
+                                    focused: classes.focused
+                                }
+                            }}
+                            onChange={(e)=>{setCreateCaseFileName(e.target.value)}}
+                        />
+                </DialogContent>
+                <DialogActions classes={{root: classes.dialogActions}}>
+                <Button variant="contained" classes={{root: classes.dialogBtn}} onClick={(e)=>{createFile(e)}}>
+                    创建
+                </Button>
+                <Button variant="contained" color="primary" onClick={(e)=>{handleCloseCreate('','')}}>
+                    取消
+                </Button>
+                </DialogActions>
+            </Dialog>
+        </React.Fragment>
     )
 }

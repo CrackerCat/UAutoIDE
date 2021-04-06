@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "10194316",
+      "name": "导入",
+      "font_class": "daoru",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    },
+    {
+      "icon_id": "14465094",
+      "name": "folder-create",
+      "font_class": "folder-create",
+      "unicode": "e676",
+      "unicode_decimal": 58998
+    },
+    {
       "icon_id": "7429584",
       "name": "add",
       "font_class": "add",

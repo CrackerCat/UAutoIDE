@@ -65,14 +65,18 @@ const useStyle = makeStyles((style)=>({
             fontSize: 18,
         },
         '.MuiOutlinedInput-input': {
-            fontSize: 14
+            fontSize: 14,
+            padding: '8px 14px',
         },
         '.MuiFormLabel-root': {
             fontSize: 14
         },
+        '.MuiInputLabel-outlined': {
+            transform: 'translate(14px, 10px) scale(0.9)',
+        },
         '.MuiInputLabel-outlined.MuiInputLabel-shrink': {
             transform: 'translate(14px, -6px) scale(0.85)'
-        }
+        },
     },
     root: {
         height: '100vh',
@@ -224,6 +228,24 @@ const useStyle = makeStyles((style)=>({
         width: '20%',
         backgroundColor: '#666'
     },
+    loadingDialog: {
+        overflow: 'hidden',
+        display: 'flex',
+        flexFlow: 'column',
+        justifyContent: 'ceter',
+        alignItems: 'center'
+    },
+    loadingDialogHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        '& > h2': {
+            margin: '0 20px',
+        }
+    },
+    loadingDialogContent: {
+        margin: '20px',
+        fontSize: '18px'
+    },
     muiDialogTitle: {
         display: 'flex',
         justifyContent: 'flex-end',
@@ -273,6 +295,7 @@ export default function MainPage(){
     const [logType,setLogType] = useState('success')//底部消息弹窗类型
     const [isConnected, setIsConnected] = React.useState(false);//是否连接上的设备
     const [loading, setLoading] = React.useState(false);//连接中
+    const [manuallyConnect, setManuallyConnect] = React.useState(false) //手动连接
     const [message, setMessage] = React.useState('');//提示框的内容
     const [sn, setSN] = useState("");//设备的设备号
     const [ip, setIP] = useState("");//设备的ip
@@ -371,14 +394,25 @@ export default function MainPage(){
     }
     //断开连接
     const disConnect = function (){
+        setManuallyConnect(false)
         setLoading(true)
         window.pywebview.api.disConnect().then((res)=>{
             // setIsConnected(false)
             showMsg(res['msg'],false)
             setLoading(false)
-            setSN('')
-            setPhone('')
-            setIP('')
+            // setSN('')
+            // setPhone('')
+            // setIP('')
+        })
+    }
+    // 显示连接中弹窗断开连接
+    const loadingDisConnect = function () {
+        setManuallyConnect(false)
+        window.pywebview.api.disConnect().then((res)=>{
+            setLoading(false)
+            // setSN('')
+            // setPhone('')
+            // setIP('')
         })
     }
     //设置弹窗关闭事件
@@ -529,22 +563,22 @@ export default function MainPage(){
     let setWorkSpace = () => {
         window.pywebview.api.openUAUTOFile().then((res)=>{
             if(res){
+                handleCloseSetting('','')
                 showMsg(res['msg'],res['ok'])
             }else{
                 // showMsg("已取消工作区打开")
             }
-            handleCloseSetting('','')
         })
     }
 
     let createuserWorkSpace = (e) => {
         window.pywebview.api.createuserWorkSpace().then((res)=>{
             if(res){
+                handleCloseSetting('','')
                 showMsg(res['msg'],res['ok'])
             }else{
                 // showMsg("已取消工作区创建")
             }
-            handleCloseSetting('','')
         })
     }
     //检测是否为新用户
@@ -735,7 +769,7 @@ export default function MainPage(){
                                         </ButtonGroup>
                                     </div>
                                     <div className={classes.wrapper}>
-                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
+                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={() => {connect(); setManuallyConnect(true)}} disabled={isConnected || loading}>连接</Button>}
                                         {isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonDisConnect]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
                                         {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                                     </div>
@@ -743,11 +777,11 @@ export default function MainPage(){
                                 <ToolbarBtn size="small" style={{padding: '0 30px'}} className={classes.mainBtn} onClick={record} disabled={isRecording || isRunning || !isConnected}><i className="iconfont" style={{marginRight: 10}}>&#xe68d;</i>开始录制</ToolbarBtn>
                                 <div className={classes.settingBtns}>
                                     <ButtonGroup style={{ marginRight: '20px' }}>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'新建脚本'} onClick={()=>{setCreateWindowOpen(true)}} disabled={isRecording || isRunning}>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'创建工作区：请选择一个空文件夹'} onClick={(e)=>{createuserWorkSpace(e)}}>
                                             {/* <NoteAdd fontSize="small" style={{fontSize: '16px'}} /> */}
-                                            <i className="iconfont">&#xe61d;</i>
+                                            <i className="iconfont">&#xe676;</i>
                                         </ToolbarBtn>
-                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置'} onClick={()=>{setSettingWindowOpen(true)}}>
+                                        <ToolbarBtn size="small" className={classes.mainBtn} title={'设置工作区：请选择已创建工作区的setting.UAUTO'} onClick={(e)=>{setWorkSpace(e)}}>
                                             {/* <Folder fontSize="small" style={{fontSize: '16px'}}/> */}
                                             <i className="iconfont">&#xe726;</i>
                                         </ToolbarBtn>
@@ -885,13 +919,13 @@ export default function MainPage(){
                         {message}
                     </Alert>
                 </Snackbar>
-                <Dialog open={createWindowOpen} fullWidth={true} maxWidth="sm">
-                    <DialogTitle>新建案例</DialogTitle>
+                {/* <Dialog open={createWindowOpen} fullWidth={true} maxWidth="sm">
+                    <DialogTitle>新建脚本</DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                             <TextField 
                                 style={{width: '100%', marginBottom: '20px'}} 
                                 id="outlined-basic" 
-                                label="案例名称" 
+                                label="脚本名称" 
                                 variant="outlined" 
                                 value={createCaseName}
                                 InputProps={{
@@ -905,7 +939,7 @@ export default function MainPage(){
                             <TextField 
                                 style={{width: '100%'}}
                                 id="outlined-basic" 
-                                label="案例文件名" 
+                                label="脚本文件名" 
                                 variant="outlined" 
                                 value={createCaseFileName}
                                 InputProps={{
@@ -925,7 +959,7 @@ export default function MainPage(){
                         取消
                     </Button>
                     </DialogActions>
-                </Dialog>
+                </Dialog> */}
                 <Dialog open={settingWindowOpen} onClose={handleCloseSetting} fullWidth={true} maxWidth="sm">
                     <DialogTitle>设置工作区</DialogTitle>
                     <DialogContent className={[classes.dialogContent, classes.settingContent]}>
@@ -972,6 +1006,23 @@ export default function MainPage(){
                         <div className={classes.recordingDialogContent}>可长按手机屏幕5秒结束录制</div>
                         {isRecording && <Button className={classes.recordingDialogBtn} onClick={() => recordPause()}>暂停录制</Button>}
                         {!isRecording && <Button className={classes.recordingDialogBtn} onClick={() => recordResume()}>继续录制</Button>}
+                    </DialogContent>
+                </Dialog>
+                <Dialog open={loading && manuallyConnect} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
+                    <DialogTitle id="simple-dialog-title">
+                    <IconButton aria-label="close" className={classes.closeButton} onClick={() => loadingDisConnect()}>
+                        <Close />
+                    </IconButton>
+                    </DialogTitle>
+                    <DialogContent className={classes.loadingDialog}>
+                        <div className={classes.loadingDialogHeader}>
+                            <h2>连接中</h2><CircularProgress style={{color: '#fff'}}/>
+                        </div>
+                        <div className={classes.loadingDialogContent}>
+                            <p>1.请保持设备USB连接状态良好</p>
+                            <p>2.请保证电脑与设备连接同一网络</p>
+                            <p>3.请打开目标程序且保持设备亮屏</p>
+                        </div>
                     </DialogContent>
                 </Dialog>
             </ThemeProvider>
