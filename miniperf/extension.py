@@ -60,8 +60,19 @@ def refreshCasesJSON():
     file_list = []
     casesList = []
 
-    dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))  
-    with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
+    if workSpacePath == r'\\':
+        recordWorkSpacePath = os.path.join(ROOT_DIR, 'asset', 'WorkSpace')
+        recordWorkSpacePath = recordWorkSpacePath.replace('\\','/')
+    else:
+        recordWorkSpacePath = workSpacePath
+
+    dir_list = os.listdir(os.path.join(recordWorkSpacePath, 'pages'))  
+
+    for file in dir_list:
+        if os.path.isdir(os.path.join(recordWorkSpacePath, 'pages',file)):
+            dir_list.remove(file)
+
+    with open(os.path.join(recordWorkSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
         s = json.loads(f.read())
     
     for i in dir_list:
@@ -89,7 +100,7 @@ def refreshCasesJSON():
         }
         casesList.append(newData)       
 
-    with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='UTF-8') as f:
+    with open(os.path.join(recordWorkSpacePath, 'setting.UAUTO'), 'w', encoding='UTF-8') as f:
         json.dump(casesList, f, ensure_ascii=False)   
             
 # 加载本地脚本列表
@@ -99,15 +110,26 @@ def loadCasesList():
     file_list = []
     casesList = []
 
-    dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))  
-    with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
+    if workSpacePath == r'\\':
+        recordWorkSpacePath = os.path.join(ROOT_DIR, 'asset', 'WorkSpace')
+        recordWorkSpacePath = recordWorkSpacePath.replace('\\','/')
+    else:
+        recordWorkSpacePath = workSpacePath
+
+    dir_list = os.listdir(os.path.join(recordWorkSpacePath, 'pages'))
+
+    for file in dir_list:
+        if os.path.isdir(os.path.join(recordWorkSpacePath, 'pages',file)):
+            dir_list.remove(file)
+
+    with open(os.path.join(recordWorkSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
         s = json.loads(f.read())
     for key in s:
         for dir1 in dir_list:
             dir1 = dir1.split('.')[0]
             if dir1 == key['run_case']:
                 case_list.append(dir1 + ".py")
-    sort_list = sorted(case_list,key = lambda x: os.path.getmtime(os.path.join(workSpacePath,'pages',x))) # 按文件最后修改时间排序
+    sort_list = sorted(case_list,key = lambda x: os.path.getmtime(os.path.join(recordWorkSpacePath,'pages',x))) # 按文件最后修改时间排序
     sort_list = sort_list[::-1]
 
     for i in sort_list:
