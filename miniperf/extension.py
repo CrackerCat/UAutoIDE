@@ -146,6 +146,17 @@ def openUAUTOFile():
         FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
         FilePath = os.path.dirname(FilePath)
         # FilePath = FilePath.replace('/','\\')
+
+        recordWorkSpacePath = os.path.join(ROOT_DIR, 'asset', 'WorkSpace')
+        recordWorkSpacePath = recordWorkSpacePath.replace('\\','/')
+        # print(recordWorkSpacePath)
+        if FilePath == recordWorkSpacePath:
+            data = {'path':r'\\'}
+            setWorkSpace(data)
+            window.destroy()
+            print(FilePath + "工作区打开成功")
+            return {"ok": True, "msg": FilePath + "工作区打开成功"}
+
         if FilePath :
             data = {'path':FilePath}
             setWorkSpace(data)
