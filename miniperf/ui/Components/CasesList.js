@@ -99,7 +99,7 @@ export default function CaseList(props){
             }
         })
     }
-    // 添加脚本
+    // 导入脚本
     const addFile = () =>{
         window.pywebview.api.addFile().then((res)=>{
             if(res){
@@ -122,6 +122,7 @@ export default function CaseList(props){
                 onChangeCaseName(res['msg'])
                 onChangeScriptsData('')
                 ShowMsg('脚本' + res['msg'] +'.py' + '创建成功')
+                getCases()
             }else if(res['exist']) {
                 setCreateCaseName('')
                 setCreateCaseFileName('')
@@ -206,7 +207,8 @@ export default function CaseList(props){
                         <TextField 
                             style={{width: '100%', marginBottom: '20px'}} 
                             id="outlined-basic" 
-                            label="脚本名称" 
+                            label="脚本名称"
+                            placeholder="请输入脚本名称"
                             variant="outlined" 
                             value={createCaseName}
                             InputProps={{
@@ -221,6 +223,7 @@ export default function CaseList(props){
                             style={{width: '100%'}}
                             id="outlined-basic" 
                             label="脚本文件名" 
+                            placeholder="请输入脚本文件名(不需要加.py)"
                             variant="outlined" 
                             value={createCaseFileName}
                             InputProps={{

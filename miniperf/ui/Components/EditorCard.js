@@ -449,7 +449,7 @@ export default function EditorCard (props) {
                             <i className="iconfont">&#xe66c;</i>
                         </EditorBtn>
                         <EditorBtn aria-label="settings" title={'导出脚本'} onClick={saveAs} disabled={isRecording || isRunning}>
-                            <SaveAlt fontSize="small" />
+                            <i className="iconfont">&#xe67c;</i>
                         </EditorBtn>
                     </div>
                 </div>
