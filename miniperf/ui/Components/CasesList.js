@@ -112,8 +112,11 @@ export default function CaseList(props){
     }
 
     let createFile = (v) => {
-        if(createCaseFileName === '' || createCaseName === '')
+        if(createCaseFileName === '' || createCaseName === '') {
+            ShowMsg('脚本名称或脚本文件名不能为空', false)
             return
+        }
+            
         window.pywebview.api.createCase({'name':createCaseFileName,'caseName':createCaseName}).then((res)=>{
             if(res['ok']){
                 setCreateCaseName('')
