@@ -110,6 +110,7 @@ export default function MainPage(){
     let [enableAdvancedMode,setEnableAdvancedMode] = useState(false)//开启高级模式
     const [advancedModeDisable,setAdvancedModeDisable] = useState(true)//高级模式是否可更改
     const [enableHierarchy,setEnableHierarchy] = useState(true)//Hierarchy是否能用
+    const [isDisconnect,setIsDisConnect] = useState(false)//断开设备连接
     let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
@@ -162,23 +163,25 @@ export default function MainPage(){
         showMsg('连接中，请打开目标程序')
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
             // setIsConnected(res['ok'])
-            if(res['ok']){
-                showMsg('连接成功：' + res['msg']['ip'],res['ok'])
-                setIP(res['msg']['ip'])
-                let version = res['msg']['version']
-                let tmp = version.split('.')[0]
-                setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
-            }
-            else {
-                showMsg(res['msg'],res['ok'])
-            }
-            setLoading(false)
+            // if(res['ok']){
+            //     // showMsg('连接成功：' + res['msg']['ip'],res['ok'])
+            //     // setIP(res['msg']['ip'])
+            //     // let version = res['msg']['version']
+            //     // let tmp = version.split('.')[0]
+            //     // setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
+            // }
+            // else {
+            //     showMsg(res['msg'],res['ok'])
+            // }
+            // setLoading(false)
+            // showMsg(res['msg'],res['ok'])
 
         })
     }
     //断开连接
     const disConnect = function (){
         setLoading(true)
+        setIsDisConnect(true)
         window.pywebview.api.disConnect().then((res)=>{
             // setIsConnected(false)
             showMsg(res['msg'],false)
@@ -186,6 +189,7 @@ export default function MainPage(){
             setSN('')
             setPhone('')
             setIP('')
+            setIsDisConnect(false)
         })
     }
     const test = function (e){
@@ -204,14 +208,27 @@ export default function MainPage(){
             if (isConnected !== status['isConnected']) {
                 setIsConnected(status['isConnected'])
             }
+            if(loading && !isDisconnect)
+            {
+                if(status['isConnected'])
+                {
+                    if(res['msg']['ip']){
+                        showMsg('连接成功：' + res['msg']['ip'],res['ok'])
+                        setIP(res['msg']['ip'])
+                        let version = res['msg']['version']
+                        let tmp = version.split('.')[0]
+                        setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
+                        setLoading(false)
+                        // setIsDisConnect(false)
+                    }
+                }
+            }
         })
     }
 
     useInterval(()=>{
         checkConnection()
-        // if(!isConnected && !loading){
-        //     getCurDevice()
-        // }
+        
     },1000)
 
     //检测是否为新用户
@@ -379,8 +396,8 @@ export default function MainPage(){
                                 onChange={changeIPValue}
                             />
                             <div className={classes.wrapper}>
-                                {!isConnected && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
-                                {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
+                                {!isConnected && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={()=>{connect()}} disabled={isConnected || loading}>连接</Button>}
+                                {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={()=>{disConnect()}} disabled={!isConnected || loading}>断开</Button>}
                                 {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                             </div>
                             {/*<Button variant="contained" color="primary" size="medium" disableElevation onClick={test}>Test</Button>*/}
