@@ -380,17 +380,16 @@ export default function MainPage(){
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
             // setIsConnected(res['ok'])
             // if(res['ok']){
-            //     // showMsg('连接成功：' + res['msg']['ip'],res['ok'])
-            //     // setIP(res['msg']['ip'])
-            //     // let version = res['msg']['version']
-            //     // let tmp = version.split('.')[0]
-            //     // setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
+            //     showMsg('连接成功：' + res['msg']['ip'],res['ok'])
+            //     setIP(res['msg']['ip'])
+            //     let version = res['msg']['version']
+            //     let tmp = version.split('.')[0]
+            //     setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
             // }
             // else {
             //     showMsg(res['msg'],res['ok'])
             // }
-            // setLoading(false)
-            // showMsg(res['msg'],res['ok'])
+            setLoading(false)
 
         })
     }
@@ -411,7 +410,9 @@ export default function MainPage(){
     // 显示连接中弹窗断开连接
     const loadingDisConnect = function () {
         setManuallyConnect(false)
+        setIsDisConnect(true)
         window.pywebview.api.disConnect().then((res)=>{
+            showMsg(res['msg'],false)
             setLoading(false)
             // setSN('')
             // setPhone('')
@@ -1028,7 +1029,7 @@ export default function MainPage(){
                 </Dialog>
                 <Dialog open={loading && manuallyConnect} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
                     <DialogTitle id="simple-dialog-title">
-                    <IconButton aria-label="close" className={classes.closeButton} onClick={() => loadingDisConnect()}>
+                    <IconButton aria-label="close" className={classes.closeButton} onClick={() => disConnect()}>
                         <Close />
                     </IconButton>
                     </DialogTitle>
