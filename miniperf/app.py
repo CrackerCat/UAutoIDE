@@ -12,7 +12,7 @@ from miniperf import api
 from miniperf import helper
 from miniperf.device_manager import DeviceManager
 
-
+window = None
 class ColorHandler(logging.StreamHandler):
     _colors = dict(black=30, red=31, green=32, yellow=33,
                    blue=34, magenta=35, cyan=36, white=37)
@@ -117,6 +117,7 @@ def on_loaded():
 
 
 def main():
+    global window
     data_dir = os.path.abspath(os.path.join(".", "data"))
     log_dir = os.path.join(data_dir, "log")
     report_dir = os.path.join(data_dir, "report")

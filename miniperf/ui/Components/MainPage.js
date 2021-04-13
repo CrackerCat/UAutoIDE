@@ -326,6 +326,7 @@ export default function MainPage(){
     const [recordWindowOpen,setRecordWindowOpen] = useState(false)//设置录制弹窗
 
 
+    const [isDisconnect,setIsDisConnect] = useState(false)//断开设备连接
     let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
@@ -378,17 +379,18 @@ export default function MainPage(){
         showMsg('连接中，请打开目标程序')
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
             // setIsConnected(res['ok'])
-            if(res['ok']){
-                showMsg('连接成功：' + res['msg']['ip'],res['ok'])
-                setIP(res['msg']['ip'])
-                let version = res['msg']['version']
-                let tmp = version.split('.')[0]
-                setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
-            }
-            else {
-                showMsg(res['msg'],res['ok'])
-            }
-            setLoading(false)
+            // if(res['ok']){
+            //     // showMsg('连接成功：' + res['msg']['ip'],res['ok'])
+            //     // setIP(res['msg']['ip'])
+            //     // let version = res['msg']['version']
+            //     // let tmp = version.split('.')[0]
+            //     // setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
+            // }
+            // else {
+            //     showMsg(res['msg'],res['ok'])
+            // }
+            // setLoading(false)
+            // showMsg(res['msg'],res['ok'])
 
         })
     }
@@ -396,6 +398,7 @@ export default function MainPage(){
     const disConnect = function (){
         setManuallyConnect(false)
         setLoading(true)
+        setIsDisConnect(true)
         window.pywebview.api.disConnect().then((res)=>{
             // setIsConnected(false)
             showMsg(res['msg'],false)
@@ -440,6 +443,21 @@ export default function MainPage(){
             let status = res['msg']
             if (isConnected !== status['isConnected']) {
                 setIsConnected(status['isConnected'])
+            }
+            if(loading && !isDisconnect)
+            {
+                if(status['isConnected'])
+                {
+                    window.pywebview.api.get_u3driver_version().then((info)=>{
+                        showMsg('连接成功：' + info['msg']['ip'],res['ok'])
+                        setIP(info['msg']['ip'])
+                        let version = info['msg']['version']
+                        let tmp = version.split('.')[0]
+                        setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
+                        setLoading(false)
+                        // setIsDisConnect(false)
+                    })
+                }
             }
         })
     }
