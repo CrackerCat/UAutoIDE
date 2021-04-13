@@ -178,3 +178,6 @@ class Api:
 
     def is_debug_mode_record(self):
         return extension.is_debug_mode_record()
+
+    def get_u3driver_version(self):
+        return extension.get_u3driver_version()

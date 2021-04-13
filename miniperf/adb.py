@@ -81,18 +81,15 @@ class Device:
         return self.device.get_hierarchy()
 
     def get_version(self):
-        global status
+        status = {}
         if self.device != None and self.isConnected:
             status['ip'] = extension.get_ip_address(self.device.appium_driver)
             status['version'] = self.device.get_server_version()
+        return status
 
     def checkConnection(self):
-        global status
-        global is_get_version
+        status = {}
         status['isConnected'] = self.isConnected
-        if is_get_version:
-            self.get_version()
-            is_get_version = False
         return status
 
     # 暂停运行案例

@@ -212,15 +212,15 @@ export default function MainPage(){
             {
                 if(status['isConnected'])
                 {
-                    if(res['msg']['ip']){
-                        showMsg('连接成功：' + res['msg']['ip'],res['ok'])
-                        setIP(res['msg']['ip'])
-                        let version = res['msg']['version']
+                    window.pywebview.api.get_u3driver_version().then((info)=>{
+                        showMsg('连接成功：' + info['msg']['ip'],res['ok'])
+                        setIP(info['msg']['ip'])
+                        let version = info['msg']['version']
                         let tmp = version.split('.')[0]
                         setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
                         setLoading(false)
                         // setIsDisConnect(false)
-                    }
+                    })
                 }
             }
         })

@@ -9,6 +9,9 @@ import configparser
 import tkinter as tk
 from tkinter import filedialog
 
+import webview
+import miniperf.app as app
+
 from miniperf import helper, adb_helper
 # from miniperf.adb import Device
 from miniperf.adb import Device
@@ -30,7 +33,7 @@ workSpacePath = config.get('Setting', 'cases_path')
 if workSpacePath == r'\\':
     workSpacePath = os.path.join(ROOT_DIR, 'asset', 'WorkSpace')
 sys.path.append(os.path.join(workSpacePath))
-
+disconnected =False
 
 class Header(object):
     def __init__(self, _comment, _filed, _type, _subtype):
@@ -155,33 +158,30 @@ def openUAUTOFile():
         window = tk.Tk()
         window.withdraw()
         FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
+        
+        # FilePath = ""
+        # window = app.window
+        # file_types = ('UAUTO (*.UAUTO)')
+        # FilePath = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+        # result = ''.join(FilePath[0])
+        # FilePath = os.path.dirname(result)
+
         FilePath = os.path.dirname(FilePath)
-        # FilePath = FilePath.replace('/','\\')
-
-        # recordWorkSpacePath = os.path.join(ROOT_DIR, 'asset', 'WorkSpace')
-        # recordWorkSpacePath = recordWorkSpacePath.replace('\\','/')
-
-        # if FilePath == recordWorkSpacePath:
-        #     data = {'path':r'\\'}
-        #     setWorkSpace(data)
-        #     window.destroy()
-        #     print(FilePath + "工作区打开成功")
-        #     return {"ok": True, "msg": FilePath + "工作区打开成功"}
 
         if FilePath:
             data = {'path':FilePath}
             setWorkSpace(data)
-            window.destroy()
+            # window.destroy()
             print(FilePath + "工作区打开成功")
             return {"ok": True, "msg": FilePath + "工作区打开成功"}
         else:
-            window.destroy()
+            # window.destroy()
             print("已取消工作区打开")
             return ""
 
     except Exception as e:
         # print(f'[ERROR]{e}')
-        window.destroy()
+        # window.destroy()
         print(f'[ERROR]' + FilePath + '工作区打开失败')
         return {"ok": False, "msg": FilePath + "工作区打开失败"}
 
@@ -319,7 +319,7 @@ def addFile():
         for item in FilePath:
             file_name = item.split('/')[-1].split('.')[0]
             item = item.replace('/','\\')
-            with open(item, 'r') as f:
+            with open(item, 'r', encoding='utf-8') as f:
                 content = f.read()
                 with open(os.path.join(workSpacePath, 'pages',file_name+".py"), "w" , encoding='utf-8') as file:
                     file.write(content)
@@ -429,7 +429,6 @@ def disConnect():
         phone.disConnect()
         return {"ok": True, "msg": f"已断开"}
 
-
 def record(data):
     # pass
     global phone
@@ -485,6 +484,12 @@ def saveFile(name, s):
         f.write(s)
     return {"ok": True, "msg": "保存成功"}
 
+def get_u3driver_version():
+    global phone
+    status = None
+    if phone != None:
+        status = phone.get_version()
+    return {"ok": status != None, "msg": status}
 
 # 打开Demo
 def openDemo():
@@ -530,10 +535,12 @@ def runCase(data):
             saveFile(data['caseName'], data['fileInfo'])
             module = LoadModuleByPath(case, CasePath(case + ".py"))
             module.AutoRun(phone.device)
+            print("运行完成")
             return {"ok": True, "msg": '运行完成'}
         except Exception as e:
             print(f'[ERROR]{e}')
             logging.error(e)
+            print("运行失败")
             return {"ok": False, "msg": f'运行失败:{e}'}
 
 
