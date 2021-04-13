@@ -162,7 +162,7 @@ def openUAUTOFile():
         FilePath = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
         result = ''.join(FilePath[0])
         FilePath = os.path.dirname(result)
-        print(FilePath)
+        # print(FilePath)
 
         if FilePath:
             data = {'path':FilePath}
@@ -192,7 +192,7 @@ def createuserWorkSpace():
         window = g_webview       
         FilePath = window.create_file_dialog(webview.FOLDER_DIALOG,directory=workSpacePath)
         FilePath = ''.join(FilePath[0])
-        print(FilePath)
+        # print(FilePath)
         if FilePath:
             data = {'path':FilePath}
             setCreateWorkSpace(data)
@@ -304,13 +304,16 @@ def createFile(data):
 
 # 添加脚本
 def addFile():
-    window = tk.Tk()
-    window.withdraw()
+    # window = tk.Tk()
+    # window.withdraw()
     casesList = []
-    # filefold = os.path.join(workSpacePath,'pages')
-    # filefold = filefold.replace(r"\\",'/')
-    FilePath = filedialog.askopenfilenames(title = "请选择需要添加进工作区的脚本",initialdir=workSpacePath,filetypes=[('py','py')])
+    # FilePath = filedialog.askopenfilenames(title = "请选择需要添加进工作区的脚本",initialdir=workSpacePath,filetypes=[('py','py')])
     
+    result = []
+    window = g_webview
+    file_types = ('py (*.py)', 'All files (*.*)')        
+    FilePath = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=True, file_types=file_types)
+
     if FilePath:
         with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='utf-8') as f:
             setting = json.load(f)
@@ -318,8 +321,7 @@ def addFile():
                 casesList.append(case)
 
         for item in FilePath:
-            file_name = item.split('/')[-1].split('.')[0]
-            item = item.replace('/','\\')
+            file_name = item.split('\\')[-1].split('.')[0]
             with open(item, 'r', encoding='utf-8') as f:
                 content = f.read()
                 with open(os.path.join(workSpacePath, 'pages',file_name+".py"), "w" , encoding='utf-8') as file:
@@ -334,12 +336,12 @@ def addFile():
 
         with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='utf-8') as f:
             json.dump(casesList, f, ensure_ascii=False)
-        window.destroy()
+        # window.destroy()
         print("脚本添加成功")
         return {"ok": True, "msg": '添加脚本成功'}
 
     else:
-        window.destroy()
+        # window.destroy()
         print("已取消添加脚本")
         return ""
 
