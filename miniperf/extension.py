@@ -6,11 +6,7 @@ import time
 import traceback
 import sys
 import configparser
-import tkinter as tk
-from tkinter import filedialog
-
 import webview
-import miniperf.app as app
 
 from miniperf import helper, adb_helper
 # from miniperf.adb import Device
@@ -155,18 +151,18 @@ def loadCase(data):
 # 打开工作区
 def openUAUTOFile():
     try:
-        window = tk.Tk()
-        window.withdraw()
-        FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
-        
-        # FilePath = ""
-        # window = app.window
-        # file_types = ('UAUTO (*.UAUTO)')
-        # FilePath = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
-        # result = ''.join(FilePath[0])
-        # FilePath = os.path.dirname(result)
+        # window = tk.Tk()
+        # window.withdraw()
+        # FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
+        # FilePath = os.path.dirname(FilePath)
 
-        FilePath = os.path.dirname(FilePath)
+        FilePath = ""
+        window = g_webview
+        file_types = ('UAUTO (*.UAUTO)', 'All files (*.*)')        
+        FilePath = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+        result = ''.join(FilePath[0])
+        FilePath = os.path.dirname(result)
+        print(FilePath)
 
         if FilePath:
             data = {'path':FilePath}
@@ -188,25 +184,30 @@ def openUAUTOFile():
 # 新建工作区
 def createuserWorkSpace():
     try:
-        window = tk.Tk()
-        window.withdraw()
-        FilePath = filedialog.askdirectory(title = "请选择创建工作区的目录",initialdir=workSpacePath)
-        # FilePath = FilePath.replace('/','\\')
+        # window = tk.Tk()
+        # window.withdraw()
+        # FilePath = filedialog.askdirectory(title = "请选择创建工作区的目录",initialdir=workSpacePath)
+
+        FilePath = ""
+        window = g_webview       
+        FilePath = window.create_file_dialog(webview.FOLDER_DIALOG,directory=workSpacePath)
+        FilePath = ''.join(FilePath[0])
+        print(FilePath)
         if FilePath:
             data = {'path':FilePath}
             setCreateWorkSpace(data)
-            window.destroy()
+            # window.destroy()
             print(FilePath +'工作区创建成功')
             # print("可通过新建脚本功能添加脚本")
             return {"ok": True, "msg": FilePath +'工作区创建成功'}
         else:
-            window.destroy()
+            # window.destroy()
             print("已取消工作区创建")
             return ""
             
     except Exception as e:
-        # print(f'[ERROR]{e}')
-        window.destroy()
+        print(f'[ERROR]{e}')
+        # window.destroy()
         print(f'[ERROR]' + FilePath + '工作区创建失败')
         return {"ok": False, "msg": FilePath + "工作区创建失败"}
 
