@@ -148,6 +148,7 @@ const ConsoleContent = React.forwardRef((props,ref)=>{
                 className={classes.textArea} 
                 id={'consoleArea'} 
                 contentEditable={true}
+                spellcheck="false"
                 onCut={noop}
                 onCopy={noop}
                 onPaste={noop}
