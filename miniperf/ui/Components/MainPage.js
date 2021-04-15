@@ -153,11 +153,25 @@ const useStyle = makeStyles((style)=>({
         display: 'flex',
         alignItems: 'center'
     },
-    selectInput: {
+    menuItemRoot: {
+        paddingTop: 0,
+        paddingBottom: 0,
+        fontSize: 14
+    },
+    selectList: {
+        paddingTop: 4,
+        paddingBottom: 4
+    },
+    select: {
         background: '#424242',
         width: '200px', 
         height: '26px', 
         fontSize: '12px',
+    },
+    selectInput: {
+        '&:after': {
+            border: '1px solid rgba(255, 255, 255, 0.23)'
+        }
     },
     ipInput: {
         padding: 10,
@@ -376,7 +390,7 @@ export default function MainPage(){
             setSN(e)
             setPhone(name)
         }
-        showMsg('连接中，请打开目标程序')
+        // showMsg('连接中，请打开目标程序')
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
             // setIsConnected(res['ok'])
             // if(res['ok']){
@@ -563,21 +577,6 @@ export default function MainPage(){
         })
     }
 
-    // let setWorkSpace = (v) => {
-    //     if(workSpacePath === '')
-    //         return
-    //     window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
-    //         if(res['ok']){
-    //             setWorkSpacePath('')
-    //             handleCloseSetting('','')
-    //             setCaseName('')
-    //             setScriptsData('')
-    //             showMsg(res['msg'],res['ok'])
-    //         }else{
-    //             showMsg(res['msg'],res['ok'])
-    //         }
-    //     })
-    // }
 
     let setWorkSpace = () => {
         window.pywebview.api.openUAUTOFile().then((res)=>{
@@ -740,30 +739,6 @@ export default function MainPage(){
                 <div className={'container'}>
                     <AppBar position={"static"}>
                         <Toolbar className={classes.toolbar}>
-                            {/* <FormControl className={classes.Input} variant="filled">
-                                {phoneList.length > 0 ? (
-                                    <Select
-                                    labelId="demo-simple-select-filled-label"
-                                    id="demo-simple-select-filled"
-                                    value={phone}
-                                    onChange={handleChange}
-                                    onOpen={getCurDevice}
-                                    disabled={isConnected || loading}
-                                >
-                                    {phoneList.map((v)=>{
-                                        return <MenuItem value={v.name}>{v.name}</MenuItem>
-                                    })}
-                                    {phoneList.length === 0 && <MenuItem><em>None</em></MenuItem>}
-                                </Select>
-                                ) : (<Button variant="filled" color="primary" disableElevation>No Devices</Button>)}
-                            </FormControl>
-                            <TextField
-                                id="filled-helperText"
-                                label="IP地址"
-                                className={classes.Input}
-                                value={ip}
-                                onChange={changeIPValue}
-                            /> */}
 
                             {/* new UI: ToolBar */}
                             <div className={classes.toolbarContainer}>
@@ -772,14 +747,16 @@ export default function MainPage(){
                                         <ButtonGroup>
                                             {phoneList.length > 0 ? (
                                                 <Select
-                                                    className={classes.selectInput}
+                                                    MenuProps={{classes: {list: classes.selectList}, disablePortal: true}}
+                                                    inputProps={{classes: {root: classes.selectInput}}}
+                                                    className={classes.select}
                                                     value={phone}
                                                     onChange={handleChange}
                                                     onOpen={getCurDevice}
                                                     disabled={isConnected || loading}
                                                 >
                                                     {phoneList.map((v)=>{
-                                                        return <MenuItem value={v.name} key={v.name}>{v.name}</MenuItem>
+                                                        return <MenuItem classes={{root: classes.menuItemRoot}} value={v.name} key={v.name}>{v.name}</MenuItem>
                                                     })}
                                                 </Select>
                                             ) : (<ToolbarBtn onClick={() => showMsg('请保证电脑连接到手机', false)} className={classes.mainBtn} size="small" style={{ width: '200px', height: '26px', fontSize: '12px', lineHeight: '12px' }}>No Devices</ToolbarBtn>)}
@@ -797,11 +774,9 @@ export default function MainPage(){
                                 <div className={classes.settingBtns}>
                                     <ButtonGroup style={{ marginRight: '20px' }}>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'创建工作区：请选择一个空文件夹'} onClick={(e)=>{createuserWorkSpace(e)}}>
-                                            {/* <NoteAdd fontSize="small" style={{fontSize: '16px'}} /> */}
                                             <i className="iconfont">&#xe676;</i>
                                         </ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'设置工作区：请选择已创建工作区的setting.UAUTO'} onClick={(e)=>{setWorkSpace(e)}}>
-                                            {/* <Folder fontSize="small" style={{fontSize: '16px'}}/> */}
                                             <i className="iconfont">&#xe726;</i>
                                         </ToolbarBtn>
                                     </ButtonGroup>
@@ -810,27 +785,8 @@ export default function MainPage(){
                                 </div>
                             </div>
                             
-                            {/* <div className={classes.wrapper}>
-                                {!isConnected && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
-                                {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
-                                {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-                            </div> */}
-                            {/* <div>
-                                <Button variant="contained" color="primary" size="small" disableElevation onClick={()=>{setIsFirst(true)}} disabled={tutorialsMode || isConnected}>新手指引</Button>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            disabled={!advancedModeDisable}
-                                            checked={enableAdvancedMode}
-                                            onChange={switchMode}
-                                            name="checkedB"
-                                            color="secondary"
-                                        />
-                                    }
-                                    label="启用高级模式"
-                                />
-                                <Button variant="contained" color="primary" size="small" disableElevation disabled={tutorialsMode || isConnected}>启用高级模式</Button>
-                            </div> */}
+                        
+                            
                         </Toolbar>
                     </AppBar>
                     {/* <Dialog open={isFirst} className={classes.beginCard}>
@@ -858,31 +814,14 @@ export default function MainPage(){
                         {enableAdvancedMode && (
                             <div className={'left'} style={setWidth(1)}>
                                 <HierarchyContent isConnected={isConnected} getCurID={getCurID} enable={enableHierarchy}/>
-                                {/*{!enableAdvancedMode && (*/}
-                                {/*    <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode}  changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
-                                {/*)}*/}
+                                
                             </div>
                         )}
                         {enableAdvancedMode && (
                             <div className={'scroller'} id={'scroller1'} draggable={"true"} onDragEnd={handleMouseMove}>
                             </div>
                         )}
-                        {/*<div className={enableAdvancedMode?'middle':'content'}>*/}
-                        {/*        <div className={enableAdvancedMode?'mBlock':'left'}  style={enableAdvancedMode?setWidth(3):setWidth(1)}>*/}
-                        {/*            <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
-                        {/*        </div>*/}
-                        {/*        {enableAdvancedMode && (*/}
-                        {/*            <div className={'hScroller'} id={'scroller3'} draggable={"true"} onDragEnd={handleMouseMove}>*/}
-                        {/*            </div>*/}
-                        {/*        )}*/}
-                        {/*        {!enableAdvancedMode && (*/}
-                        {/*            <div className={'scroller'} id={'scroller1'} draggable={"true"} onDragEnd={handleMouseMove}>*/}
-                        {/*            </div>*/}
-                        {/*        )}*/}
-                        {/*        <div className={enableAdvancedMode?'mBlock':'right'}  style={enableAdvancedMode?setWidth(4):setWidth(2)}>*/}
-                        {/*            <ConsoleCard/>*/}
-                        {/*        </div>*/}
-                        {/*</div>*/}
+                        
                         <div className={'middle'}>
                             <div className={'mBlock1'} style={enableAdvancedMode ? setWidth(3) : {height: '100%'}}>
                             <EditorCard
@@ -910,12 +849,7 @@ export default function MainPage(){
                                 <ConsoleCard consoleData={consoleData} onChangeConsoleData={e => handleChangeConsoleData(e)}/>
                             </div>}
                         </div>
-                        {/*<div className={'mBlock'}>*/}
-                        {/*    <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
-                        {/*</div>*/}
-                        {/*<div className={'mBlock'}>*/}
-                        {/*    <ConsoleCard/>*/}
-                        {/*</div>*/}
+                        
                         {enableAdvancedMode && (
                             <div className={'scroller'} id={'scroller2'} draggable={"true"} onDragEnd={handleMouseMove}>
                             </div>
@@ -938,64 +872,11 @@ export default function MainPage(){
                         {message}
                     </Alert>
                 </Snackbar>
-                {/* <Dialog open={createWindowOpen} fullWidth={true} maxWidth="sm">
-                    <DialogTitle>新建脚本</DialogTitle>
-                    <DialogContent className={classes.dialogContent}>
-                            <TextField 
-                                style={{width: '100%', marginBottom: '20px'}} 
-                                id="outlined-basic" 
-                                label="脚本名称" 
-                                variant="outlined" 
-                                value={createCaseName}
-                                InputProps={{
-                                    classes: {
-                                        notchedOutline: classes.notchedOutline,
-                                        focused: classes.focused
-                                    }
-                                }}
-                                onChange={(e)=>{setCreateCaseName(e.target.value)}}
-                            />
-                            <TextField 
-                                style={{width: '100%'}}
-                                id="outlined-basic" 
-                                label="脚本文件名" 
-                                variant="outlined" 
-                                value={createCaseFileName}
-                                InputProps={{
-                                    classes: {
-                                        notchedOutline: classes.notchedOutline,
-                                        focused: classes.focused
-                                    }
-                                }}
-                                onChange={(e)=>{setCreateCaseFileName(e.target.value)}}
-                            />
-                    </DialogContent>
-                    <DialogActions classes={{root: classes.dialogActions}}>
-                    <Button variant="contained" classes={{root: classes.dialogBtn}} onClick={(e)=>{createFile(e)}}>
-                        创建
-                    </Button>
-                    <Button variant="contained" color="primary" onClick={(e)=>{handleCloseCreate('','')}}>
-                        取消
-                    </Button>
-                    </DialogActions>
-                </Dialog> */}
+                
                 <Dialog open={settingWindowOpen} onClose={handleCloseSetting} fullWidth={true} maxWidth="sm">
                     <DialogTitle>设置工作区</DialogTitle>
                     <DialogContent className={[classes.dialogContent, classes.settingContent]}>
-                        {/* <TextField 
-                            style={{width: '100%'}} 
-                            id="outlined-basic" 
-                            label="设置工作区" 
-                            variant="outlined" 
-                            value={workSpacePath}
-                            InputProps={{
-                                classes: {
-                                    notchedOutline: classes.notchedOutline,
-                                    focused: classes.focused
-                                }
-                            }}
-                            onChange={(e)=>{setWorkSpacePath(e.target.value)}}
-                        /> */}
+                        
                         <p className={classes.settingText}>创建：请选择一个空文件夹</p>
                         <p className={classes.settingText}>设置：请选择已创建工作区的setting.UAUTO</p>
                         

@@ -111,7 +111,7 @@ const ConsoleContent = React.forwardRef((props,ref)=>{
                 const list = ret.map(r => {
                     if(testInfo.test(r.trim())) return (`<p style="margin: 3px 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400;">${r}</p>`)
                     if(testError.test(r.trim())) return (`<p style="margin: 3px 0; padding: 0; color: #FF4D4F;  font-size: 12px; font-weight: 400;">${r}</p>`)
-                    return r
+                    return `<p style="margin: 3px 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400;">${r}</p>`
                 })
                 let l = consoleData
                 // l+=(res + '\n')
