@@ -765,7 +765,7 @@ export default function MainPage(){
                                         </ButtonGroup>
                                     </div>
                                     <div className={classes.wrapper}>
-                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={() => {connect(); setManuallyConnect(true)}} disabled={isConnected || loading}>连接</Button>}
+                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={() => {connect(); setManuallyConnect(true)}} disabled={isConnected || loading || phone === '' || ip === ''}>连接</Button>}
                                         {isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonDisConnect]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
                                         {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                                     </div>

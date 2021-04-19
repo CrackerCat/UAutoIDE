@@ -58,44 +58,68 @@ def isDevicesChange():
 def refreshCasesJSON():
     file_list = []
     casesList = []
+    initList = []
+    dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))  
+
+    for dirs in dir_list:   # 添加__init__文件
+        if dirs != "__init__.py" and not os.path.isdir(os.path.join(workSpacePath, 'pages', dirs)):
+            dirs = dirs.split('.')[0]
+            names = "from pages import " + dirs + "\n"
+            initList.append(names)
+
+    with open(os.path.join(workSpacePath, 'pages', '__init__.py'), 'w+', encoding='UTF-8') as f:
+        for i in initList:
+            f.write(i)
 
     dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))  
 
-    for file in dir_list:   # 移除文件夹
-        if os.path.isdir(os.path.join(workSpacePath, 'pages',file)):
-            dir_list.remove(file)
+    if dir_list:
+        for file in dir_list:   # 移除文件夹
+            if os.path.isdir(os.path.join(workSpacePath, 'pages',file)):
+                dir_list.remove(file)
+            else:
+                file = file.split('.')[0]
+                if file != '__init__':
+                    file_list.append(file)
 
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
-        s = json.loads(f.read())
-    
-    for i in dir_list:
-        i = i.split('.')[0]
-        if i != '__init__' and i != 'temp_test':
-            file_list.append(i)
-    
-    for file in file_list:
-        for value in s:
-            if file == value['run_case']:
-                # if file not in casesList['run_case']:
-                newData = {
-                        "test_name": value['test_name'],
-                        "tag": value['tag'],
-                        "run_case": value['run_case'],
-                }
-                casesList.append(newData)
-                file_list.remove(file)
+        try:
+            s = json.loads(f.read())
+            for file in file_list:
+                for value in s:
+                    if file == value['run_case']:
+                        # if file not in casesList['run_case']:
+                        newData = {
+                                "test_name": value['test_name'],
+                                "tag": value['tag'],
+                                "run_case": value['run_case'],
+                        }
+                        casesList.append(newData)
+                        file_list.remove(file)
 
-    for file in file_list:
-        newData = {
-                "test_name": file,
-                "tag": file,
-                "run_case": file,
-        }
-        casesList.append(newData)       
+        except json.decoder.JSONDecodeError:
+            if file_list != '':
+                for file in file_list:
+                        newData = {
+                            "test_name": file,
+                            "tag": file,
+                            "run_case": file,
+                        }
+                        casesList.append(newData)
+                        file_list.remove(file)
+
+    if file_list:
+        for file in file_list:
+            newData = {
+                    "test_name": file,
+                    "tag": file,
+                    "run_case": file,
+            }
+            casesList.append(newData)       
 
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='UTF-8') as f:
-        json.dump(casesList, f, ensure_ascii=False)   
-            
+        json.dump(casesList, f, ensure_ascii=False)    
+             
 # 加载本地脚本列表
 def loadCasesList():
     refreshCasesJSON()
@@ -103,38 +127,39 @@ def loadCasesList():
     file_list = []
     casesList = []
 
-    dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))
-
-    for file in dir_list:
-        if os.path.isdir(os.path.join(workSpacePath, 'pages',file)):
-            dir_list.remove(file)
-
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
-        s = json.loads(f.read())
+        try:
+            s = json.loads(f.read())
+            for case in s:
+                case = case['run_case'] + ".py"
+                case_list.append(case)
+
+            sort_list = sorted(case_list,key = lambda x: os.path.getmtime(os.path.join(workSpacePath,'pages',x))) # 按文件最后修改时间排序
+            sort_list = sort_list[::-1]
+
+            for i in sort_list:
+                i = i.split('.')[0]
+                file_list.append(i)
+
+            for file in file_list:
+                for value in s:
+                    if file == value['run_case']:
+                        # if file not in casesList['run_case']:
+                        newData = {
+                                "test_name": value['test_name'],
+                                "tag": value['tag'],
+                                "run_case": value['run_case'],
+                            }
+                        casesList.append(newData)
         
-    for key in s:
-        for dir1 in dir_list:
-            dir1 = dir1.split('.')[0]
-            if dir1 == key['run_case']:
-                case_list.append(dir1 + ".py")
-    sort_list = sorted(case_list,key = lambda x: os.path.getmtime(os.path.join(workSpacePath,'pages',x))) # 按文件最后修改时间排序
-    sort_list = sort_list[::-1]
-
-    for i in sort_list:
-        i = i.split('.')[0]
-        file_list.append(i)
-
-    for file in file_list:
-        for value in s:
-            if file == value['run_case']:
-                # if file not in casesList['run_case']:
-                newData = {
-                        "test_name": value['test_name'],
-                        "tag": value['tag'],
-                        "run_case": value['run_case'],
-                    }
-                casesList.append(newData)
-
+        except json.decoder.JSONDecodeError:
+            newData = {
+                "test_name": '',
+                "tag": '',
+                "run_case":'',
+            }
+            casesList.append(newData)
+    
     return {"ok": True, "msg": casesList}
 
 # 加载指定名称脚本
@@ -176,7 +201,7 @@ def openUAUTOFile():
             return ""
 
     except Exception as e:
-        # print(f'[ERROR]{e}')
+        print(f'[ERROR]{e}')
         # window.destroy()
         print(f'[ERROR]' + FilePath + '工作区打开失败')
         return {"ok": False, "msg": FilePath + "工作区打开失败"}
@@ -336,7 +361,6 @@ def addFile():
 
         with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='utf-8') as f:
             json.dump(casesList, f, ensure_ascii=False)
-        # window.destroy()
         print("脚本添加成功")
         return {"ok": True, "msg": '添加脚本成功'}
 
