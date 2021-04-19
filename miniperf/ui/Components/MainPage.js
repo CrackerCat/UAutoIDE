@@ -396,7 +396,7 @@ export default function MainPage(){
                                 onChange={changeIPValue}
                             />
                             <div className={classes.wrapper}>
-                                {!isConnected && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={()=>{connect()}} disabled={isConnected || loading}>连接</Button>}
+                                {!isConnected && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={()=>{connect()}} disabled={isConnected || loading || phone == "" ||ip == ""}>连接</Button>}
                                 {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={()=>{disConnect()}} disabled={!isConnected || loading}>断开</Button>}
                                 {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                             </div>
