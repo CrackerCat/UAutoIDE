@@ -169,7 +169,8 @@ def loadCase(data):
         with open(path, 'r', encoding='UTF-8') as f:
             return {"ok": True, "msg": f.read()}
     except Exception as e:
-        # print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         logging.error(e)
         return {"ok": False, "msg": e}
 
@@ -201,7 +202,8 @@ def openUAUTOFile():
             return ""
 
     except Exception as e:
-        print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         # window.destroy()
         print(f'[ERROR]' + FilePath + '工作区打开失败')
         return {"ok": False, "msg": FilePath + "工作区打开失败"}
@@ -231,7 +233,8 @@ def createuserWorkSpace():
             return ""
             
     except Exception as e:
-        print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         # window.destroy()
         print(f'[ERROR]' + FilePath + '工作区创建失败')
         return {"ok": False, "msg": FilePath + "工作区创建失败"}
@@ -323,7 +326,8 @@ def createFile(data):
         print("脚本" + data['name'] + ".py"+ "创建成功")
         return {"ok": True, "msg": data['name']}
     except Exception as e:
-        print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         logging.error(e)
         return {"ok": False, "msg": e}
 
@@ -430,7 +434,8 @@ def getTempFile():
         with open(os.path.join(workSpacePath, 'pages', 'temp_test.py'), 'r', encoding='utf-8') as f:
             return {"ok": True, "msg": f.read()}
     except Exception as e:
-        print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         logging.error(e)
         return {"ok": False, "msg": e}
 
@@ -445,16 +450,17 @@ def connect(data):
         return {"ok": False, "msg": f"连接失败：请确认是否输入正确的设备号与IP"}
     except Exception as e:
         logging.error(e)
-        print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         return {"ok": False, "msg": f"连接失败：{e}"}
 
 
 def disConnect():
     # pass
     global phone
-    if phone.isConnected:
-        phone.disConnect()
-        return {"ok": True, "msg": f"已断开"}
+    # if phone.isConnected:
+    phone.disConnect()
+    return {"ok": True, "msg": f"已断开"}
 
 def record(data):
     # pass
@@ -565,9 +571,10 @@ def runCase(data):
             print("运行完成")
             return {"ok": True, "msg": '运行完成'}
         except Exception as e:
-            print(f'[ERROR]{e}')
+            err_string = str(e).replace('\n','')
+            print(f'[ERROR]{err_string}')
             logging.error(e)
-            print("运行失败")
+            print("[ERROR]运行失败")
             return {"ok": False, "msg": f'运行失败:{e}'}
 
 

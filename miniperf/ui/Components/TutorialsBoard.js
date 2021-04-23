@@ -40,7 +40,7 @@ export default function TutorialsBoard(props){
         if(isOpenDemo){
             if(!isConnected && !loading){
                 if(phoneList.length === 1){
-                    connect('',phoneList[0]['sn'],phoneList[0]['name'])
+                    connect('',phoneList[0]['sn'],phoneList[0]['name'],false)
                 }
             }
         }

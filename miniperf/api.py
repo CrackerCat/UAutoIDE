@@ -6,6 +6,8 @@ import os
 from miniperf import extension
 import sys
 import subprocess
+import re
+
 class Api:
 
     def __init__(self):
@@ -92,7 +94,9 @@ class Api:
                     continue
                 if '[ERROR]' not in s:
                     s = '[INFO]' + s
+                    s = str(s).replace('\n','')
                 temp += s
+
             self.output.clear()
             return temp
         return '405null'

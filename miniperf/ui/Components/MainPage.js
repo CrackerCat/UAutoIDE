@@ -6,7 +6,8 @@ import {
     Input,
     InputAdornment, InputLabel, MenuItem, Select, Snackbar, TextField,
     Toolbar,
-    Switch
+    Switch,
+    IconButton
 } from "@material-ui/core";
 import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import './MainPage.css'
@@ -19,6 +20,7 @@ import HierarchyContent from "./HierarchyContent";
 import {useInterval} from "../Util/Util"
 import * as PropTypes from "prop-types";
 import TutorialsBoard from "./TutorialsBoard";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 const theme = createMuiTheme({
     palette: {
@@ -111,6 +113,8 @@ export default function MainPage(){
     const [advancedModeDisable,setAdvancedModeDisable] = useState(true)//高级模式是否可更改
     const [enableHierarchy,setEnableHierarchy] = useState(true)//Hierarchy是否能用
     const [isDisconnect,setIsDisConnect] = useState(false)//断开设备连接
+    const [isUserClose,setIsUserClose] = useState(false)
+
     let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
@@ -134,10 +138,42 @@ export default function MainPage(){
         }
         setTutorialsWindowOpen(false);
         setTutorialsMode(false);
+        // if(isConnected){
+        //     disConnect();
+        // }     
+        disConnect();
+        showMsg('新手指引已关闭');
+    };
+
+    //连接中弹窗关闭事件
+    let userConnectClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setLoading(false)
+        setSN('')
+        setPhone('')
+        setIP('')
+        // setIsDisConnect(false)
         if(isConnected){
             disConnect();
-        }     
-        showMsg('新手指引已关闭');
+        }
+        disConnect();
+        setIsUserClose(false)
+        showMsg('连接已关闭');
+
+        // setLoading(true)
+        // setIsDisConnect(true)
+        // window.pywebview.api.disConnect().then((res)=>{
+        //     // setIsConnected(false)
+        //     showMsg(res['msg'],false)
+        //     setLoading(false)
+        //     setSN('')
+        //     setPhone('')
+        //     setIP('')
+        //     setIsDisConnect(false)
+        //     setUserDisconnect(false);
+        // })
     };
 
     //底部消息弹窗关闭事件
@@ -153,15 +189,21 @@ export default function MainPage(){
         setLogType(type?'success':'error')
         setOkOpen(true)
     }
+
     //连接设备
-    let connect = function (d,e = '',name = ''){
+    let connect = function (d,e = '',name = '',useclose = true){
         setLoading(true)
+        if(useclose){
+            setIsUserClose(true)
+        }
+        
         if(e !== ''){
             setSN(e)
             setPhone(name)
         }
         showMsg('连接中，请打开目标程序')
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
+            setIsUserClose(false)
             // setIsConnected(res['ok'])
             // if(res['ok']){
             //     // showMsg('连接成功：' + res['msg']['ip'],res['ok'])
@@ -190,6 +232,7 @@ export default function MainPage(){
             setPhone('')
             setIP('')
             setIsDisConnect(false)
+            setIsUserClose(false)
         })
     }
     const test = function (e){
@@ -211,7 +254,7 @@ export default function MainPage(){
             if(loading && !isDisconnect)
             {
                 if(status['isConnected'])
-                {
+                {   
                     window.pywebview.api.get_u3driver_version().then((info)=>{
                         showMsg('连接成功：' + info['msg']['ip'],res['ok'])
                         setIP(info['msg']['ip'])
@@ -219,7 +262,7 @@ export default function MainPage(){
                         let tmp = version.split('.')[0]
                         setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
                         setLoading(false)
-                        // setIsDisConnect(false)
+                        setIsUserClose(false)
                     })
                 }
             }
@@ -401,6 +444,21 @@ export default function MainPage(){
                                 {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                             </div>
                             {/*<Button variant="contained" color="primary" size="medium" disableElevation onClick={test}>Test</Button>*/}
+                            
+                            <Dialog open={isUserClose}>
+                            <DialogTitle>
+                                连接中
+                                <IconButton onClick={()=>{userConnectClose('','')}}>
+                                    <HighlightOffIcon/>
+                                </IconButton>
+                            </DialogTitle>
+                            <DialogContent>
+                                <p>1.请保持设备USB连接状态良好</p>
+                                <p>2.请保证电脑与设备连接同一网络</p>
+                                <p>3.请打开目标程序且保持设备亮屏</p>
+                            </DialogContent>
+                        </Dialog>
+
                             <div className={classes.grow} />
                             <div>
                                 <Button variant="contained" color="primary" size="small" disableElevation onClick={()=>{setIsFirst(true)}} disabled={tutorialsMode || isConnected}>新手指导</Button>

@@ -5,10 +5,29 @@ from u3driver import AltrunUnityDriver, By
 from miniperf import device_manager
 from miniperf import extension
 import threading
+import ctypes
+import inspect
 demoPackageName = 'com.DefaultName.DefaultName'
 demoPackageActivity = 'com.unity3d.player.UnityPlayerActivity'
 is_get_version = True
 status = {}
+
+def _async_raise(tid, exctype):
+        """raises the exception, performs cleanup if needed"""
+        tid = ctypes.c_long(tid)
+        if not inspect.isclass(exctype):
+            exctype = type(exctype)
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+        if res == 0:
+            raise ValueError("invalid thread id")
+        elif res != 1:
+            # """if it returns a number greater than one, you're in trouble,
+            # and you should call it again with exc=NULL to revert the effect"""
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
+            raise SystemError("PyThreadState_SetAsyncExc failed")
+    
+def stop_thread(thread):
+    _async_raise(thread.ident, SystemExit)
 
 class DeviceThread(threading.Thread):
     def __init__(self, target_func,serial_num,ip,  *args, **kwargs):
@@ -29,6 +48,24 @@ class DeviceThread(threading.Thread):
     def stopped(self):
         return self._stop_event.is_set()
 
+    def _get_my_tid(self):
+    
+        if not self.isAlive():
+            raise threading.ThreadError("the thread is not active")
+
+        if hasattr(self, "_thread_id"):
+            return self._thread_id
+
+        for tid, tobj in threading._active.items():
+            if tobj is self:
+                self._thread_id = tid
+                return tid
+
+        raise AssertionError("could not determine the thread's id")
+
+    def raiseExc(self, exctype):
+        _async_raise(self._get_my_tid(), exctype )
+
 class Device:
     def __init__(self, ROOT_DIR,serial_num=''):
         self.serial_num = serial_num
@@ -45,7 +82,7 @@ class Device:
         try:
             self.device = AltrunUnityDriver(serial_num, '', ip)
             self.finishConnected = True    
-        except:
+        except self.thread.ThreadStopped:
             pass
 
     @property
@@ -71,6 +108,7 @@ class Device:
     def disConnect(self):
         self.device.stop()
         self.thread.stop()
+        # stop_thread(self.thread)
         self.finishConnected = False
 
 
