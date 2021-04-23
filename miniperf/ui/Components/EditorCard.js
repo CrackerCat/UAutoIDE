@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
         // background:'lightgrey',
     },
     content:{
-        height: 'calc(100% - 32px)',
+        height: 'calc(100% - 36px)',
         position:'relative',
         flex:1,
         padding:0,

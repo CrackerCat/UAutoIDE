@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     logContainer: {
-        height: 'calc(100% - 32px)',
+        height: 'calc(100% - 36px)',
     },
     textArea:{
         boxSizing: 'border-box',
@@ -107,24 +107,24 @@ const ConsoleContent = React.forwardRef((props,ref)=>{
         const testError = new RegExp(/^(\[ERROR\]).*/)
         window.pywebview.api.PythonOutput().then((res)=>{
             if(res !== "405null") {
-                // const ret = res.split('\n')
-                // const list = ret.map(r => {
-                //     if(testInfo.test(r.trim())) return (`<p style="margin: 3px 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400;">${r}</p>`)
-                //     if(testError.test(r.trim())) return (`<p style="margin: 3px 0; padding: 0; color: #FF4D4F;  font-size: 12px; font-weight: 400;">${r}</p>`)
-                //     return `<p style="margin: 3px 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400;">${r}</p>`
-                // })
-                if(testInfo.test(res)) {
-                    res = `<pre style="margin: 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400; line-height: 16px;">${res}</pre>`
-                } else if(testError.test(res)) {
-                    res = `<pre style="margin: 0; padding: 0; color: #FF4D4F;  font-size: 12px; font-weight: 400; line-height: 16px;">${res}</pre>`
-                } else {
-                    res = `<pre style="margin: 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400; line-height: 16px;">${res}</pre>`
-                }
-                let l = consoleData
-                l+=(res + '\n')
-                // for(let item of list) {
-                //     l += item
+                const ret = res.split('\n')
+                const list = ret.map(r => {
+                    if(testInfo.test(r.trim())) return (`<p style="margin: 3px 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400;">${r}</p>`)
+                    if(testError.test(r.trim())) return (`<p style="margin: 3px 0; padding: 0; color: #FF4D4F;  font-size: 12px; font-weight: 400;">${r}</p>`)
+                    return `<p style="margin: 3px 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400;">${r}</p>`
+                })
+                // if(testInfo.test(res)) {
+                //     res = `<pre style="margin: 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400; line-height: 16px;">${res}</pre>`
+                // } else if(testError.test(res)) {
+                //     res = `<pre style="margin: 0; padding: 0; color: #FF4D4F;  font-size: 12px; font-weight: 400; line-height: 16px;">${res}</pre>`
+                // } else {
+                //     res = `<pre style="margin: 0; padding: 0; color: #fff; font-size: 12px; font-weight: 400; line-height: 16px;">${res}</pre>`
                 // }
+                let l = consoleData
+                // l+=(res + '\n')
+                for(let item of list) {
+                    l += item
+                }
                 onChangeConsoleData(l)
             }
         })
