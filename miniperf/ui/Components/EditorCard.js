@@ -265,7 +265,6 @@ export default function EditorCard (props) {
             }
             setRunned(false)
         })
-        // .then(() => {alert(`record: ${isRecording}  !connect:${!isConnected}  !run:${!isRunning}  !pause:${!isPausing}`)})
     }
     function saveAs() {
 

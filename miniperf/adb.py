@@ -26,9 +26,8 @@ class DeviceThread(threading.Thread):
     def run(self):
         while True:
             if self._stop_event.is_set():
-                print("关闭连接")
                 break
-            print("尝试连接")
+            print("连接中")
             data = self.target_func(self.serial_num,self.ip)
             # time.sleep(1)
         # pass
@@ -73,7 +72,6 @@ class Device:
             return False
 
     def connect(self, serial_num, ip):
-        print("connect")
         self.serial_num = serial_num
         if ip == '':
             ip = extension.get_ip_address(serial_num)
@@ -89,7 +87,7 @@ class Device:
             self.device.stop()
         if self.thread:
             self.thread.stop()
-        
+        print("关闭连接")
         self.device = None
         self.finishConnected = False
 

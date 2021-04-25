@@ -345,7 +345,14 @@ export default function MainPage(){
     const changeIPValue = (e) =>{
         setIP(e.target.value);
     }
-
+    //教学弹窗关闭事件
+    let handleCloseTutorials = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setTutorialsWindowOpen(false);
+        setTutorialsMode(false);
+    };
     //教学弹窗关闭事件
     let userOnClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -354,7 +361,6 @@ export default function MainPage(){
         setTutorialsWindowOpen(false);
         setTutorialsMode(false);
         disConnect();
-        setLoading(false)
         showMsg('新手指引已关闭');
     };
 
@@ -442,7 +448,7 @@ export default function MainPage(){
             if(loading && !isDisconnect)
             {
                 if(status['isConnected'])
-                {
+                {   
                     window.pywebview.api.get_u3driver_version().then((info)=>{
                         showMsg('连接成功：' + info['msg']['ip'],res['ok'])
                         setIP(info['msg']['ip'])
@@ -745,8 +751,8 @@ export default function MainPage(){
                                         </ButtonGroup>
                                     </div>
                                     <div className={classes.wrapper}>
-                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={() => {connect(); setManuallyConnect(true)}} disabled={isConnected || loading || phone === '' || ip === ''}>连接</Button>}
-                                        {isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonDisConnect]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
+                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={() => {connect()}} disabled={isConnected || loading || phone === '' || ip === ''}>连接</Button>}
+                                        {isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonDisConnect]} onClick={()=>{disConnect()}} disabled={!isConnected || loading}>断开</Button>}
                                         {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                                     </div>
                                 </div>
@@ -779,9 +785,9 @@ export default function MainPage(){
                     </Dialog> */}
                     <TutorialsBoard
                         open={tutorialsWindowOpen}
-                        // open={true}
-                        onClose={userOnClose}
+                        onClose={handleCloseTutorials}
                         isConnected={isConnected}
+                        userOnClose={userOnClose}
                         loading={loading}
                         connect={connect}
                         changeSNValue={changeSNValue}
