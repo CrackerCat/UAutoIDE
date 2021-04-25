@@ -1,10 +1,13 @@
 import json
 import os
+import time
 
 from u3driver import AltrunUnityDriver, By
 from miniperf import device_manager
 from miniperf import extension
 import threading
+import ctypes
+import inspect
 demoPackageName = 'com.DefaultName.DefaultName'
 demoPackageActivity = 'com.unity3d.player.UnityPlayerActivity'
 is_get_version = True
@@ -18,10 +21,17 @@ class DeviceThread(threading.Thread):
         self.finishConnected = False
         self.serial_num = serial_num
         self.ip = ip
-        data = self.target_func(self.serial_num,self.ip)
+        # data = self.target_func(self.serial_num,self.ip)
 
     def run(self):
-        pass
+        while True:
+            if self._stop_event.is_set():
+                print("关闭连接")
+                break
+            print("尝试连接")
+            data = self.target_func(self.serial_num,self.ip)
+            # time.sleep(1)
+        # pass
 
     def stop(self):
         self._stop_event.set()
@@ -30,22 +40,29 @@ class DeviceThread(threading.Thread):
         return self._stop_event.is_set()
 
 class Device:
+
     def __init__(self, ROOT_DIR,serial_num=''):
         self.serial_num = serial_num
         self.screenshot_path = os.path.join('C:\image', 'screenshot_pic')
         self.tempFilePath = os.path.join(ROOT_DIR, 'asset', 'temp_test.py')
         self.adbPath = os.path.join(ROOT_DIR,'asset','ADB','adb.exe')
         self.demoPath = os.path.join(ROOT_DIR, 'asset', 'demo.apk')
+        self.device = None
         # devices = DeviceThread()
         # self.finishConnected = DeviceThread.finishConnected
         self.finishConnected = False
         pass
     
+
     def connectcheck(self,serial_num, ip):
         try:
-            self.device = AltrunUnityDriver(serial_num, '', ip)
-            self.finishConnected = True    
-        except:
+            self.device = AltrunUnityDriver(serial_num, '', ip, timeout=1)
+            self.finishConnected = True
+            self.thread.stop()
+            self.thread = None
+            print("连接成功")
+        except Exception as e:
+            # print(e)
             pass
 
     @property
@@ -56,23 +73,25 @@ class Device:
             return False
 
     def connect(self, serial_num, ip):
+        print("connect")
         self.serial_num = serial_num
         if ip == '':
             ip = extension.get_ip_address(serial_num)
-        # self.device = AltrunUnityDriver(serial_num, '', ip)
-        # self.isConnected = True
-        # self.connectcheck(serial_num,ip)
+
         self.thread = DeviceThread(target_func=self.connectcheck,serial_num = serial_num,ip = ip)
-        # self.finishConnected = self.thread.finishConnected
         self.thread.start()
+        # self.thread.join()
 
         return
 
     def disConnect(self):
-        self.device.stop()
-        self.thread.stop()
+        if self.device:
+            self.device.stop()
+        if self.thread:
+            self.thread.stop()
+        
+        self.device = None
         self.finishConnected = False
-
 
     def test(self):
         return self.tempFilePath
@@ -162,7 +181,6 @@ class Device:
     def getTempFile(self):
         with open(self.tempFilePath, 'r') as f:
             return f.read()
-
 
     def screenshot(self, filename=None, format='pillow'):
         """ screenshot, Image format is JPEG

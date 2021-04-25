@@ -364,9 +364,7 @@ export default function MainPage(){
         }
         setTutorialsWindowOpen(false);
         setTutorialsMode(false);
-        if(isConnected){
             disConnect();
-        }     
         showMsg('新手指引已关闭');
     };
 
