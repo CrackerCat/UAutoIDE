@@ -155,9 +155,6 @@ export default function MainPage(){
         setPhone('')
         setIP('')
         // setIsDisConnect(false)
-        if(isConnected){
-            disConnect();
-        }
         disConnect();
         setIsUserClose(false)
         showMsg('连接已关闭');
@@ -203,7 +200,7 @@ export default function MainPage(){
         }
         showMsg('连接中，请打开目标程序')
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
-            setIsUserClose(false)
+            // setIsUserClose(false)
             // setIsConnected(res['ok'])
             // if(res['ok']){
             //     // showMsg('连接成功：' + res['msg']['ip'],res['ok'])
