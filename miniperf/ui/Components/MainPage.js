@@ -309,7 +309,6 @@ export default function MainPage(){
     const [logType,setLogType] = useState('success')//底部消息弹窗类型
     const [isConnected, setIsConnected] = React.useState(false);//是否连接上的设备
     const [loading, setLoading] = React.useState(false);//连接中
-    const [manuallyConnect, setManuallyConnect] = React.useState(false) //手动连接
     const [message, setMessage] = React.useState('');//提示框的内容
     const [sn, setSN] = useState("");//设备的设备号
     const [ip, setIP] = useState("");//设备的ip
@@ -338,9 +337,8 @@ export default function MainPage(){
     const [isPausing,setIsPausing] = React.useState(false)
     const [consoleData,setConsoleData] = useState('')//console的输出信息
     const [recordWindowOpen,setRecordWindowOpen] = useState(false)//设置录制弹窗
-
-
     const [isDisconnect,setIsDisConnect] = useState(false)//断开设备连接
+    const [isUserClose,setIsUserClose] = useState(false)
     let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
@@ -349,23 +347,26 @@ export default function MainPage(){
     }
 
     //教学弹窗关闭事件
-    let handleCloseTutorials = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setTutorialsWindowOpen(false);
-        setTutorialsMode(false);
-    };
-
-    //教学弹窗关闭事件
     let userOnClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
         }
         setTutorialsWindowOpen(false);
         setTutorialsMode(false);
-            disConnect();
+        disConnect();
+        setLoading(false)
         showMsg('新手指引已关闭');
+    };
+
+    //连接中弹窗关闭事件
+    let userConnectClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setLoading(false)
+        disConnect();
+        setIsUserClose(false)
+        showMsg('连接已关闭');
     };
 
     //底部消息弹窗关闭事件
@@ -382,32 +383,23 @@ export default function MainPage(){
         setOkOpen(true)
     }
     //连接设备
-    let connect = function (d,e = '',name = ''){
+    let connect = function (d,e = '',name = '',useclose = true){
         setLoading(true)
+        if(useclose){
+            setIsUserClose(true)
+        }
+        
         if(e !== ''){
             setSN(e)
             setPhone(name)
         }
-        // showMsg('连接中，请打开目标程序')
+        showMsg('连接中，请打开目标程序')
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
-            // setIsConnected(res['ok'])
-            // if(res['ok']){
-            //     showMsg('连接成功：' + res['msg']['ip'],res['ok'])
-            //     setIP(res['msg']['ip'])
-            //     let version = res['msg']['version']
-            //     let tmp = version.split('.')[0]
-            //     setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
-            // }
-            // else {
-            //     showMsg(res['msg'],res['ok'])
-            // }
-            setLoading(false)
 
         })
     }
     //断开连接
     const disConnect = function (){
-        setManuallyConnect(false)
         setLoading(true)
         setIsDisConnect(true)
         window.pywebview.api.disConnect().then((res)=>{
@@ -417,18 +409,8 @@ export default function MainPage(){
             // setSN('')
             // setPhone('')
             // setIP('')
-        })
-    }
-    // 显示连接中弹窗断开连接
-    const loadingDisConnect = function () {
-        setManuallyConnect(false)
-        setIsDisConnect(true)
-        window.pywebview.api.disConnect().then((res)=>{
-            showMsg(res['msg'],false)
-            setLoading(false)
-            // setSN('')
-            // setPhone('')
-            // setIP('')
+            setIsDisConnect(false)
+            setIsUserClose(false)
         })
     }
     //设置弹窗关闭事件
@@ -468,7 +450,7 @@ export default function MainPage(){
                         let tmp = version.split('.')[0]
                         setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
                         setLoading(false)
-                        // setIsDisConnect(false)
+                        setIsUserClose(false)
                     })
                 }
             }
@@ -798,9 +780,8 @@ export default function MainPage(){
                     <TutorialsBoard
                         open={tutorialsWindowOpen}
                         // open={true}
-                        onClose={handleCloseTutorials}
+                        onClose={userOnClose}
                         isConnected={isConnected}
-                        userOnClose={userOnClose}
                         loading={loading}
                         connect={connect}
                         changeSNValue={changeSNValue}
@@ -906,9 +887,9 @@ export default function MainPage(){
                         {!isRecording && <Button className={classes.recordingDialogBtn} onClick={() => recordResume()}>继续录制</Button>}
                     </DialogContent>
                 </Dialog>
-                <Dialog open={loading && manuallyConnect} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
+                <Dialog open={isUserClose} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
                     <DialogTitle id="simple-dialog-title">
-                    <IconButton aria-label="close" className={classes.closeButton} onClick={() => disConnect()}>
+                    <IconButton aria-label="close" className={classes.closeButton} onClick={()=>{userConnectClose('','')}}>
                         <Close />
                     </IconButton>
                     </DialogTitle>
