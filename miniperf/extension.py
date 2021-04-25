@@ -186,8 +186,9 @@ def openUAUTOFile():
         window = g_webview
         file_types = ('UAUTO (*.UAUTO)', 'All files (*.*)')        
         FilePath = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
-        result = ''.join(FilePath[0])
-        FilePath = os.path.dirname(result)
+        if FilePath != None:
+            result = ''.join(FilePath[0])
+            FilePath = os.path.dirname(result)
         # print(FilePath)
 
         if FilePath:
@@ -218,7 +219,8 @@ def createuserWorkSpace():
         FilePath = ""
         window = g_webview       
         FilePath = window.create_file_dialog(webview.FOLDER_DIALOG,directory=workSpacePath)
-        FilePath = ''.join(FilePath[0])
+        if FilePath != None:
+            FilePath = ''.join(FilePath[0])
         # print(FilePath)
         if FilePath:
             data = {'path':FilePath}
