@@ -173,6 +173,12 @@ const useStyle = makeStyles((style)=>({
             border: '1px solid rgba(255, 255, 255, 0.23)'
         }
     },
+    inputSelect: {
+        padding: 5,
+        border: '1px solid rgba(255, 255, 255, 0.23)',
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+    },
     ipInput: {
         padding: 10,
         background: '#424242',
@@ -733,8 +739,21 @@ export default function MainPage(){
                                         <ButtonGroup>
                                             {phoneList.length > 0 ? (
                                                 <Select
-                                                    MenuProps={{classes: {list: classes.selectList}, disablePortal: true}}
-                                                    inputProps={{classes: {root: classes.selectInput}}}
+                                                    MenuProps={{
+                                                        classes: {list: classes.selectList}, 
+                                                        disablePortal: true,
+                                                        anchorOrigin: {
+                                                            vertical: 'bottom',
+                                                            horizontal: 'left'
+                                                        },
+                                                        transformOrigin: {
+                                                            vertical: 'top',
+                                                            horizontal: 'left'
+                                                        },
+                                                        getContentAnchorEl: null
+                                                    }}
+                                                    input={<InputBase classes={{root: classes.selectInput}} />}
+                                                    inputProps={{classes: {select: classes.inputSelect}}}
                                                     className={classes.select}
                                                     value={phone}
                                                     onChange={handleChange}
