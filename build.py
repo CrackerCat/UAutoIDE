@@ -81,10 +81,10 @@ def build_wheel(ctx):
     print("Task: Build Wheel")
     subprocess.check_call(['python', 'setup.py', 'bdist', 'bdist_wheel'])
     try:
-        for d in ['venv/src', 'src']:
+        for d, p in [('venv/src', '../../../dist/'), ('src','../../dist/')]:
             if os.path.exists(d):
                 for filename in os.listdir(d):
-                    subprocess.check_call(['python', 'setup.py', 'bdist', 'bdist_wheel', '-d', '../../../dist/'], cwd=f'{d}/{filename}')
+                    subprocess.check_call(['python', 'setup.py', 'bdist', 'bdist_wheel', '-d', p], cwd=f'{d}/{filename}')
     except FileNotFoundError as e:
         pass
     
