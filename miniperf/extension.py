@@ -77,7 +77,8 @@ def refreshCasesJSON():
     if dir_list:
         for file in dir_list:   # 移除文件夹
             if os.path.isdir(os.path.join(workSpacePath, 'pages',file)):
-                dir_list.remove(file)
+                # dir_list.remove(file)
+                continue
             else:
                 file = file.split('.')[0]
                 if file != '__init__' and file != '':
@@ -86,28 +87,28 @@ def refreshCasesJSON():
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
         try:
             s = json.loads(f.read())
-            for file in file_list:
+            
+            while i in range(len(file_list)):
                 for value in s:
-                    if file == value['run_case']:
-                        # if file not in casesList['run_case']:
+                    if file_list[i] == value['run_case']:
                         newData = {
                                 "test_name": value['test_name'],
                                 "tag": value['tag'],
                                 "run_case": value['run_case'],
                         }
                         casesList.append(newData)
-                        file_list.remove(file)
+                        file_list.remove(file_list[i])
 
         except json.decoder.JSONDecodeError:
             if file_list != '':
-                for file in file_list:
-                        newData = {
-                            "test_name": file,
-                            "tag": file,
-                            "run_case": file,
-                        }
-                        casesList.append(newData)
-                        file_list.remove(file)
+                while i in range(len(file_list)):
+                    newData = {
+                            "test_name": file_list[i],
+                            "tag": file_list[i],
+                            "run_case": file_list[i],
+                    }
+                    casesList.append(newData)
+                    file_list.remove(file_list[i])
 
     if file_list:
         for file in file_list:
@@ -119,7 +120,7 @@ def refreshCasesJSON():
             casesList.append(newData)       
 
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='UTF-8') as f:
-        json.dump(casesList, f, ensure_ascii=False)    
+        json.dump(casesList, f, ensure_ascii=False)   
              
 # 加载本地脚本列表
 def loadCasesList():
