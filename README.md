@@ -6,6 +6,8 @@
 
 https://king3soft.github.io
 
+https://twilight-lab-vvv.zhouzhou-program.workers.dev/cfdownload/https://github.com/king3soft/UAutoIDE/releases/tag/v0.0.32
+
 ## 功能说明
 
 1. 集成SDK(https://github.com/king3soft/UAutoSDK)
