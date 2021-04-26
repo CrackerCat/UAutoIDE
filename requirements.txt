@@ -4,7 +4,8 @@ pywebview==3.4
 uiautomator2==2.5.1
 humanize==3.2.0
 requests==2.25.1
--e git+https://github.com/king3soft/u3driver.git#egg=u3driver
+u3driver==1.0.33
+logcat_parser==0.2.4
 -e git+https://github.com/dkw72n/pure-python-adb.git@eb8dae622422933ccb9316777329e20056612a23#egg=pure_python_adb
 -e .
 
