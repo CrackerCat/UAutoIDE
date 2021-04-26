@@ -7,6 +7,7 @@ import traceback
 import sys
 import configparser
 import webview
+import re
 
 from miniperf import helper, adb_helper
 # from miniperf.adb import Device
@@ -79,7 +80,7 @@ def refreshCasesJSON():
                 dir_list.remove(file)
             else:
                 file = file.split('.')[0]
-                if file != '__init__':
+                if file != '__init__' and file != '':
                     file_list.append(file)
 
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
@@ -305,7 +306,20 @@ def createWorkSpace(path: str):
 def createFile(data):
     global workSpacePath
     try:
+        pattern = re.compile(r'[^a-zA-Z0-9_]')  #脚本名只能是数字字母下划线
+        rule = re.compile('^[a-zA-Z]{1}')  #脚本名只能以字母开头
+
+        result = pattern.findall(data['name'])
+        if len(result) != 0:
+            print('[ERROR]支持使用字母、数字、下划线来为文件命名，必须以字母开头')
+            return {'ok':False,'msg':'支持使用字母、数字、下划线来为文件命名，必须以字母开头'}
+        else:
+            if rule.match(data['name']) is None:
+                print('[ERROR]支持使用字母、数字、下划线来为文件命名，必须以字母开头')
+                return {'ok':False,'msg':'支持使用字母、数字、下划线来为文件命名，必须以字母开头'}
+                
         path = os.path.join(workSpacePath, 'pages', data['name'] + '.py')
+          
         if os.path.isfile(path):
             print(f'[ERROR]' + "脚本" + data['name'] + ".py" + "已存在")
             return {'ok':False,'exist':True,'msg':'文件名已存在'}
