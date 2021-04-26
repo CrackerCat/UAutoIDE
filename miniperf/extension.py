@@ -6,8 +6,7 @@ import time
 import traceback
 import sys
 import configparser
-import tkinter as tk
-from tkinter import filedialog
+import webview
 
 from miniperf import helper, adb_helper
 # from miniperf.adb import Device
@@ -30,7 +29,7 @@ workSpacePath = config.get('Setting', 'cases_path')
 if workSpacePath == r'\\':
     workSpacePath = os.path.join(ROOT_DIR, 'asset', 'WorkSpace')
 sys.path.append(os.path.join(workSpacePath))
-
+disconnected =False
 
 class Header(object):
     def __init__(self, _comment, _filed, _type, _subtype):
@@ -59,44 +58,68 @@ def isDevicesChange():
 def refreshCasesJSON():
     file_list = []
     casesList = []
+    initList = []
+    dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))  
+
+    for dirs in dir_list:   # 添加__init__文件
+        if dirs != "__init__.py" and not os.path.isdir(os.path.join(workSpacePath, 'pages', dirs)):
+            dirs = dirs.split('.')[0]
+            names = "from pages import " + dirs + "\n"
+            initList.append(names)
+
+    with open(os.path.join(workSpacePath, 'pages', '__init__.py'), 'w+', encoding='UTF-8') as f:
+        for i in initList:
+            f.write(i)
 
     dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))  
 
-    for file in dir_list:   # 移除文件夹
-        if os.path.isdir(os.path.join(workSpacePath, 'pages',file)):
-            dir_list.remove(file)
+    if dir_list:
+        for file in dir_list:   # 移除文件夹
+            if os.path.isdir(os.path.join(workSpacePath, 'pages',file)):
+                dir_list.remove(file)
+            else:
+                file = file.split('.')[0]
+                if file != '__init__':
+                    file_list.append(file)
 
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
-        s = json.loads(f.read())
-    
-    for i in dir_list:
-        i = i.split('.')[0]
-        if i != '__init__' and i != 'temp_test':
-            file_list.append(i)
-    
-    for file in file_list:
-        for value in s:
-            if file == value['run_case']:
-                # if file not in casesList['run_case']:
-                newData = {
-                        "test_name": value['test_name'],
-                        "tag": value['tag'],
-                        "run_case": value['run_case'],
-                }
-                casesList.append(newData)
-                file_list.remove(file)
+        try:
+            s = json.loads(f.read())
+            for file in file_list:
+                for value in s:
+                    if file == value['run_case']:
+                        # if file not in casesList['run_case']:
+                        newData = {
+                                "test_name": value['test_name'],
+                                "tag": value['tag'],
+                                "run_case": value['run_case'],
+                        }
+                        casesList.append(newData)
+                        file_list.remove(file)
 
-    for file in file_list:
-        newData = {
-                "test_name": file,
-                "tag": file,
-                "run_case": file,
-        }
-        casesList.append(newData)       
+        except json.decoder.JSONDecodeError:
+            if file_list != '':
+                for file in file_list:
+                        newData = {
+                            "test_name": file,
+                            "tag": file,
+                            "run_case": file,
+                        }
+                        casesList.append(newData)
+                        file_list.remove(file)
+
+    if file_list:
+        for file in file_list:
+            newData = {
+                    "test_name": file,
+                    "tag": file,
+                    "run_case": file,
+            }
+            casesList.append(newData)       
 
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='UTF-8') as f:
-        json.dump(casesList, f, ensure_ascii=False)   
-            
+        json.dump(casesList, f, ensure_ascii=False)    
+             
 # 加载本地脚本列表
 def loadCasesList():
     refreshCasesJSON()
@@ -104,38 +127,39 @@ def loadCasesList():
     file_list = []
     casesList = []
 
-    dir_list = os.listdir(os.path.join(workSpacePath, 'pages'))
-
-    for file in dir_list:
-        if os.path.isdir(os.path.join(workSpacePath, 'pages',file)):
-            dir_list.remove(file)
-
     with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='UTF-8') as f:
-        s = json.loads(f.read())
+        try:
+            s = json.loads(f.read())
+            for case in s:
+                case = case['run_case'] + ".py"
+                case_list.append(case)
+
+            sort_list = sorted(case_list,key = lambda x: os.path.getmtime(os.path.join(workSpacePath,'pages',x))) # 按文件最后修改时间排序
+            sort_list = sort_list[::-1]
+
+            for i in sort_list:
+                i = i.split('.')[0]
+                file_list.append(i)
+
+            for file in file_list:
+                for value in s:
+                    if file == value['run_case']:
+                        # if file not in casesList['run_case']:
+                        newData = {
+                                "test_name": value['test_name'],
+                                "tag": value['tag'],
+                                "run_case": value['run_case'],
+                            }
+                        casesList.append(newData)
         
-    for key in s:
-        for dir1 in dir_list:
-            dir1 = dir1.split('.')[0]
-            if dir1 == key['run_case']:
-                case_list.append(dir1 + ".py")
-    sort_list = sorted(case_list,key = lambda x: os.path.getmtime(os.path.join(workSpacePath,'pages',x))) # 按文件最后修改时间排序
-    sort_list = sort_list[::-1]
-
-    for i in sort_list:
-        i = i.split('.')[0]
-        file_list.append(i)
-
-    for file in file_list:
-        for value in s:
-            if file == value['run_case']:
-                # if file not in casesList['run_case']:
-                newData = {
-                        "test_name": value['test_name'],
-                        "tag": value['tag'],
-                        "run_case": value['run_case'],
-                    }
-                casesList.append(newData)
-
+        except json.decoder.JSONDecodeError:
+            newData = {
+                "test_name": '',
+                "tag": '',
+                "run_case":'',
+            }
+            casesList.append(newData)
+    
     return {"ok": True, "msg": casesList}
 
 # 加载指定名称脚本
@@ -145,68 +169,75 @@ def loadCase(data):
         with open(path, 'r', encoding='UTF-8') as f:
             return {"ok": True, "msg": f.read()}
     except Exception as e:
-        # print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         logging.error(e)
         return {"ok": False, "msg": e}
 
 # 打开工作区
 def openUAUTOFile():
     try:
-        window = tk.Tk()
-        window.withdraw()
-        FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
-        FilePath = os.path.dirname(FilePath)
-        # FilePath = FilePath.replace('/','\\')
+        # window = tk.Tk()
+        # window.withdraw()
+        # FilePath = filedialog.askopenfilename(title = "请选择项目的UAUTO文件",filetypes=[('UAUTO','*.UAUTO')],initialdir=workSpacePath)
+        # FilePath = os.path.dirname(FilePath)
 
-        # recordWorkSpacePath = os.path.join(ROOT_DIR, 'asset', 'WorkSpace')
-        # recordWorkSpacePath = recordWorkSpacePath.replace('\\','/')
-
-        # if FilePath == recordWorkSpacePath:
-        #     data = {'path':r'\\'}
-        #     setWorkSpace(data)
-        #     window.destroy()
-        #     print(FilePath + "工作区打开成功")
-        #     return {"ok": True, "msg": FilePath + "工作区打开成功"}
+        FilePath = ""
+        window = g_webview
+        file_types = ('UAUTO (*.UAUTO)', 'All files (*.*)')        
+        FilePath = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=False, file_types=file_types)
+        if FilePath != None:
+            result = ''.join(FilePath[0])
+            FilePath = os.path.dirname(result)
+        # print(FilePath)
 
         if FilePath:
             data = {'path':FilePath}
             setWorkSpace(data)
-            window.destroy()
+            # window.destroy()
             print(FilePath + "工作区打开成功")
             return {"ok": True, "msg": FilePath + "工作区打开成功"}
         else:
-            window.destroy()
+            # window.destroy()
             print("已取消工作区打开")
             return ""
 
     except Exception as e:
-        # print(f'[ERROR]{e}')
-        window.destroy()
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
+        # window.destroy()
         print(f'[ERROR]' + FilePath + '工作区打开失败')
         return {"ok": False, "msg": FilePath + "工作区打开失败"}
 
 # 新建工作区
 def createuserWorkSpace():
     try:
-        window = tk.Tk()
-        window.withdraw()
-        FilePath = filedialog.askdirectory(title = "请选择创建工作区的目录",initialdir=workSpacePath)
-        # FilePath = FilePath.replace('/','\\')
+        # window = tk.Tk()
+        # window.withdraw()
+        # FilePath = filedialog.askdirectory(title = "请选择创建工作区的目录",initialdir=workSpacePath)
+
+        FilePath = ""
+        window = g_webview       
+        FilePath = window.create_file_dialog(webview.FOLDER_DIALOG,directory=workSpacePath)
+        if FilePath != None:
+            FilePath = ''.join(FilePath[0])
+        # print(FilePath)
         if FilePath:
             data = {'path':FilePath}
             setCreateWorkSpace(data)
-            window.destroy()
+            # window.destroy()
             print(FilePath +'工作区创建成功')
             # print("可通过新建脚本功能添加脚本")
             return {"ok": True, "msg": FilePath +'工作区创建成功'}
         else:
-            window.destroy()
+            # window.destroy()
             print("已取消工作区创建")
             return ""
             
     except Exception as e:
-        # print(f'[ERROR]{e}')
-        window.destroy()
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
+        # window.destroy()
         print(f'[ERROR]' + FilePath + '工作区创建失败')
         return {"ok": False, "msg": FilePath + "工作区创建失败"}
 
@@ -297,19 +328,23 @@ def createFile(data):
         print("脚本" + data['name'] + ".py"+ "创建成功")
         return {"ok": True, "msg": data['name']}
     except Exception as e:
-        print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         logging.error(e)
         return {"ok": False, "msg": e}
 
 # 添加脚本
 def addFile():
-    window = tk.Tk()
-    window.withdraw()
+    # window = tk.Tk()
+    # window.withdraw()
     casesList = []
-    # filefold = os.path.join(workSpacePath,'pages')
-    # filefold = filefold.replace(r"\\",'/')
-    FilePath = filedialog.askopenfilenames(title = "请选择需要添加进工作区的脚本",initialdir=workSpacePath,filetypes=[('py','py')])
+    # FilePath = filedialog.askopenfilenames(title = "请选择需要添加进工作区的脚本",initialdir=workSpacePath,filetypes=[('py','py')])
     
+    result = []
+    window = g_webview
+    file_types = ('py (*.py)', 'All files (*.*)')        
+    FilePath = window.create_file_dialog(webview.OPEN_DIALOG, allow_multiple=True, file_types=file_types)
+
     if FilePath:
         with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'r', encoding='utf-8') as f:
             setting = json.load(f)
@@ -317,9 +352,8 @@ def addFile():
                 casesList.append(case)
 
         for item in FilePath:
-            file_name = item.split('/')[-1].split('.')[0]
-            item = item.replace('/','\\')
-            with open(item, 'r') as f:
+            file_name = item.split('\\')[-1].split('.')[0]
+            with open(item, 'r', encoding='utf-8') as f:
                 content = f.read()
                 with open(os.path.join(workSpacePath, 'pages',file_name+".py"), "w" , encoding='utf-8') as file:
                     file.write(content)
@@ -333,12 +367,11 @@ def addFile():
 
         with open(os.path.join(workSpacePath, 'setting.UAUTO'), 'w', encoding='utf-8') as f:
             json.dump(casesList, f, ensure_ascii=False)
-        window.destroy()
         print("脚本添加成功")
         return {"ok": True, "msg": '添加脚本成功'}
 
     else:
-        window.destroy()
+        # window.destroy()
         print("已取消添加脚本")
         return ""
 
@@ -403,7 +436,8 @@ def getTempFile():
         with open(os.path.join(workSpacePath, 'pages', 'temp_test.py'), 'r', encoding='utf-8') as f:
             return {"ok": True, "msg": f.read()}
     except Exception as e:
-        print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         logging.error(e)
         return {"ok": False, "msg": e}
 
@@ -418,17 +452,17 @@ def connect(data):
         return {"ok": False, "msg": f"连接失败：请确认是否输入正确的设备号与IP"}
     except Exception as e:
         logging.error(e)
-        print(f'[ERROR]{e}')
+        err_string = str(e).replace('\n','')
+        print(f'[ERROR]{err_string}')
         return {"ok": False, "msg": f"连接失败：{e}"}
 
 
 def disConnect():
     # pass
     global phone
-    if phone.isConnected:
-        phone.disConnect()
-        return {"ok": True, "msg": f"已断开"}
-
+    # if phone.isConnected:
+    phone.disConnect()
+    return {"ok": True, "msg": f"已断开"}
 
 def record(data):
     # pass
@@ -485,6 +519,12 @@ def saveFile(name, s):
         f.write(s)
     return {"ok": True, "msg": "保存成功"}
 
+def get_u3driver_version():
+    global phone
+    status = None
+    if phone != None:
+        status = phone.get_version()
+    return {"ok": status != None, "msg": status}
 
 # 打开Demo
 def openDemo():
@@ -530,10 +570,13 @@ def runCase(data):
             saveFile(data['caseName'], data['fileInfo'])
             module = LoadModuleByPath(case, CasePath(case + ".py"))
             module.AutoRun(phone.device)
+            print("运行完成")
             return {"ok": True, "msg": '运行完成'}
         except Exception as e:
-            print(f'[ERROR]{e}')
+            err_string = str(e).replace('\n','')
+            print(f'[ERROR]{err_string}')
             logging.error(e)
+            print("[ERROR]运行失败")
             return {"ok": False, "msg": f'运行失败:{e}'}
 
 

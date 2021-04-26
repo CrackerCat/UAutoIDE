@@ -55,7 +55,7 @@ const MuiDialogTitle = withStyles(styles)((props) => {
 
 export default function TutorialsBoard(props){
     const classes = useStyle()
-    const { onClose, open ,isConnected,loading,connect,phoneList,showMsg,userOnClose} = props;
+    const { onClose, open ,isConnected,loading,connect,phoneList,showMsg, userOnClose } = props;
     const [isOpenDemo,setIsOpenDemo] = useState(false)
     const [opening,setOpening] = useState(false)
     const [progress,setProgress] = useState(0)
@@ -74,7 +74,7 @@ export default function TutorialsBoard(props){
         if(isOpenDemo){
             if(!isConnected && !loading){
                 if(phoneList.length === 1){
-                    connect('',phoneList[0]['sn'],phoneList[0]['name'])
+                    connect('',phoneList[0]['sn'],phoneList[0]['name'],false)
                 }
             }
         }
@@ -100,7 +100,7 @@ export default function TutorialsBoard(props){
 
     return(
         <Dialog open={open} className={classes.root}>
-            <MuiDialogTitle id="simple-dialog-title" onClose={() => onClose('', '')}>演示脚本</MuiDialogTitle>
+            <MuiDialogTitle id="simple-dialog-title" onClose={() => userOnClose('', '')}>演示脚本</MuiDialogTitle>
             <DialogContent className={classes.dialogContent}>
                 <p style={{fontSize: 14}} className={isOpenDemo?classes.Finish:''}>正在打开演示Demo，如未安装将自动安装（请确保有且仅有1台设备连接于电脑）</p>
 

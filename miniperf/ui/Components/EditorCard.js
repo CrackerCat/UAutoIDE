@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
         // background:'lightgrey',
     },
     content:{
-        height: 'calc(100% - 32px)',
+        height: 'calc(100% - 36px)',
         position:'relative',
         flex:1,
         padding:0,
@@ -265,7 +265,6 @@ export default function EditorCard (props) {
             }
             setRunned(false)
         })
-        // .then(() => {alert(`record: ${isRecording}  !connect:${!isConnected}  !run:${!isRunning}  !pause:${!isPausing}`)})
     }
     function saveAs() {
 

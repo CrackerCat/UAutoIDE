@@ -6,6 +6,8 @@ import os
 from miniperf import extension
 import sys
 import subprocess
+import re
+
 class Api:
 
     def __init__(self):
@@ -92,7 +94,9 @@ class Api:
                     continue
                 if '[ERROR]' not in s:
                     s = '[INFO]' + s
+                    s = str(s).replace('\n','')
                 temp += s
+
             self.output.clear()
             return temp
         return '405null'
@@ -178,3 +182,6 @@ class Api:
 
     def is_debug_mode_record(self):
         return extension.is_debug_mode_record()
+
+    def get_u3driver_version(self):
+        return extension.get_u3driver_version()

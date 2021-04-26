@@ -153,11 +153,31 @@ const useStyle = makeStyles((style)=>({
         display: 'flex',
         alignItems: 'center'
     },
-    selectInput: {
+    menuItemRoot: {
+        paddingTop: 0,
+        paddingBottom: 0,
+        fontSize: 14
+    },
+    selectList: {
+        paddingTop: 4,
+        paddingBottom: 4
+    },
+    select: {
         background: '#424242',
         width: '200px', 
         height: '26px', 
         fontSize: '12px',
+    },
+    selectInput: {
+        '&:after': {
+            border: '1px solid rgba(255, 255, 255, 0.23)'
+        }
+    },
+    inputSelect: {
+        padding: 5,
+        border: '1px solid rgba(255, 255, 255, 0.23)',
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
     },
     ipInput: {
         padding: 10,
@@ -295,7 +315,6 @@ export default function MainPage(){
     const [logType,setLogType] = useState('success')//底部消息弹窗类型
     const [isConnected, setIsConnected] = React.useState(false);//是否连接上的设备
     const [loading, setLoading] = React.useState(false);//连接中
-    const [manuallyConnect, setManuallyConnect] = React.useState(false) //手动连接
     const [message, setMessage] = React.useState('');//提示框的内容
     const [sn, setSN] = useState("");//设备的设备号
     const [ip, setIP] = useState("");//设备的ip
@@ -324,15 +343,14 @@ export default function MainPage(){
     const [isPausing,setIsPausing] = React.useState(false)
     const [consoleData,setConsoleData] = useState('')//console的输出信息
     const [recordWindowOpen,setRecordWindowOpen] = useState(false)//设置录制弹窗
-
-
+    const [isDisconnect,setIsDisConnect] = useState(false)//断开设备连接
+    const [isUserClose,setIsUserClose] = useState(false)
     let changeSNValue = (e) =>{
         setSN(e.target.value);
     }
     const changeIPValue = (e) =>{
         setIP(e.target.value);
     }
-
     //教学弹窗关闭事件
     let handleCloseTutorials = (event, reason) => {
         if (reason === 'clickaway') {
@@ -341,7 +359,6 @@ export default function MainPage(){
         setTutorialsWindowOpen(false);
         setTutorialsMode(false);
     };
-
     //教学弹窗关闭事件
     let userOnClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -349,10 +366,19 @@ export default function MainPage(){
         }
         setTutorialsWindowOpen(false);
         setTutorialsMode(false);
-        if(isConnected){
-            disConnect();
-        }     
+        disConnect();
         showMsg('新手指引已关闭');
+    };
+
+    //连接中弹窗关闭事件
+    let userConnectClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setLoading(false)
+        disConnect();
+        setIsUserClose(false)
+        showMsg('连接已关闭');
     };
 
     //底部消息弹窗关闭事件
@@ -369,33 +395,25 @@ export default function MainPage(){
         setOkOpen(true)
     }
     //连接设备
-    let connect = function (d,e = '',name = ''){
+    let connect = function (d,e = '',name = '',useclose = true){
         setLoading(true)
+        if(useclose){
+            setIsUserClose(true)
+        }
+        
         if(e !== ''){
             setSN(e)
             setPhone(name)
         }
         showMsg('连接中，请打开目标程序')
         window.pywebview.api.connect({'sn':e===''?sn:e,'ip':ip}).then((res)=>{
-            // setIsConnected(res['ok'])
-            if(res['ok']){
-                showMsg('连接成功：' + res['msg']['ip'],res['ok'])
-                setIP(res['msg']['ip'])
-                let version = res['msg']['version']
-                let tmp = version.split('.')[0]
-                setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
-            }
-            else {
-                showMsg(res['msg'],res['ok'])
-            }
-            setLoading(false)
 
         })
     }
     //断开连接
     const disConnect = function (){
-        setManuallyConnect(false)
         setLoading(true)
+        setIsDisConnect(true)
         window.pywebview.api.disConnect().then((res)=>{
             // setIsConnected(false)
             showMsg(res['msg'],false)
@@ -403,16 +421,8 @@ export default function MainPage(){
             // setSN('')
             // setPhone('')
             // setIP('')
-        })
-    }
-    // 显示连接中弹窗断开连接
-    const loadingDisConnect = function () {
-        setManuallyConnect(false)
-        window.pywebview.api.disConnect().then((res)=>{
-            setLoading(false)
-            // setSN('')
-            // setPhone('')
-            // setIP('')
+            setIsDisConnect(false)
+            setIsUserClose(false)
         })
     }
     //设置弹窗关闭事件
@@ -440,6 +450,21 @@ export default function MainPage(){
             let status = res['msg']
             if (isConnected !== status['isConnected']) {
                 setIsConnected(status['isConnected'])
+            }
+            if(loading && !isDisconnect)
+            {
+                if(status['isConnected'])
+                {   
+                    window.pywebview.api.get_u3driver_version().then((info)=>{
+                        showMsg('连接成功：' + info['msg']['ip'],res['ok'])
+                        setIP(info['msg']['ip'])
+                        let version = info['msg']['version']
+                        let tmp = version.split('.')[0]
+                        setEnableHierarchy(parseInt(tmp) >= 2)//当版本号大于2.0时可以使用Hierarchy
+                        setLoading(false)
+                        setIsUserClose(false)
+                    })
+                }
             }
         })
     }
@@ -544,21 +569,6 @@ export default function MainPage(){
         })
     }
 
-    // let setWorkSpace = (v) => {
-    //     if(workSpacePath === '')
-    //         return
-    //     window.pywebview.api.setWorkSpace({'path':workSpacePath}).then((res)=>{
-    //         if(res['ok']){
-    //             setWorkSpacePath('')
-    //             handleCloseSetting('','')
-    //             setCaseName('')
-    //             setScriptsData('')
-    //             showMsg(res['msg'],res['ok'])
-    //         }else{
-    //             showMsg(res['msg'],res['ok'])
-    //         }
-    //     })
-    // }
 
     let setWorkSpace = () => {
         window.pywebview.api.openUAUTOFile().then((res)=>{
@@ -721,30 +731,6 @@ export default function MainPage(){
                 <div className={'container'}>
                     <AppBar position={"static"}>
                         <Toolbar className={classes.toolbar}>
-                            {/* <FormControl className={classes.Input} variant="filled">
-                                {phoneList.length > 0 ? (
-                                    <Select
-                                    labelId="demo-simple-select-filled-label"
-                                    id="demo-simple-select-filled"
-                                    value={phone}
-                                    onChange={handleChange}
-                                    onOpen={getCurDevice}
-                                    disabled={isConnected || loading}
-                                >
-                                    {phoneList.map((v)=>{
-                                        return <MenuItem value={v.name}>{v.name}</MenuItem>
-                                    })}
-                                    {phoneList.length === 0 && <MenuItem><em>None</em></MenuItem>}
-                                </Select>
-                                ) : (<Button variant="filled" color="primary" disableElevation>No Devices</Button>)}
-                            </FormControl>
-                            <TextField
-                                id="filled-helperText"
-                                label="IP地址"
-                                className={classes.Input}
-                                value={ip}
-                                onChange={changeIPValue}
-                            /> */}
 
                             {/* new UI: ToolBar */}
                             <div className={classes.toolbarContainer}>
@@ -753,14 +739,29 @@ export default function MainPage(){
                                         <ButtonGroup>
                                             {phoneList.length > 0 ? (
                                                 <Select
-                                                    className={classes.selectInput}
+                                                    MenuProps={{
+                                                        classes: {list: classes.selectList}, 
+                                                        disablePortal: true,
+                                                        anchorOrigin: {
+                                                            vertical: 'bottom',
+                                                            horizontal: 'left'
+                                                        },
+                                                        transformOrigin: {
+                                                            vertical: 'top',
+                                                            horizontal: 'left'
+                                                        },
+                                                        getContentAnchorEl: null
+                                                    }}
+                                                    input={<InputBase classes={{root: classes.selectInput}} />}
+                                                    inputProps={{classes: {select: classes.inputSelect}}}
+                                                    className={classes.select}
                                                     value={phone}
                                                     onChange={handleChange}
                                                     onOpen={getCurDevice}
                                                     disabled={isConnected || loading}
                                                 >
                                                     {phoneList.map((v)=>{
-                                                        return <MenuItem value={v.name} key={v.name}>{v.name}</MenuItem>
+                                                        return <MenuItem classes={{root: classes.menuItemRoot}} value={v.name} key={v.name}>{v.name}</MenuItem>
                                                     })}
                                                 </Select>
                                             ) : (<ToolbarBtn onClick={() => showMsg('请保证电脑连接到手机', false)} className={classes.mainBtn} size="small" style={{ width: '200px', height: '26px', fontSize: '12px', lineHeight: '12px' }}>No Devices</ToolbarBtn>)}
@@ -769,8 +770,8 @@ export default function MainPage(){
                                         </ButtonGroup>
                                     </div>
                                     <div className={classes.wrapper}>
-                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={() => {connect(); setManuallyConnect(true)}} disabled={isConnected || loading}>连接</Button>}
-                                        {isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonDisConnect]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
+                                        {!isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonConnect]} onClick={() => {connect()}} disabled={isConnected || loading || phone === '' || ip === ''}>连接</Button>}
+                                        {isConnected && <Button variant="contained" color="primary" size="small" disableElevation className={[classes.Button, classes.mainBtn, classes.ButtonDisConnect]} onClick={()=>{disConnect()}} disabled={!isConnected || loading}>断开</Button>}
                                         {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
                                     </div>
                                 </div>
@@ -778,11 +779,9 @@ export default function MainPage(){
                                 <div className={classes.settingBtns}>
                                     <ButtonGroup style={{ marginRight: '20px' }}>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'创建工作区：请选择一个空文件夹'} onClick={(e)=>{createuserWorkSpace(e)}}>
-                                            {/* <NoteAdd fontSize="small" style={{fontSize: '16px'}} /> */}
                                             <i className="iconfont">&#xe676;</i>
                                         </ToolbarBtn>
                                         <ToolbarBtn size="small" className={classes.mainBtn} title={'设置工作区：请选择已创建工作区的setting.UAUTO'} onClick={(e)=>{setWorkSpace(e)}}>
-                                            {/* <Folder fontSize="small" style={{fontSize: '16px'}}/> */}
                                             <i className="iconfont">&#xe726;</i>
                                         </ToolbarBtn>
                                     </ButtonGroup>
@@ -791,27 +790,8 @@ export default function MainPage(){
                                 </div>
                             </div>
                             
-                            {/* <div className={classes.wrapper}>
-                                {!isConnected && <Button variant="contained" color="primary" size="medium" disableElevation className={[classes.Button,classes.ButtonConnect]} onClick={connect} disabled={isConnected || loading}>连接</Button>}
-                                {isConnected && <Button variant="contained" color="secondary" size="medium" disableElevation className={[classes.Button]} onClick={disConnect} disabled={!isConnected || loading}>断开</Button>}
-                                {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-                            </div> */}
-                            {/* <div>
-                                <Button variant="contained" color="primary" size="small" disableElevation onClick={()=>{setIsFirst(true)}} disabled={tutorialsMode || isConnected}>新手指引</Button>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            disabled={!advancedModeDisable}
-                                            checked={enableAdvancedMode}
-                                            onChange={switchMode}
-                                            name="checkedB"
-                                            color="secondary"
-                                        />
-                                    }
-                                    label="启用高级模式"
-                                />
-                                <Button variant="contained" color="primary" size="small" disableElevation disabled={tutorialsMode || isConnected}>启用高级模式</Button>
-                            </div> */}
+                        
+                            
                         </Toolbar>
                     </AppBar>
                     {/* <Dialog open={isFirst} className={classes.beginCard}>
@@ -824,7 +804,6 @@ export default function MainPage(){
                     </Dialog> */}
                     <TutorialsBoard
                         open={tutorialsWindowOpen}
-                        // open={true}
                         onClose={handleCloseTutorials}
                         isConnected={isConnected}
                         userOnClose={userOnClose}
@@ -839,31 +818,14 @@ export default function MainPage(){
                         {enableAdvancedMode && (
                             <div className={'left'} style={setWidth(1)}>
                                 <HierarchyContent isConnected={isConnected} getCurID={getCurID} enable={enableHierarchy}/>
-                                {/*{!enableAdvancedMode && (*/}
-                                {/*    <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode}  changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
-                                {/*)}*/}
+                                
                             </div>
                         )}
                         {enableAdvancedMode && (
                             <div className={'scroller'} id={'scroller1'} draggable={"true"} onDragEnd={handleMouseMove}>
                             </div>
                         )}
-                        {/*<div className={enableAdvancedMode?'middle':'content'}>*/}
-                        {/*        <div className={enableAdvancedMode?'mBlock':'left'}  style={enableAdvancedMode?setWidth(3):setWidth(1)}>*/}
-                        {/*            <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
-                        {/*        </div>*/}
-                        {/*        {enableAdvancedMode && (*/}
-                        {/*            <div className={'hScroller'} id={'scroller3'} draggable={"true"} onDragEnd={handleMouseMove}>*/}
-                        {/*            </div>*/}
-                        {/*        )}*/}
-                        {/*        {!enableAdvancedMode && (*/}
-                        {/*            <div className={'scroller'} id={'scroller1'} draggable={"true"} onDragEnd={handleMouseMove}>*/}
-                        {/*            </div>*/}
-                        {/*        )}*/}
-                        {/*        <div className={enableAdvancedMode?'mBlock':'right'}  style={enableAdvancedMode?setWidth(4):setWidth(2)}>*/}
-                        {/*            <ConsoleCard/>*/}
-                        {/*        </div>*/}
-                        {/*</div>*/}
+                        
                         <div className={'middle'}>
                             <div className={'mBlock1'} style={enableAdvancedMode ? setWidth(3) : {height: '100%'}}>
                             <EditorCard
@@ -891,12 +853,7 @@ export default function MainPage(){
                                 <ConsoleCard consoleData={consoleData} onChangeConsoleData={e => handleChangeConsoleData(e)}/>
                             </div>}
                         </div>
-                        {/*<div className={'mBlock'}>*/}
-                        {/*    <EditorCard ShowMsg={showMsg} isConnected={isConnected} tutorials={tutorialsMode} setTutorialsMode={setTutorialsMode} changeADV={(e)=>{setAdvancedModeDisable(e)}}/>*/}
-                        {/*</div>*/}
-                        {/*<div className={'mBlock'}>*/}
-                        {/*    <ConsoleCard/>*/}
-                        {/*</div>*/}
+                        
                         {enableAdvancedMode && (
                             <div className={'scroller'} id={'scroller2'} draggable={"true"} onDragEnd={handleMouseMove}>
                             </div>
@@ -919,64 +876,11 @@ export default function MainPage(){
                         {message}
                     </Alert>
                 </Snackbar>
-                {/* <Dialog open={createWindowOpen} fullWidth={true} maxWidth="sm">
-                    <DialogTitle>新建脚本</DialogTitle>
-                    <DialogContent className={classes.dialogContent}>
-                            <TextField 
-                                style={{width: '100%', marginBottom: '20px'}} 
-                                id="outlined-basic" 
-                                label="脚本名称" 
-                                variant="outlined" 
-                                value={createCaseName}
-                                InputProps={{
-                                    classes: {
-                                        notchedOutline: classes.notchedOutline,
-                                        focused: classes.focused
-                                    }
-                                }}
-                                onChange={(e)=>{setCreateCaseName(e.target.value)}}
-                            />
-                            <TextField 
-                                style={{width: '100%'}}
-                                id="outlined-basic" 
-                                label="脚本文件名" 
-                                variant="outlined" 
-                                value={createCaseFileName}
-                                InputProps={{
-                                    classes: {
-                                        notchedOutline: classes.notchedOutline,
-                                        focused: classes.focused
-                                    }
-                                }}
-                                onChange={(e)=>{setCreateCaseFileName(e.target.value)}}
-                            />
-                    </DialogContent>
-                    <DialogActions classes={{root: classes.dialogActions}}>
-                    <Button variant="contained" classes={{root: classes.dialogBtn}} onClick={(e)=>{createFile(e)}}>
-                        创建
-                    </Button>
-                    <Button variant="contained" color="primary" onClick={(e)=>{handleCloseCreate('','')}}>
-                        取消
-                    </Button>
-                    </DialogActions>
-                </Dialog> */}
+                
                 <Dialog open={settingWindowOpen} onClose={handleCloseSetting} fullWidth={true} maxWidth="sm">
                     <DialogTitle>设置工作区</DialogTitle>
                     <DialogContent className={[classes.dialogContent, classes.settingContent]}>
-                        {/* <TextField 
-                            style={{width: '100%'}} 
-                            id="outlined-basic" 
-                            label="设置工作区" 
-                            variant="outlined" 
-                            value={workSpacePath}
-                            InputProps={{
-                                classes: {
-                                    notchedOutline: classes.notchedOutline,
-                                    focused: classes.focused
-                                }
-                            }}
-                            onChange={(e)=>{setWorkSpacePath(e.target.value)}}
-                        /> */}
+                        
                         <p className={classes.settingText}>创建：请选择一个空文件夹</p>
                         <p className={classes.settingText}>设置：请选择已创建工作区的setting.UAUTO</p>
                         
@@ -1008,9 +912,9 @@ export default function MainPage(){
                         {!isRecording && <Button className={classes.recordingDialogBtn} onClick={() => recordResume()}>继续录制</Button>}
                     </DialogContent>
                 </Dialog>
-                <Dialog open={loading && manuallyConnect} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
+                <Dialog open={isUserClose} fullWidth={true} maxWidth="sm" className={classes.muiDialog}>
                     <DialogTitle id="simple-dialog-title">
-                    <IconButton aria-label="close" className={classes.closeButton} onClick={() => loadingDisConnect()}>
+                    <IconButton aria-label="close" className={classes.closeButton} onClick={()=>{userConnectClose('','')}}>
                         <Close />
                     </IconButton>
                     </DialogTitle>
