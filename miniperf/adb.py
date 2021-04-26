@@ -6,8 +6,7 @@ from u3driver import AltrunUnityDriver, By
 from miniperf import device_manager
 from miniperf import extension
 import threading
-import ctypes
-import inspect
+
 demoPackageName = 'com.DefaultName.DefaultName'
 demoPackageActivity = 'com.unity3d.player.UnityPlayerActivity'
 is_get_version = True
