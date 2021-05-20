@@ -8,6 +8,8 @@ import sys
 import configparser
 import webview
 import re
+import webbrowser
+import subprocess
 
 from miniperf import helper, adb_helper
 # from miniperf.adb import Device
@@ -603,10 +605,15 @@ def isNewUser():
 # 通过VS CODE打开工作区
 def openInVS():
     try:
-        os.popen(f'code {workSpacePath}')
-        return {"ok": True, "msg": '已打开'}
+        p = subprocess.Popen(f'code {workSpacePath}',shell = True,stdout=subprocess.PIPE, stderr=subprocess.PIPE,encoding="utf-8")
+        if p.communicate():
+            print("已打开VSCode")
+            return {"ok": True, "msg": '已打开'}
+
     except:
-        return {"ok": False, "msg": '出错'}
+        webbrowser.open("https://code.visualstudio.com/")
+        print("无VSCode环境，请先安装")
+        return {"ok": False, "msg": '无VSCode环境，请先安装'}
 
 
 # 修改Config
